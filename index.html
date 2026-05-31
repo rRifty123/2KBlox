@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2KBlox - Retro Sandbox Environment</title>
+    <title>2KBlox - Ultimate Sandbox Development Environment</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght=700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
@@ -13,6 +13,8 @@
             --retro-bg: #bcd6f7;
             --roblox-red: #e63946;
             --panel-bg: #ffffff;
+            --studio-dark: #1e1e1e;
+            --studio-panel: #2d2d2d;
         }
         * { box-sizing: border-box; font-family: 'Comic Neue', Arial, sans-serif; font-weight: 700; }
         body, html { margin: 0; padding: 0; background: var(--retro-bg); height: 100%; overflow: hidden; }
@@ -49,30 +51,39 @@
         .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; position: relative; }
         .badge-limited { position: absolute; top: 5px; right: 5px; background: #ff4500; color: white; padding: 2px 6px; font-size: 10px; border-radius: 3px; }
 
-        /* STUDIO LAYOUT */
+        /* ADVANCED STUDIO LAYOUT */
         .studio-container { display: flex; width: 100%; height: 100%; background: #222; }
-        .studio-sidebar { width: 300px; background: #2d2d2d; color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
-        .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; text-align:center; }
+        .studio-sidebar { width: 300px; background: var(--studio-panel); color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
+        .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; text-align:center; letter-spacing: 1px; }
         .explorer-tree, .properties-list { flex: 1; overflow-y: auto; padding: 8px; font-family: monospace; font-size: 12px; }
-        .explorer-item { cursor: pointer; padding: 6px 4px; border-bottom: 1px solid #3a3a3a; }
+        .explorer-item { cursor: pointer; padding: 6px 4px; border-bottom: 1px solid #3a3a3a; display: flex; justify-content: space-between; }
         .explorer-item.selected { background: #007acc; color: white; }
         .prop-group { margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px; }
-        .prop-group label { display: block; color: #aaa; font-size: 11px; }
+        .prop-group label { display: block; color: #aaa; font-size: 11px; margin-bottom: 2px; }
 
         .studio-main-build-zone { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 8px; padding: 5px; }
-        .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 5px 10px; cursor: pointer; }
+        .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 6px; padding: 5px; border-bottom: 2px solid #222; }
+        .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 4px 10px; cursor: pointer; font-size: 13px; border-radius: 3px; }
+        .studio-toolbar button.active-tool { background: #007acc; border-color: #0098ff; }
 
-        .code-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; flex-direction: column; }
+        /* ADVANCED SCRIPT & BLOCK ENVIRONMENT */
+        .code-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; }
+        .workspace-split-editor { display: flex; width: 100%; height: 100%; }
+        .script-text-pane { flex: 1; display: flex; flex-direction: column; background: var(--studio-dark); }
         #html-textarea-field { width: 100%; flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 15px; background: #1e1e1e; color: #7ec699; border: none; resize: none; }
-        .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
+        
+        .block-code-pane { width: 45%; background: #f0f2f5; border-left: 3px solid #ccc; display: flex; flex-direction: column; }
+        .block-toolbox { padding: 10px; background: #e2e8f0; display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 2px solid #cbd5e1; }
+        .code-block-item { background: #3b82f6; color: white; padding: 6px 12px; border-radius: 4px; cursor: grab; font-size: 12px; display: inline-flex; align-items: center; }
+        .block-assembly-line { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8fafc; }
+        .assembled-block { background: white; border: 2px solid #3b82f6; border-left: 8px solid #3b82f6; padding: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* FORUM & SOCIAL STRUCTURES */
+        .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
         .forum-row { background: white; padding: 12px; margin-bottom: 8px; border: 2px solid #aaa; border-radius: 4px; display: flex; justify-content: space-between; cursor: pointer; }
         .forum-row:hover { border-color: #3570c5; }
         .post-container { background: white; padding: 15px; margin-bottom: 10px; border: 2px solid #bbb; border-radius: 4px; }
 
-        /* GAME CLIENT OVERLAYS */
+        /* INTERACTIVE GAME SCREEN OVERLAYS */
         #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
         .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
         .game-ui-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; pointer-events: auto; }
@@ -80,7 +91,7 @@
         .game-chat-log { flex: 1; overflow-y: auto; color: #fff; font-family: monospace; font-size: 13px; margin-bottom: 5px; }
         .game-esc-menu { position: absolute; top: 25%; left: 35%; width: 30%; background: white; border: 4px solid #333; padding: 20px; border-radius: 8px; display: none; pointer-events: auto; text-align: center; }
 
-        /* ADMIN DASHBOARD */
+        /* COMPREHENSIVE SECURITY PANEL */
         .admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 15px 0; }
         .admin-module-card { background: #1e293b; border: 1px solid #38bdf8; padding: 15px; border-radius: 6px; color: #38bdf8; }
     </style>
@@ -109,7 +120,6 @@
 
     <div id="main-viewport">
 
-        <!-- AUTH PAGE -->
         <div id="page-auth" class="page active">
             <div class="auth-container">
                 <h2>Welcome to 2KBlox</h2>
@@ -121,7 +131,6 @@
             </div>
         </div>
 
-        <!-- HOME PAGE -->
         <div id="page-home" class="page">
             <div style="display:grid; grid-template-columns: 3fr 1fr; gap:20px;">
                 <div>
@@ -144,7 +153,6 @@
             </div>
         </div>
 
-        <!-- PROFILE PAGE -->
         <div id="page-profile" class="page">
             <div style="background:white; padding:20px; border-radius:6px; border:2px solid #aaa;">
                 <h2 id="profile-title">User Profile</h2>
@@ -158,13 +166,11 @@
             </div>
         </div>
 
-        <!-- GAMES DISCOVER PAGE -->
         <div id="page-games-discover" class="page">
             <h2>Public Games</h2>
             <div class="item-grid" id="games-market-list"></div>
         </div>
 
-        <!-- AVATAR EDITOR -->
         <div id="page-avatar-editor" class="page">
             <h2>Avatar Customizer Closet</h2>
             <div style="display:flex; gap:20px; height:500px;">
@@ -176,13 +182,11 @@
             </div>
         </div>
 
-        <!-- CATALOG MARKETPLACE -->
         <div id="page-marketplace" class="page">
             <h2>Catalog Shop</h2>
             <div class="item-grid" id="catalog-item-list"></div>
         </div>
 
-        <!-- FORUMS SYSTEM -->
         <div id="page-forums" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <h2>Community Forums</h2>
@@ -191,7 +195,6 @@
             <div id="forum-threads-list"></div>
         </div>
 
-        <!-- FORUM VIEW THREAD PANEL -->
         <div id="page-forum-view" class="page">
             <button class="btn-action" style="width:120px; margin-bottom:15px; background:#6c757d;" onclick="switchPage('forums')">← Back</button>
             <h2 id="view-thread-title">Thread</h2>
@@ -202,7 +205,6 @@
             <button class="btn-action" style="width:150px; margin-top:5px;" onclick="submitForumReply()">Post Reply</button>
         </div>
 
-        <!-- GROUPS PANEL -->
         <div id="page-groups" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <h2>Community Groups</h2>
@@ -211,7 +213,6 @@
             <div class="item-grid" id="groups-matrix-grid"></div>
         </div>
 
-        <!-- CREATE HUB -->
         <div id="page-create-hub" class="page">
             <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
                 <h2>Developer Creations Studio</h2>
@@ -220,31 +221,48 @@
             <div class="item-grid" id="user-creations-grid"></div>
         </div>
 
-        <!-- BUILD STUDIO CORE -->
         <div id="page-studio" class="page" style="padding:0;">
             <div class="studio-container">
                 <div class="studio-main-build-zone">
                     <div class="studio-toolbar">
                         <button onclick="spawn3DObject('Part')">🧱 Insert Block</button>
                         <button onclick="spawn3DObject('Sphere')">🔮 Insert Sphere</button>
+                        <span style="color:#aaa; margin: 0 4px;">|</span>
+                        <button id="tool-move" class="active-tool" onclick="changeActiveStudioTool('move')">🏃 Move</button>
+                        <button id="tool-scale" onclick="changeActiveStudioTool('scale')">📐 Scale</button>
+                        <button id="tool-rotate" onclick="changeActiveStudioTool('rotate')">🔄 Rotate</button>
+                        <span style="color:#aaa; margin: 0 4px;">|</span>
                         <button style="background:#8a2be2;" onclick="openHtmlEditorWindow()">🌐 Script Sandbox Editor</button>
                         <button style="background:var(--roblox-red);" onclick="triggerHtmlLivePlaytest()">▶️ Run Live Playtest</button>
                         <button style="background:#007acc;" onclick="saveActiveStudioProject()">💾 Save Blueprint</button>
-                        <button style="background:#555;" onclick="switchPage('create-hub')">❌ Exit</button>
+                        <button style="background:#555;" onclick="exitStudioModeWorkspace()">❌ Exit</button>
                     </div>
                     <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b;"></div>
 
-                    <!-- BHTML EDITOR -->
                     <div class="code-editor-window" id="html-editor-panel">
                         <div class="studio-toolbar" style="background:#111;">
                             <span style="color:#fff; margin-left:10px;">Asset Scripting Terminal</span>
-                            <select id="script-syntax-select" style="width:140px; padding:2px; background:#2d2d2d; color:white;">
-                                <option value="BHTML">BHTML (Retro Custom)</option>
+                            <select id="script-syntax-select" style="width:180px; padding:2px; background:#2d2d2d; color:white;" onchange="toggleScriptWorkspaceLayoutView()">
                                 <option value="HTML">Standard HTML</option>
+                                <option value="BHTML">BHTML (Block Code)</option>
                             </select>
                             <button style="margin-left:auto; background:#28a745;" onclick="closeHtmlEditorWindow()">Save & Close</button>
                         </div>
-                        <textarea id="html-textarea-field"></textarea>
+                        <div class="workspace-split-editor">
+                            <div class="script-text-pane">
+                                <textarea id="html-textarea-field" placeholder="Enter source code engine sequences..."></textarea>
+                            </div>
+                            <div class="block-code-pane" id="block-code-pane" style="display:none;">
+                                <div class="block-toolbox">
+                                    <div class="code-block-item" onclick="appendVisualCodeBlock('game_title')">+ Title Block</div>
+                                    <div class="code-block-item" style="background:#9333ea;" onclick="appendVisualCodeBlock('glow')">+ Glow FX Block</div>
+                                    <div class="code-block-item" style="background:#16a34a;" onclick="appendVisualCodeBlock('card')">+ Border Card Block</div>
+                                    <div class="code-block-item" style="background:#dc2626;" onclick="appendVisualCodeBlock('alert')">+ Warning Alert Block</div>
+                                </div>
+                                <div class="block-assembly-line" id="block-assembly-line">
+                                    </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -257,7 +275,6 @@
             </div>
         </div>
 
-        <!-- FULL ORIGINAL MASTER ADMINISTRATION HUB -->
         <div id="page-admin" class="page" style="background:#0f172a;">
             <h2 style="color:#38bdf8;">🚨 MASTER SECURITY INFRASTRUCTURE SYSTEM</h2>
             <div class="admin-dashboard-grid">
@@ -282,7 +299,6 @@
             </div>
         </div>
 
-        <!-- DIALOG MODALS -->
         <div id="new-game-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px;">
             <h3>Initialize New Experience Place</h3>
             <label>Experience Title Handle:</label>
@@ -308,7 +324,6 @@
 
     </div>
 
-    <!-- MAIN PLAYER CLIENT VIEWPORT LAYER -->
     <div id="game-client-viewport">
         <div id="game-3d-scene-box" style="width:100%; height:100%;"></div>
         <div class="game-ui-overlay">
@@ -326,7 +341,6 @@
         </div>
     </div>
 
-    <!-- BHTML DISPLAY OUTPUT LAYER -->
     <div id="html-playtest-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:white; z-index:9999; padding:20px; overflow:auto;">
         <div style="padding:10px; background:#eee; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <strong id="playtest-header-title">Rendering Sandbox Instance Output</strong>
@@ -354,13 +368,16 @@
         const db = getFirestore(app);
 
         let localUserDoc = null;
-        let studioScene, studioCamera, studioRenderer, selectedObjectId = null;
+        let studioScene, studioCamera, studioRenderer;
+        let selectedObjectId = null;
+        let activeStudioTool = 'move'; // 'move', 'scale', 'rotate'
         let activeStudioControls = { theta: 0.5, phi: 1.0, radius: 15, isTargetDragging: false, prevX: 0, prevY: 0 };
         
         let activeGameScene, activeGameCamera, activeGameRenderer, activePlayerMeshObj;
         let gameActiveState = { keys: {}, velY: 0, isJumping: false, animationFrame: 0 };
         
         let objectsMatrix = [];
+        let blockSequenceData = [];
         let currentlyEditingGameId = null;
         let activeThreadId = null;
 
@@ -458,7 +475,6 @@
             if(bindControls) renderFabricInventoryGrid();
         }
 
-        /* PROFILE ROUTING & LOADING FIX */
         async function showUserProfilePage(username) {
             document.getElementById('profile-title').textContent = `${username}'s Profile`;
             const box = document.getElementById('profile-avatar-box'); box.innerHTML = '';
@@ -486,7 +502,7 @@
             }
         }
 
-        /* FORUMS LOGIC */
+        /* FORUM REPLIES */
         window.openNewForumPostModal = () => document.getElementById('new-forum-modal').style.display = 'block';
         window.submitForumThreadCloud = async () => {
             const title = document.getElementById('forum-title-input').value.trim();
@@ -547,7 +563,7 @@
             viewForumThreadInstance(activeThreadId);
         };
 
-        /* GROUPS LOGIC */
+        /* GROUPS CORE */
         window.openNewGroupModal = () => document.getElementById('new-group-modal').style.display = 'block';
         window.submitGroupCloud = async () => {
             const name = document.getElementById('group-title-input').value.trim();
@@ -576,7 +592,7 @@
             });
         }
 
-        /* CATALOG BUY SYSTEM RESTORATION */
+        /* MARKETPLACE CATALOG */
         async function syncCatalogMarketplaceUI() {
             const grid = document.getElementById('catalog-item-list'); grid.innerHTML = '';
             const snap = await getDocs(collection(db, "catalog"));
@@ -604,7 +620,6 @@
             alert(`Purchased ${item.title}!`);
         }
 
-        /* RENDER HOMEPAGE FEATURED GAMES LIST */
         async function syncHomeFeaturedGames() {
             const grid = document.getElementById('home-featured-games'); grid.innerHTML = '';
             const q = query(collection(db, "games"), where("isFeatured", "==", true));
@@ -618,13 +633,28 @@
             });
         }
 
-        /* CREATIONS HANDLER CONNECTIVITY FIX */
+        /* ==========================================
+           ENGINE & ADVANCED OBJECTS CONTROLS PIPELINE
+           ========================================== */
+        window.changeActiveStudioTool = function(toolType) {
+            activeStudioTool = toolType;
+            document.querySelectorAll('.studio-toolbar button').forEach(b => {
+                if(b.id && b.id.startsWith('tool-')) b.classList.remove('active-tool');
+            });
+            const selectedBtn = document.getElementById(`tool-${toolType}`);
+            if(selectedBtn) selectedBtn.classList.add('active-tool');
+        };
+
         window.launchStudioDevelopmentInstance = function(gameId, title) {
             currentlyEditingGameId = gameId; switchPage('studio');
             getDoc(doc(db, "games", gameId)).then(snap => {
                 if(snap.exists()) {
                     document.getElementById('html-textarea-field').value = snap.data().htmlScript || "";
-                    document.getElementById('script-syntax-select').value = snap.data().scriptType || "BHTML";
+                    const syncSyntax = snap.data().scriptType || "HTML";
+                    document.getElementById('script-syntax-select').value = syncSyntax;
+                    blockSequenceData = snap.data().blocksArray || [];
+                    toggleScriptWorkspaceLayoutView();
+                    renderAssembledBlockChainInterface();
                 }
             });
 
@@ -638,19 +668,54 @@
             const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10,30,15); studioScene.add(dl);
             updateStudioOrbitCameraPositionTransform();
 
-            /* LOOK AROUND CONTROLS PERSISTENCE FIX */
-            box.onmousedown = (e) => { activeStudioControls.isTargetDragging = true; activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY; };
+            // Orbit & Interactive Engine Transformation Triggers
+            box.onmousedown = (e) => { 
+                activeStudioControls.isTargetDragging = true; 
+                activeStudioControls.prevX = e.clientX; 
+                activeStudioControls.prevY = e.clientY; 
+            };
+            
             window.onmousemove = (e) => {
                 if(!activeStudioControls.isTargetDragging) return;
-                let deltaX = e.clientX - activeStudioControls.prevX; let deltaY = e.clientY - activeStudioControls.prevY;
-                activeStudioControls.theta -= deltaX * 0.007; activeStudioControls.phi += deltaY * 0.007;
-                activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY;
-                updateStudioOrbitCameraPositionTransform();
+                let deltaX = e.clientX - activeStudioControls.prevX; 
+                let deltaY = e.clientY - activeStudioControls.prevY;
+                
+                // If an item is active, use mouse coordinate deltas to transform the object matrix
+                const targetObj = objectsMatrix.find(o => o.id === selectedObjectId);
+                if(targetObj && !e.shiftKey) { 
+                    const scalarModifier = 0.05;
+                    if(activeStudioTool === 'move') {
+                        targetObj.mesh.position.x += deltaX * scalarModifier;
+                        targetObj.mesh.position.y -= deltaY * scalarModifier;
+                    } else if(activeStudioTool === 'scale') {
+                        targetObj.mesh.scale.x = Math.max(0.2, targetObj.mesh.scale.x + deltaX * scalarModifier);
+                        targetObj.mesh.scale.y = Math.max(0.2, targetObj.mesh.scale.y - deltaY * scalarModifier);
+                    } else if(activeStudioTool === 'rotate') {
+                        targetObj.mesh.rotation.y += deltaX * 0.02;
+                        targetObj.mesh.rotation.x += deltaY * 0.02;
+                    }
+                    openPropertiesInspector();
+                } else {
+                    // Holding SHIFT spins the scene space camera around the object origin instead
+                    activeStudioControls.theta -= deltaX * 0.007; 
+                    activeStudioControls.phi += deltaY * 0.007;
+                    updateStudioOrbitCameraPositionTransform();
+                }
+                activeStudioControls.prevX = e.clientX; 
+                activeStudioControls.prevY = e.clientY;
             };
             window.onmouseup = () => activeStudioControls.isTargetDragging = false;
 
-            function loop() { if(document.getElementById('page-studio').classList.contains('active')) requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); }
+            function loop() { 
+                if(document.getElementById('page-studio').classList.contains('active')) requestAnimationFrame(loop); 
+                studioRenderer.render(studioScene, studioCamera); 
+            }
             loop(); objectsMatrix = []; renderExplorerStudioHierarchy();
+        };
+
+        window.exitStudioModeWorkspace = function() {
+            selectedObjectId = null;
+            switchPage('create-hub');
         };
 
         async function renderCreationsLandingDashboard() {
@@ -687,11 +752,23 @@
             renderExplorerStudioHierarchy();
         };
 
+        window.deleteStudioObjectNode = function(id, event) {
+            if(event) event.stopPropagation();
+            const idx = objectsMatrix.findIndex(o => o.id === id);
+            if(idx !== -1) {
+                studioScene.remove(objectsMatrix[idx].mesh);
+                objectsMatrix.splice(idx, 1);
+                if(selectedObjectId === id) selectedObjectId = null;
+                renderExplorerStudioHierarchy();
+                document.getElementById('properties-window').innerHTML = '';
+            }
+        };
+
         function renderExplorerStudioHierarchy() {
             const el = document.getElementById('explorer-list'); el.innerHTML = '';
             objectsMatrix.forEach(obj => {
                 const div = document.createElement('div'); div.className = `explorer-item ${selectedObjectId === obj.id ? 'selected' : ''}`;
-                div.innerHTML = `🧱 ${obj.name}`;
+                div.innerHTML = `<span>🧱 ${obj.name}</span><span style="color:#ff4d4d;cursor:pointer;" onclick="deleteStudioObjectNode('${obj.id}', event)">🗑️</span>`;
                 div.onclick = () => { selectedObjectId = obj.id; renderExplorerStudioHierarchy(); openPropertiesInspector(); };
                 el.appendChild(div);
             });
@@ -704,23 +781,23 @@
                 <div class="prop-group"><label>Label Name</label><input type='text' id='p-name' value='${obj.name}'></div>
                 <div class="prop-group"><label>Position (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
-                        <input type="number" step="0.5" id="p-pos-x" value="${obj.mesh.position.x}">
-                        <input type="number" step="0.5" id="p-pos-y" value="${obj.mesh.position.y}">
-                        <input type="number" step="0.5" id="p-pos-z" value="${obj.mesh.position.z}">
+                        <input type="number" step="0.5" id="p-pos-x" value="${obj.mesh.position.x.toFixed(2)}">
+                        <input type="number" step="0.5" id="p-pos-y" value="${obj.mesh.position.y.toFixed(2)}">
+                        <input type="number" step="0.5" id="p-pos-z" value="${obj.mesh.position.z.toFixed(2)}">
                     </div>
                 </div>
                 <div class="prop-group"><label>Rotation (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
-                        <input type="number" step="0.1" id="p-rot-x" value="${obj.mesh.rotation.x}">
-                        <input type="number" step="0.1" id="p-rot-y" value="${obj.mesh.rotation.y}">
-                        <input type="number" step="0.1" id="p-rot-z" value="${obj.mesh.rotation.z}">
+                        <input type="number" step="0.1" id="p-rot-x" value="${obj.mesh.rotation.x.toFixed(2)}">
+                        <input type="number" step="0.1" id="p-rot-y" value="${obj.mesh.rotation.y.toFixed(2)}">
+                        <input type="number" step="0.1" id="p-rot-z" value="${obj.mesh.rotation.z.toFixed(2)}">
                     </div>
                 </div>
                 <div class="prop-group"><label>Scale (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
-                        <input type="number" step="0.2" id="p-scale-x" value="${obj.mesh.scale.x}">
-                        <input type="number" step="0.2" id="p-scale-y" value="${obj.mesh.scale.y}">
-                        <input type="number" step="0.2" id="p-scale-z" value="${obj.mesh.scale.z}">
+                        <input type="number" step="0.2" id="p-scale-x" value="${obj.mesh.scale.x.toFixed(2)}">
+                        <input type="number" step="0.2" id="p-scale-y" value="${obj.mesh.scale.y.toFixed(2)}">
+                        <input type="number" step="0.2" id="p-scale-z" value="${obj.mesh.scale.z.toFixed(2)}">
                     </div>
                 </div>
             `;
@@ -738,11 +815,70 @@
             });
         }
 
+        /* ==========================================
+           HYBRID CODE & HYBRID BHTML BLOCK SYSTEM
+           ========================================== */
+        window.toggleScriptWorkspaceLayoutView = function() {
+            const syntax = document.getElementById('script-syntax-select').value;
+            const blockPane = document.getElementById('block-code-pane');
+            if(syntax === 'BHTML') {
+                blockPane.style.display = 'flex';
+                compileBlocksIntoMarkupTextarea();
+            } else {
+                blockPane.style.display = 'none';
+            }
+        };
+
+        window.appendVisualCodeBlock = function(blockType) {
+            let promptVal = prompt(`Enter context payload content for [${blockType}]:`);
+            if(promptVal === null) return;
+            blockSequenceData.push({ id: "block_" + Date.now(), type: blockType, value: promptVal });
+            renderAssembledBlockChainInterface();
+            compileBlocksIntoMarkupTextarea();
+        };
+
+        window.removeVisualCodeBlockNode = function(id) {
+            blockSequenceData = blockSequenceData.filter(b => b.id !== id);
+            renderAssembledBlockChainInterface();
+            compileBlocksIntoMarkupTextarea();
+        };
+
+        function renderAssembledBlockChainInterface() {
+            const line = document.getElementById('block-assembly-line');
+            line.innerHTML = '';
+            if(blockSequenceData.length === 0) {
+                line.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:20px;">No custom code blocks attached yet. Click options above to build.</div>';
+                return;
+            }
+            blockSequenceData.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'assembled-block';
+                div.innerHTML = `
+                    <div><strong>[${b.type.toUpperCase()}]</strong>: <span style="font-family:monospace;color:#334155;">"${b.value}"</span></div>
+                    <span style="color:#ef4444;cursor:pointer;font-size:14px;" onclick="removeVisualCodeBlockNode('${b.id}')">❌</span>
+                `;
+                line.appendChild(div);
+            });
+        }
+
+        function compileBlocksIntoMarkupTextarea() {
+            let textOutput = '';
+            blockSequenceData.forEach(b => {
+                textOutput += `<${b.type}>${b.value}</${b.type}>\n`;
+            });
+            document.getElementById('html-textarea-field').value = textOutput;
+        }
+
         window.openHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='flex'; };
         window.closeHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='none'; };
+        
         window.saveActiveStudioProject = async function() {
-            await updateDoc(doc(db, "games", currentlyEditingGameId), { htmlScript: document.getElementById('html-textarea-field').value, scriptType: document.getElementById('script-syntax-select').value });
-            alert("Saved blueprint!");
+            await updateDoc(doc(db, "games", currentlyEditingGameId), { 
+                htmlScript: document.getElementById('html-textarea-field').value, 
+                scriptType: document.getElementById('script-syntax-select').value,
+                blocksArray: blockSequenceData
+            });
+            alert("Saved blueprint updates directly to Cloud Registry!");
         };
 
         window.triggerHtmlLivePlaytest = function() {
@@ -750,7 +886,7 @@
             const syntaxStandard = document.getElementById('script-syntax-select').value;
             const zone = document.getElementById('html-playtest-render-zone');
             
-            if(syntaxStandard === "BHTML") {
+            if(syntaxStandard === "BHTML" || codePayload.includes('<game_title>')) {
                 let parsed = codePayload
                     .replace(/<game_title>/g, "<h1 style='color: #1a4380; font-size: 28px; text-decoration: underline;'>🎮 Retro Server Terminal Instance</h1>")
                     .replace(/<\/game_title>/g, "")
@@ -767,6 +903,7 @@
             document.getElementById('html-playtest-overlay').style.display = 'block';
         };
 
+        /* GAME CLIENT CONTROLLER */
         window.launchActiveGameSimulationInstance = function(gameId, title, creator) {
             document.getElementById('game-client-viewport').style.display = 'block';
             const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
@@ -854,7 +991,7 @@
 
         window.commitNewGameToCloudRegistry = async function() {
             const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
-            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, htmlScript: "", scriptType: "BHTML", isFeatured: false, isBanned: false });
+            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, htmlScript: "", scriptType: "HTML", blocksArray: [], isFeatured: false, isBanned: false });
             document.getElementById('new-game-modal').style.display='none'; renderCreationsLandingDashboard();
         };
 
@@ -871,10 +1008,10 @@
         }
 
         function renderFabricInventoryGrid() {
-            const box = document.getElementById('avatar-inventory-list'); box.innerHTML = '<p>Closet inventory active.</p>';
+            const box = document.getElementById('avatar-inventory-list'); box.innerHTML = '<p>Closet asset inventory active.</p>';
         }
 
-        /* MASTER ADMINISTRATION SYSTEM CONFIGURATION OPERATIONS */
+        /* MASTER ADMINISTRATION NODES */
         window.triggerAdminPrompt = function() { if(prompt("Enter Access Pin:") === "080112") switchPage('admin'); };
         
         window.moderateExperience = async function(type) {
