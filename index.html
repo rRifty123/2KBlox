@@ -43,7 +43,7 @@
         .page { width: 100%; height: 100%; display: none; padding: 20px; overflow-y: auto; }
         .page.active { display: block; }
 
-        .auth-container { width: 360px; background: white; margin: 50px auto; padding: 25px; border: 4px solid #3570c5; text-align: center; border-radius: 8px; }
+        .auth-container { width: 360px; background: white; margin: 30px auto; padding: 25px; border: 4px solid #3570c5; text-align: center; border-radius: 8px; }
         .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; border-radius: 4px; }
         input, select, textarea { width: 100%; padding: 8px; margin: 6px 0; border: 2px solid #aaa; border-radius: 4px; }
 
@@ -51,7 +51,7 @@
         .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; position: relative; color: #222; }
         .badge-limited { position: absolute; top: 5px; right: 5px; background: #ff4500; color: white; padding: 2px 6px; font-size: 10px; border-radius: 3px; }
 
-        /* STUDIO INTERFACE LAYOUT */
+        /* STUDIO LAYOUT AND Sidebars */
         .studio-container { display: flex; width: 100%; height: 100%; background: #222; }
         .studio-sidebar { width: 300px; background: var(--studio-panel); color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
         .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; text-align:center; letter-spacing: 1px; }
@@ -62,11 +62,11 @@
         .prop-group label { display: block; color: #aaa; font-size: 11px; margin-bottom: 2px; }
 
         .studio-main-build-zone { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 6px; padding: 5px; border-bottom: 2px solid #222; }
+        .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 6px; padding: 5px; border-bottom: 2px solid #222; overflow-x: auto; white-space: nowrap; }
         .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 4px 10px; cursor: pointer; font-size: 13px; border-radius: 3px; }
         .studio-toolbar button.active-tool { background: #007acc; border-color: #0098ff; }
 
-        /* MIXED CODE SCRIPTS */
+        /* MULTI-SYNTAX RUNTIME CODE EDITORS */
         .code-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; }
         .workspace-split-editor { display: flex; width: 100%; height: 100%; }
         .script-text-pane { flex: 1; display: flex; flex-direction: column; background: var(--studio-dark); }
@@ -83,7 +83,7 @@
         .forum-row:hover { border-color: #3570c5; }
         .post-container { background: white; padding: 15px; margin-bottom: 10px; border: 2px solid #bbb; border-radius: 4px; color: #222; }
 
-        /* GAME MATRIX OVERLAYS */
+        /* ACTIVE GAME CORE CLIENT INTERFACES */
         #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
         .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
         .game-ui-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; pointer-events: auto; }
@@ -91,11 +91,18 @@
         .game-chat-log { flex: 1; overflow-y: auto; color: #fff; font-family: monospace; font-size: 13px; margin-bottom: 5px; }
         .game-esc-menu { position: absolute; top: 25%; left: 35%; width: 30%; background: white; border: 4px solid #333; padding: 20px; border-radius: 8px; display: none; pointer-events: auto; text-align: center; color: #222; }
         .crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 24px; pointer-events: none; display: none; font-family: monospace; }
+        
+        /* DYNAMIC RUNTIME SCREEN GUI CONTAINERS */
+        #game-runtime-gui-layer { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 5500; }
 
         .profile-layout-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
-        .profile-sub-section { background: white; border: 2px solid #aaa; border-radius: 6px; padding: 12px; margin-bottom: 15px; color: #222; }
+        .profile-sub-section { background: white; border: 2px solid #aaa; border-radius: 6px; padding: 12px; margin-bottom: 15px; color: #222; position: relative; }
         .admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 15px 0; }
         .admin-module-card { background: #1e293b; border: 1px solid #38bdf8; padding: 15px; border-radius: 6px; color: #38bdf8; }
+        
+        /* USER SETTINGS MODALS */
+        .modal-view-backdrop { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9000; justify-content:center; align-items:center; }
+        .modal-body-wrapper { background:white; padding:25px; border-radius:8px; border:4px solid #3570c5; width:420px; color:#222; }
     </style>
 </head>
 <body>
@@ -123,19 +130,26 @@
 
     <div id="main-viewport">
 
-        <!-- AUTH ENTRANCE PANEL -->
         <div id="page-auth" class="page active">
             <div class="auth-container">
                 <h2>Welcome to 2KBlox</h2>
                 <input type="email" id="auth-email" placeholder="Email Address">
                 <input type="text" id="auth-user" placeholder="Username">
                 <input type="password" id="auth-pass" placeholder="Password">
+                
+                <div style="margin: 8px 0; text-align: left;">
+                    <label style="font-size: 13px; color: #555; display:block; margin-bottom:2px;">Select Avatar Identity Gender:</label>
+                    <select id="auth-gender">
+                        <option value="boy">Boy (Classic Azure Top)</option>
+                        <option value="girl">Girl (Pink Dress/Skirt Mesh)</option>
+                    </select>
+                </div>
+
                 <button class="btn-action" onclick="handleAuth('login')">Log In</button>
                 <button class="btn-action" style="background:#007bff; margin-top:6px; border-color:#0062cc;" onclick="handleAuth('signup')">Sign Up</button>
             </div>
         </div>
 
-        <!-- HOME DASHBOARD PORTAL -->
         <div id="page-home" class="page">
             <div style="display:grid; grid-template-columns: 3fr 1fr; gap:20px;">
                 <div>
@@ -162,12 +176,12 @@
             </div>
         </div>
 
-        <!-- ADVANCED USER PROFILE PAGE -->
         <div id="page-profile" class="page">
             <div class="profile-layout-grid">
                 <div>
                     <div class="profile-sub-section" style="text-align:center;">
-                        <h2 id="profile-title" style="margin-top:0;">User Profile</h2>
+                        <button style="position:absolute; top:8px; right:8px; background:#6c757d; border:none; color:white; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:12px;" onclick="openProfileSettingsModal()">⚙️ Settings</button>
+                        <h2 id="profile-title" style="margin-top:0; padding-right:60px;">User Profile</h2>
                         <div id="profile-avatar-box" style="height:320px; background:#b0e0e6; border:2px solid #888; border-radius:4px; margin-bottom:10px;"></div>
                     </div>
                     <div class="profile-sub-section">
@@ -198,13 +212,11 @@
             </div>
         </div>
 
-        <!-- DISCOVER INDEX -->
         <div id="page-games-discover" class="page">
             <h2>Public Games</h2>
             <div class="item-grid" id="games-market-list"></div>
         </div>
 
-        <!-- AVATAR CLOSER CLOSET -->
         <div id="page-avatar-editor" class="page">
             <h2>Avatar Customizer Closet</h2>
             <div style="display:flex; gap:20px; height:500px;">
@@ -216,13 +228,11 @@
             </div>
         </div>
 
-        <!-- CATALOG MARKETPLACE -->
         <div id="page-marketplace" class="page">
             <h2>Catalog Shop</h2>
             <div class="item-grid" id="catalog-item-list"></div>
         </div>
 
-        <!-- COMMUNITY FORUMS -->
         <div id="page-forums" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <h2>Community Forums</h2>
@@ -231,7 +241,6 @@
             <div id="forum-threads-list"></div>
         </div>
 
-        <!-- FORUM ROUTING INSTANCE -->
         <div id="page-forum-view" class="page">
             <button class="btn-action" style="width:120px; margin-bottom:15px; background:#6c757d;" onclick="switchPage('forums')">← Back</button>
             <h2 id="view-thread-title">Thread</h2>
@@ -242,7 +251,6 @@
             <button class="btn-action" style="width:150px; margin-top:5px;" onclick="submitForumReply()">Post Reply</button>
         </div>
 
-        <!-- GROUPS MANAGER -->
         <div id="page-groups" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <h2>Community Groups</h2>
@@ -251,7 +259,6 @@
             <div class="item-grid" id="groups-matrix-grid"></div>
         </div>
 
-        <!-- CREATION LANDING DASHBOARD -->
         <div id="page-create-hub" class="page">
             <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
                 <h2>Developer Creations Studio</h2>
@@ -260,38 +267,43 @@
             <div class="item-grid" id="user-creations-grid"></div>
         </div>
 
-        <!-- ENGINE TOOLBAR & VIEWPORT -->
         <div id="page-studio" class="page" style="padding:0;">
             <div class="studio-container">
                 <div class="studio-main-build-zone">
                     <div class="studio-toolbar">
                         <button onclick="spawn3DObject('Part')">🧱 Insert Block</button>
                         <button onclick="spawn3DObject('Sphere')">🔮 Insert Sphere</button>
+                        <button onclick="spawn3DObject('SpawnPoint')" style="background:#0284c7;">🏁 Insert SpawnPoint</button>
                         <span style="color:#aaa; margin: 0 4px;">|</span>
                         <button id="tool-move" class="active-tool" onclick="changeActiveStudioTool('move')">🏃 Move</button>
                         <button id="tool-scale" onclick="changeActiveStudioTool('scale')">📐 Scale</button>
                         <button id="tool-rotate" onclick="changeActiveStudioTool('rotate')">🔄 Rotate</button>
                         <span style="color:#aaa; margin: 0 4px;">|</span>
-                        <button style="background:#8a2be2;" onclick="openHtmlEditorWindow()">🌐 Script Sandbox Editor</button>
+                        <button style="background:#e11d48;" onclick="openGuiBuilderWorkspacePanel()">🖥️ Screen GUI Layer</button>
+                        <button style="background:#8a2be2;" onclick="openHtmlEditorWindow()">📜 Script Sandbox Editor</button>
                         <button style="background:var(--roblox-red);" onclick="triggerHtmlLivePlaytest()">▶️ Run Live Playtest</button>
                         <button style="background:#007acc;" onclick="saveActiveStudioProject()">💾 Save Blueprint</button>
                         <button style="background:#555;" onclick="exitStudioModeWorkspace()">❌ Exit</button>
                     </div>
+                    
+                    <div style="background:#444; color:#fff; padding:3px 10px; font-size:11px; display:flex; gap:15px;">
+                        <span>💡 <b>Roblox Controls Patched:</b> Hold Right-Click + drag to look around. Hold Right-Click + WASD to fly through workspace map.</span>
+                    </div>
+
                     <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b;"></div>
 
-                    <!-- MIXED SANDBOX TERMINAL AND VISUAL BLOCK WORKSPACE -->
                     <div class="code-editor-window" id="html-editor-panel">
                         <div class="studio-toolbar" style="background:#111;">
                             <span style="color:#fff; margin-left:10px;">Asset Scripting Terminal</span>
                             <select id="script-syntax-select" style="width:180px; padding:2px; background:#2d2d2d; color:white;" onchange="toggleScriptWorkspaceLayoutView()">
-                                <option value="HTML">Standard HTML</option>
-                                <option value="BHTML">BHTML (Block Code)</option>
+                                <option value="HTML">Standard HTML Markup</option>
+                                <option value="BHTML">BHTML (Block Code Builder Matrix)</option>
                             </select>
-                            <button style="margin-left:auto; background:#28a745;" onclick="closeHtmlEditorWindow()">Save & Close</button>
+                            <button style="margin-left:auto; background:#28a745;" onclick="closeHtmlEditorWindow()">Save & Close Script</button>
                         </div>
                         <div class="workspace-split-editor">
                             <div class="script-text-pane">
-                                <textarea id="html-textarea-field" placeholder="Enter source code engine sequences..."></textarea>
+                                <textarea id="html-textarea-field" placeholder="Enter custom markup script lines here..."></textarea>
                             </div>
                             <div class="block-code-pane" id="block-code-pane" style="display:none;">
                                 <div class="block-toolbox">
@@ -304,6 +316,27 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="code-editor-window" id="gui-builder-panel">
+                        <div class="studio-toolbar" style="background:#111;">
+                            <span style="color:#fff; margin-left:10px;">In-Game Screen GUI Canvas Element Suite</span>
+                            <button onclick="addNewGuiNodeElement('text')" style="background:#0284c7;">➕ Add Text Label</button>
+                            <button onclick="addNewGuiNodeElement('image')" style="background:#16a34a;">➕ Add Image Label</button>
+                            <button style="margin-left:auto; background:#28a745;" onclick="closeGuiBuilderWorkspacePanel()">Save & Exit UI Panel</button>
+                        </div>
+                        <div style="display:flex; height:calc(100% - 45px);">
+                            <div id="gui-builder-tree-pane" style="width:280px; background:#222; border-right:2px solid #444; padding:10px; overflow-y:auto; color:white;">
+                                <h4>GUI Layout Hierarchies</h4>
+                                <div id="gui-node-tree-list"></div>
+                            </div>
+                            <div id="gui-builder-canvas-preview" style="flex:1; background:#94a3b8; position:relative; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+                                <div style="width:80%; height:80%; background:#fff; border:4px dashed #333; position:relative;" id="gui-box-dropzone">
+                                    <small style="position:absolute; top:4px; left:4px; color:#aaa;">In-Game Preview Frame HUD</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="studio-sidebar">
@@ -315,7 +348,6 @@
             </div>
         </div>
 
-        <!-- COMPREHENSIVE SECURITY INFRASTRUCTURE CONTROL DASHBOARD -->
         <div id="page-admin" class="page" style="background:#0f172a;">
             <h2 style="color:#38bdf8;">🚨 MASTER SECURITY INFRASTRUCTURE SYSTEM</h2>
             <div class="admin-dashboard-grid">
@@ -340,7 +372,6 @@
             </div>
         </div>
 
-        <!-- MODALS -->
         <div id="new-game-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px; color:#222;">
             <h3>Initialize New Experience Place</h3>
             <label>Experience Title Handle:</label>
@@ -364,11 +395,26 @@
             <button class="btn-action" style="background:#666; margin-top:5px;" onclick="document.getElementById('new-group-modal').style.display='none'">Cancel</button>
         </div>
 
+        <div class="modal-view-backdrop" id="profile-settings-modal">
+            <div class="modal-body-wrapper">
+                <h3 style="margin-top:0;">Edit Profile Settings</h3>
+                <label style="font-size:12px; color:#555;">Modify Clothes Style Identity Preset:</label>
+                <select id="settings-edit-gender">
+                    <option value="boy">Boy (Azure Set)</option>
+                    <option value="girl">Girl (Pink Skirt & Dress Matrix)</option>
+                </select>
+                <button class="btn-action" style="margin-top:15px;" onclick="commitProfileSettingsDataChanges()">Save Profile Updates</button>
+                <button class="btn-action" style="background:#6c757d; border-color:#5a6268; margin-top:5px;" onclick="document.getElementById('profile-settings-modal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- MAIN ACTIVE CORE CLIENT VIEWPORT -->
     <div id="game-client-viewport">
         <div id="game-3d-scene-box" style="width:100%; height:100%;"></div>
+        
+        <div id="game-runtime-gui-layer"></div>
+
         <div class="crosshair" id="game-crosshair">+</div>
         <div class="game-ui-overlay">
             <button class="game-ui-btn" onclick="toggleGameEscMenu()">Menu Panel [ESC]</button>
@@ -385,7 +431,6 @@
         </div>
     </div>
 
-    <!-- RUNTIME PLAYTEST RENDER OVERLAY -->
     <div id="html-playtest-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:white; z-index:9999; padding:20px; overflow:auto; color:#222;">
         <div style="padding:10px; background:#eee; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <strong id="playtest-header-title">Rendering Sandbox Instance Output</strong>
@@ -413,32 +458,47 @@
         const db = getFirestore(app);
 
         let localUserDoc = null;
+        
+        // Studio Viewport Control Data Structure Mappings
         let studioScene, studioCamera, studioRenderer;
         let selectedObjectId = null;
         let activeStudioTool = 'move';
-        let activeStudioControls = { theta: 0.5, phi: 1.0, radius: 15, isTargetDragging: false, prevX: 0, prevY: 0 };
+        let studioCamLookState = { yaw: -Math.PI/4, pitch: -Math.PI/6, keys: {}, isRightMouseDown: false };
+        let studioCamPositionVector = new THREE.Vector3(12, 10, 12);
         
+        // Active Game Runtime Tracking Matrices
         let activeGameScene, activeGameCamera, activeGameRenderer, activePlayerMeshObj;
         let gameActiveState = { keys: {}, animationFrame: 0, yaw: 0, pitch: 0 };
         
         let objectsMatrix = [];
         let blockSequenceData = [];
+        let screenGuiElementsArray = [];
         let currentlyEditingGameId = null;
         let activeThreadId = null;
+        let selectedGuiNodeId = null;
 
         window.handleAuth = async function(type) {
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
             const username = document.getElementById('auth-user').value.trim();
+            const selectedGender = document.getElementById('auth-gender').value;
+
             if(!email || !pass) return alert("Credentials required.");
             try {
                 if(type === 'signup') {
                     if(!username) return alert("Username required.");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
+                    
+                    // Assign Clothes Outfit Color Profiles Procedurally matching selected Gender Node
+                    let outfitFit = { shirt: '#4a90e2', leggings: '#1d3557', gender: 'boy' };
+                    if(selectedGender === 'girl') {
+                        outfitFit = { shirt: '#f472b6', leggings: '#db2777', gender: 'girl' };
+                    }
+
                     await setDoc(doc(db, "users", res.user.uid), { 
                         username, tickets: 120, inventory: [], 
                         friends: [], recentGames: [],
-                        activeOutfit: { shirt: '#e63946', leggings: '#1d3557' }, isBanned: false 
+                        activeOutfit: outfitFit, isBanned: false 
                     });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
@@ -449,13 +509,13 @@
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 const snap = await getDoc(doc(db, "users", u.uid));
-                if(snap.exists() && snap.data().isBanned) { alert("Account is banned."); auth.signOut(); return; }
+                if(snap.exists() && snap.data().isBanned) { alert("Account suspended."); auth.signOut(); return; }
                 localUserDoc = { uid: u.uid, ...snap.data() };
                 
-                // Backwards compatibility data check layers
                 if(!localUserDoc.inventory) localUserDoc.inventory = [];
                 if(!localUserDoc.friends) localUserDoc.friends = [];
                 if(!localUserDoc.recentGames) localUserDoc.recentGames = [];
+                if(!localUserDoc.activeOutfit) localUserDoc.activeOutfit = { shirt: '#4a90e2', leggings: '#1d3557', gender: 'boy' };
 
                 document.getElementById('page-auth').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
@@ -473,7 +533,6 @@
             
             const targetNav = document.getElementById(`nav-${p}`);
             if(targetNav) targetNav.classList.add('active');
-
             const target = document.getElementById(`page-${p}`);
             if(target) target.classList.add('active');
 
@@ -487,14 +546,23 @@
             if(p === 'profile') showUserProfilePage(localUserDoc.username);
         };
 
-        function generateRigK6ComplexMesh(shirt, pants) {
+        function generateRigK6ComplexMesh(shirt, pants, optionalGender) {
             const group = new THREE.Group();
             const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
-            const shirtMat = new THREE.MeshLambertMaterial({ color: shirt || "#e63946" });
+            const shirtMat = new THREE.MeshLambertMaterial({ color: shirt || "#4a90e2" });
             const pantsMat = new THREE.MeshLambertMaterial({ color: pants || "#1d3557" });
 
             const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), skinMat); head.position.y = 3.4; group.add(head);
-            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.7), shirtMat); torso.position.y = 2.0; group.add(torso);
+            
+            // Build custom mesh parameters based on Gender identity profile structures
+            if (optionalGender === 'girl' || localUserDoc?.activeOutfit?.gender === 'girl') {
+                // Girl Character Model Variant with custom Skirt/Dress mesh configurations
+                const torsoDress = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 1.1, 1.8, 4), shirtMat);
+                torsoDress.position.y = 2.0; torsoDress.rotation.y = Math.PI / 4; group.add(torsoDress);
+            } else {
+                // Standard block rig profile
+                const torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.7), shirtMat); torso.position.y = 2.0; group.add(torso);
+            }
             
             const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); la.position.set(-1.0, 2.0, 0); group.add(la);
             const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); ra.position.set(1.0, 2.0, 0); group.add(ra);
@@ -509,6 +577,21 @@
             return group;
         }
 
+        /* OVERHEAD NAME TAG BILLBOARD CREATOR MATRIX */
+        function createOverheadNameTagCanvasNode(usernameString) {
+            const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; ctx.fillRect(64, 16, 384, 64);
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4; ctx.strokeRect(64, 16, 384, 64);
+            ctx.font = 'bold 36px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+            ctx.fillText(usernameString, 256, 60);
+
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+            const spr = new THREE.Sprite(mat); spr.scale.set(4, 1, 1); spr.position.y = 4.4;
+            return spr;
+        }
+
         function init3DAvatarViewerCanvas(id, bindControls) {
             const box = document.getElementById(id); if(!box) return; box.innerHTML = '';
             const scene = new THREE.Scene(); scene.background = new THREE.Color(0xb0e0e6);
@@ -519,8 +602,8 @@
             scene.add(new THREE.AmbientLight(0x888888));
             const l = new THREE.DirectionalLight(0xffffff, 1.0); l.position.set(5, 10, 5); scene.add(l);
 
-            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
-            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings); scene.add(rig);
+            const fit = localUserDoc.activeOutfit || { shirt: '#4a90e2', leggings: '#1d3557', gender: 'boy' };
+            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings, fit.gender); scene.add(rig);
             rig.position.y = -1.5; camera.position.set(0, 0, 5.5); camera.lookAt(0, -0.2, 0);
 
             function loop() { if(document.getElementById(id)) { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); } }
@@ -528,9 +611,25 @@
             if(bindControls) renderFabricInventoryGrid();
         }
 
-        /* HOME PAGE MATRIX DYNAMIC POPULATION LAYERS */
+        /* PROFILE INTERFACES SETTINGS UPDATE MOTORS */
+        window.openProfileSettingsModal = function() {
+            document.getElementById('profile-settings-modal').style.display = 'flex';
+            document.getElementById('settings-edit-gender').value = localUserDoc.activeOutfit?.gender || 'boy';
+        };
+
+        window.commitProfileSettingsDataChanges = async function() {
+            const chosenGender = document.getElementById('settings-edit-gender').value;
+            let outfitFit = { shirt: '#4a90e2', leggings: '#1d3557', gender: chosenGender };
+            if(chosenGender === 'girl') { outfitFit = { shirt: '#f472b6', leggings: '#db2777', gender: 'girl' }; }
+
+            localUserDoc.activeOutfit = outfitFit;
+            await updateDoc(doc(db, "users", localUserDoc.uid), { activeOutfit: outfitFit });
+            document.getElementById('profile-settings-modal').style.display = 'none';
+            alert("Profile style settings matrix synchronized successfully.");
+            showUserProfilePage(localUserDoc.username);
+        };
+
         async function syncHomeDynamicMatrices() {
-            // Affiliated Groups Fetch
             const gHome = document.getElementById('home-groups-list'); gHome.innerHTML = '';
             const gSnap = await getDocs(collection(db, "groups"));
             let joinedGroupCount = 0;
@@ -543,20 +642,15 @@
             });
             if(joinedGroupCount === 0) gHome.innerHTML = '<p style="color:#666;">You haven\'t affiliated with any groups yet.</p>';
 
-            // Recent Sessions Activity Feed Load Pipeline
             const rHome = document.getElementById('home-recent-games-list'); rHome.innerHTML = '';
             if(localUserDoc.recentGames && localUserDoc.recentGames.length > 0) {
-                // Eliminate duplication nodes safely
                 const distinctTitles = [...new Set(localUserDoc.recentGames)];
                 distinctTitles.forEach(title => {
                     rHome.innerHTML += `<div class="market-card" style="background:#f0fdf4; border-color:#22c55e;">🎮 <b>${title}</b></div>`;
                 });
-            } else {
-                rHome.innerHTML = '<p style="color:#666;">No recent play sessions found.</p>';
-            }
+            } else { rHome.innerHTML = '<p style="color:#666;">No recent play sessions found.</p>'; }
         }
 
-        /* ADVANCED USER PROFILE PAGE LAYOUT ENGINE */
         async function showUserProfilePage(username) {
             document.getElementById('profile-title').textContent = `${username}'s Matrix Profile`;
             const box = document.getElementById('profile-avatar-box'); box.innerHTML = '';
@@ -567,14 +661,13 @@
             renderer.setSize(box.clientWidth, 320); box.appendChild(renderer.domElement);
             scene.add(new THREE.AmbientLight(0x999999));
             
-            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
-            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings); scene.add(rig); 
+            const fit = localUserDoc.activeOutfit || { shirt: '#4a90e2', leggings: '#1d3557', gender: 'boy' };
+            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings, fit.gender); scene.add(rig); 
             rig.position.y = -1.5; camera.position.set(0, 0, 5); camera.lookAt(0, 0, 0);
             
             function loop() { if(document.getElementById('profile-avatar-box').innerHTML !== '') { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); } }
             loop();
 
-            // Populate Friends Grid Module
             const friendsGrid = document.getElementById('profile-friends-grid'); friendsGrid.innerHTML = '';
             if(localUserDoc.friends && localUserDoc.friends.length > 0) {
                 localUserDoc.friends.forEach(fName => {
@@ -582,7 +675,6 @@
                 });
             } else { friendsGrid.innerHTML = '<p style="color:#777;">No confirmed friends yet.</p>'; }
 
-            // Populate User Experiences Workspace Grid
             const gamesGrid = document.getElementById('profile-games-grid'); gamesGrid.innerHTML = '';
             const gamesSnap = await getDocs(query(collection(db, "games"), where("creator", "==", username)));
             let totalGames = 0;
@@ -592,7 +684,6 @@
             });
             if(totalGames === 0) gamesGrid.innerHTML = '<p style="color:#777;">No public spaces built.</p>';
 
-            // Populate Groups Section Inside Profile Tab Core
             const profileGroupsGrid = document.getElementById('profile-groups-grid'); profileGroupsGrid.innerHTML = '';
             const allGroupsSnap = await getDocs(collection(db, "groups"));
             let profileGroupCount = 0;
@@ -604,12 +695,9 @@
                 }
             });
             if(profileGroupCount === 0) profileGroupsGrid.innerHTML = '<p style="color:#777;">Not in any community groups.</p>';
-
-            // Synchronize Incoming Processing Friend Request Wrappers
             syncFriendRequestsUIElement();
         }
 
-        /* REAL-TIME FRIEND ACTION PIPELINES */
         window.searchUserAccounts = async function() {
             const queryVal = document.getElementById('profile-user-search-input').value.trim();
             const resultsBox = document.getElementById('profile-search-results'); resultsBox.innerHTML = '';
@@ -618,10 +706,8 @@
             const q = query(collection(db, "users"), where("username", "==", queryVal));
             const snap = await getDocs(q);
             if(snap.empty) { resultsBox.innerHTML = '<p style="color:red; font-size:12px;">User target not discovered.</p>'; return; }
-            
             snap.forEach(d => {
-                const uData = d.data();
-                if(uData.username === localUserDoc.username) return;
+                const uData = d.data(); if(uData.username === localUserDoc.username) return;
                 resultsBox.innerHTML += `
                     <div style="background:#f8fafc; padding:8px; border:1px solid #cbd5e1; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
                         <span>👤 <b>${uData.username}</b></span>
@@ -633,9 +719,7 @@
 
         window.sendFriendRequestToTarget = async function(targetName) {
             const q = query(collection(db, "friendRequests"), where("from", "==", localUserDoc.username), where("to", "==", targetName));
-            const activeCheck = await getDocs(q);
-            if(!activeCheck.empty) return alert("Friend request already processing to this profile.");
-
+            const activeCheck = await getDocs(q); if(!activeCheck.empty) return alert("Friend request already processing.");
             await addDoc(collection(db, "friendRequests"), { from: localUserDoc.username, to: targetName, status: "pending" });
             alert(`Friend request transmitted to ${targetName}!`);
         };
@@ -644,18 +728,14 @@
             const container = document.getElementById('profile-friend-requests-list'); container.innerHTML = '';
             const q = query(collection(db, "friendRequests"), where("to", "==", localUserDoc.username), where("status", "==", "pending"));
             const snap = await getDocs(q);
-            
             if(snap.empty) { container.innerHTML = '<p style="color:#777;">No active incoming requests.</p>'; return; }
             snap.forEach(d => {
-                const req = d.data();
-                const div = document.createElement('div');
+                const req = d.data(); const div = document.createElement('div');
                 div.style = "background:#f0fdf4; padding:8px; border:1px solid #bbf7d0; border-radius:4px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;";
                 div.innerHTML = `<span>From: <b>${req.from}</b></span><div>
                     <button class="btn-action" style="width:auto; padding:3px 8px; background:#22c55e; margin-right:3px;" id="acc-${d.id}">Accept</button>
                     <button class="btn-action" style="width:auto; padding:3px 8px; background:#ef4444;" id="dec-${d.id}">Deny</button>
-                </div>`;
-                container.appendChild(div);
-
+                </div>`; container.appendChild(div);
                 document.getElementById(`acc-${d.id}`).onclick = () => resolveFriendRequestNode(d.id, req.from, true);
                 document.getElementById(`dec-${d.id}`).onclick = () => resolveFriendRequestNode(d.id, req.from, false);
             });
@@ -664,98 +744,65 @@
         async function resolveFriendRequestNode(reqId, senderName, approved) {
             await updateDoc(doc(db, "friendRequests", reqId), { status: approved ? "accepted" : "rejected" });
             if(approved) {
-                const userRef = doc(db, "users", localUserDoc.uid);
-                localUserDoc.friends.push(senderName);
+                const userRef = doc(db, "users", localUserDoc.uid); localUserDoc.friends.push(senderName);
                 await updateDoc(userRef, { friends: localUserDoc.friends });
-                
-                // Mirror tracking connection array logic directly onto sender profile row
                 const q = query(collection(db, "users"), where("username", "==", senderName));
                 const snap = await getDocs(q);
                 snap.forEach(async (d) => {
-                    const existingFriends = d.data().friends || [];
-                    existingFriends.push(localUserDoc.username);
-                    await updateDoc(doc(db, "users", d.id), { friends: existingFriends });
+                    const eF = d.data().friends || []; eF.push(localUserDoc.username);
+                    await updateDoc(doc(db, "users", d.id), { friends: eF });
                 });
             }
             showUserProfilePage(localUserDoc.username);
         }
 
-        /* COMMUNITY FORUMS ENGINE PATCH CORE */
+        /* FORUM CONTROLLERS */
         window.openNewForumPostModal = () => document.getElementById('new-forum-modal').style.display = 'block';
         window.submitForumThreadCloud = async () => {
             const title = document.getElementById('forum-title-input').value.trim();
-            const body = document.getElementById('forum-body-input').value.trim();
-            if(!title || !body) return;
+            const body = document.getElementById('forum-body-input').value.trim(); if(!title || !body) return;
             await addDoc(collection(db, "forums"), { title, author: localUserDoc.username, body, replies: [], timestamp: Date.now() });
-            document.getElementById('new-forum-modal').style.display = 'none';
-            syncForumsDashboard();
+            document.getElementById('new-forum-modal').style.display = 'none'; syncForumsDashboard();
         };
-
         async function syncForumsDashboard() {
             const list = document.getElementById('forum-threads-list'); list.innerHTML = '';
             const snap = await getDocs(collection(db, "forums"));
-            if(snap.empty) { list.innerHTML = '<p style="color:#222; text-align:center;">No topics found. Create the first thread!</p>'; return; }
             snap.forEach(d => {
                 const f = d.data(); const row = document.createElement('div'); row.className = 'forum-row';
-                row.innerHTML = `<div>静态 📌 <b>${f.title}</b> <small>by ${f.author}</small></div><div>💬 ${f.replies ? f.replies.length : 0} replies</div>`;
-                row.onclick = () => viewForumThreadInstance(d.id);
-                list.appendChild(row);
+                row.innerHTML = `<div>📌 <b>${f.title}</b> <small>by ${f.author}</small></div><div>💬 ${f.replies ? f.replies.length : 0} replies</div>`;
+                row.onclick = () => viewForumThreadInstance(d.id); list.appendChild(row);
             });
         }
-
         async function viewForumThreadInstance(id) {
             activeThreadId = id; switchPage('forum-view');
             const snap = await getDoc(doc(db, "forums", id)); if(!snap.exists()) return;
-            const f = snap.data();
-            document.getElementById('view-thread-title').textContent = f.title;
-            
+            const f = snap.data(); document.getElementById('view-thread-title').textContent = f.title;
             const container = document.getElementById('forum-replies-container');
-            container.innerHTML = `
-                <div class="post-container" style="background:#f1f5f9;">
-                    <b>${f.author}</b> <small>(Original Poster)</small>
-                    <p style="font-size:16px; margin-top:10px;">${f.body}</p>
-                </div>
-            `;
-            if(f.replies) {
-                f.replies.forEach(r => {
-                    container.innerHTML += `<div class="post-container"><b>${r.author}</b><p style="margin-top:5px;">${r.body}</p></div>`;
-                });
-            }
+            container.innerHTML = `<div class="post-container" style="background:#f1f5f9;"><b>${f.author}</b><p style="font-size:16px; margin-top:10px;">${f.body}</p></div>`;
+            if(f.replies) f.replies.forEach(r => { container.innerHTML += `<div class="post-container"><b>${r.author}</b><p style="margin-top:5px;">${r.body}</p></div>`; });
         }
-
         window.submitForumReply = async () => {
             const body = document.getElementById('forum-reply-body').value.trim(); if(!body) return;
             const ref = doc(db, "forums", activeThreadId); const snap = await getDoc(ref);
-            const curReplies = snap.data().replies || [];
-            curReplies.push({ author: localUserDoc.username, body });
-            await updateDoc(ref, { replies: curReplies });
-            document.getElementById('forum-reply-body').value = '';
+            const curReplies = snap.data().replies || []; curReplies.push({ author: localUserDoc.username, body });
+            await updateDoc(ref, { replies: curReplies }); document.getElementById('forum-reply-body').value = '';
             viewForumThreadInstance(activeThreadId);
         };
 
-        /* COMMUNITY GROUPS ENGINE PATCH CORE */
+        /* COMMUNITY GROUPS */
         window.openNewGroupModal = () => document.getElementById('new-group-modal').style.display = 'block';
         window.submitGroupCloud = async () => {
             const name = document.getElementById('group-title-input').value.trim(); if(!name) return;
             await addDoc(collection(db, "groups"), { name, owner: localUserDoc.username, members: [localUserDoc.username] });
-            document.getElementById('new-group-modal').style.display = 'none';
-            syncGroupsDashboard();
+            document.getElementById('new-group-modal').style.display = 'none'; syncGroupsDashboard();
         };
-
         async function syncGroupsDashboard() {
             const grid = document.getElementById('groups-matrix-grid'); grid.innerHTML = '';
             const snap = await getDocs(collection(db, "groups"));
             snap.forEach(d => {
                 const g = d.data(); const card = document.createElement('div'); card.className = 'market-card';
                 const isMember = g.members && g.members.includes(localUserDoc.username);
-                card.innerHTML = `
-                    <h3>👥 ${g.name}</h3>
-                    <p><small>Owner: ${g.owner}</small></p>
-                    <p><small>Members: ${g.members ? g.members.length : 1}</small></p>
-                    <button class="btn-action" style="background:${isMember ? '#6c757d' : '#007bff'};" id="join-g-${d.id}" ${isMember ? 'disabled' : ''}>
-                        ${isMember ? 'Joined' : 'Join Group'}
-                    </button>
-                `;
+                card.innerHTML = `<h3>👥 ${g.name}</h3><p><small>Members: ${g.members ? g.members.length : 1}</small></p><button class="btn-action" style="background:${isMember ? '#6c757d' : '#007bff'};" id="join-g-${d.id}" ${isMember ? 'disabled' : ''}>${isMember ? 'Joined' : 'Join Group'}</button>`;
                 grid.appendChild(card);
                 if(!isMember) {
                     document.getElementById(`join-g-${d.id}`).onclick = async () => {
@@ -766,218 +813,49 @@
             });
         }
 
-        /* MARKETPLACE CATALOG SHOP AND RE-EQUIP SYSTEM PATHS */
+        /* CATALOG AND CLOSET COLOR SYSTEM */
         async function syncCatalogMarketplaceUI() {
             const grid = document.getElementById('catalog-item-list'); grid.innerHTML = '';
             const snap = await getDocs(collection(db, "catalog"));
             snap.forEach(d => {
                 const item = d.data(); const card = document.createElement('div'); card.className = 'market-card';
-                if(item.isLimited) card.innerHTML += `<span class="badge-limited">LTD</span>`;
-                card.innerHTML += `
-                    <div style="width:100%; height:80px; background:${item.color || '#ccc'}; border-radius:4px; margin-bottom:5px;"></div>
-                    <strong>${item.title}</strong><br>
-                    <span>💵 ${item.price} Tickets</span>
-                    <button class="btn-action" style="margin-top:5px;" id="buy-${d.id}">Purchase</button>
-                `;
-                grid.appendChild(card);
-                document.getElementById(`buy-${d.id}`).onclick = () => purchaseCatalogAssetItem(d.id, item);
+                card.innerHTML += `<div style="width:100%; height:80px; background:${item.color || '#ccc'}; border-radius:4px; margin-bottom:5px;"></div><strong>${item.title}</strong><br><span>💵 ${item.price} Tickets</span><button class="btn-action" style="margin-top:5px;" id="buy-${d.id}">Purchase</button>`;
+                grid.appendChild(card); document.getElementById(`buy-${d.id}`).onclick = () => purchaseCatalogAssetItem(d.id, item);
             });
         }
-
         async function purchaseCatalogAssetItem(id, item) {
-            if(localUserDoc.inventory && localUserDoc.inventory.includes(item.title)) return alert("Asset item already owned inside closet profile inventory matrix.");
+            if(localUserDoc.inventory.includes(item.title)) return alert("Asset item already owned.");
             if(localUserDoc.tickets < item.price) return alert("Insufficient tickets.");
-            
-            const userRef = doc(db, "users", localUserDoc.uid);
-            const nextTickets = localUserDoc.tickets - item.price;
-            localUserDoc.tickets = nextTickets;
-            localUserDoc.inventory.push(item.title);
-
+            const userRef = doc(db, "users", localUserDoc.uid); const nextTickets = localUserDoc.tickets - item.price;
+            localUserDoc.tickets = nextTickets; localUserDoc.inventory.push(item.title);
             await updateDoc(userRef, { tickets: nextTickets, inventory: localUserDoc.inventory });
-            document.getElementById('user-tickets').textContent = nextTickets;
-            alert(`Purchased item: ${item.title}!`);
-            syncCatalogMarketplaceUI();
+            document.getElementById('user-tickets').textContent = nextTickets; alert(`Purchased item: ${item.title}!`); syncCatalogMarketplaceUI();
         }
-
         function renderFabricInventoryGrid() {
             const box = document.getElementById('avatar-inventory-list'); if(!box) return; box.innerHTML = '';
-            if(!localUserDoc.inventory || localUserDoc.inventory.length === 0) {
-                box.innerHTML = '<p style="color:#555;">No purchased custom cosmetics found inside inventory closet matrix.</p>';
-                return;
-            }
+            if(localUserDoc.inventory.length === 0) { box.innerHTML = '<p style="color:#555;">No purchased custom cosmetics found.</p>'; return; }
             localUserDoc.inventory.forEach((itemName, index) => {
                 const itemCard = document.createElement('div'); itemCard.className = 'market-card';
-                itemCard.innerHTML = `📁 <b>${itemName}</b><button class="btn-action" style="margin-top:5px; font-size:11px; padding:3px;" id="eq-${index}">Equip Color</button>`;
+                itemCard.innerHTML = `📁 <b>${itemName}</b><button class="btn-action" style="margin-top:5px; font-size:11px; padding:3px;" id="eq-${index}">Equip Style</button>`;
                 box.appendChild(itemCard);
-
                 document.getElementById(`eq-${index}`).onclick = async () => {
-                    // Extracting a safe procedural color from title metadata handles
                     let matchedColor = "#4a90e2";
                     if(itemName.toLowerCase().includes('blue')) matchedColor = "#3b82f6";
                     if(itemName.toLowerCase().includes('red')) matchedColor = "#ef4444";
                     if(itemName.toLowerCase().includes('green')) matchedColor = "#10b981";
-                    if(itemName.toLowerCase().includes('crown') || itemName.toLowerCase().includes('gold')) matchedColor = "#eab308";
-                    
-                    localUserDoc.activeOutfit = { shirt: matchedColor, leggings: "#1e293b" };
+                    localUserDoc.activeOutfit.shirt = matchedColor;
                     await updateDoc(doc(db, "users", localUserDoc.uid), { activeOutfit: localUserDoc.activeOutfit });
-                    alert(`Equipped cosmetic layer color matrix: ${itemName}`);
                     init3DAvatarViewerCanvas('avatar-3d-canvas', true);
                 };
             });
         }
 
         /* ==========================================
-           ADVANCED GAME SIMULATION CONTROLS ENGINE (MOUSE LOOK)
-           ========================================== */
-        window.launchActiveGameSimulationInstance = async function(gameId, title, creator) {
-            // Push Session Activity Directly Into Live Data Arrays
-            if(!localUserDoc.recentGames) localUserDoc.recentGames = [];
-            localUserDoc.recentGames.push(title);
-            await updateDoc(doc(db, "users", localUserDoc.uid), { recentGames: localUserDoc.recentGames });
-
-            document.getElementById('game-client-viewport').style.display = 'block';
-            document.getElementById('game-crosshair').style.display = 'block';
-            const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
-            
-            activeGameScene = new THREE.Scene(); activeGameScene.background = new THREE.Color(0xb0e0e6);
-            activeGameCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            activeGameRenderer = new THREE.WebGLRenderer({ antialias: true });
-            activeGameRenderer.setSize(window.innerWidth, window.innerHeight); box.appendChild(activeGameRenderer.domElement);
-
-            activeGameScene.add(new THREE.AmbientLight(0xaaaaaa));
-            activeGameScene.add(new THREE.GridHelper(100, 100));
-
-            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
-            activePlayerMeshObj = generateRigK6ComplexMesh(fit.shirt, fit.leggings); activeGameScene.add(activePlayerMeshObj);
-
-            // Re-zero dynamic Euler rotation values for FPS mouse tracking
-            gameActiveState.yaw = 0; gameActiveState.pitch = 0;
-            updateGameViewportOrbitCamera();
-
-            // Handle Mouse-Look Vector Captures via PointerLock API
-            box.requestPointerLock = box.requestPointerLock || box.mozRequestPointerLock;
-            box.onclick = () => { if(document.pointerLockElement !== box) box.requestPointerLock(); };
-
-            window.addEventListener('keydown', handleGameInputKeyDown);
-            window.addEventListener('keyup', handleGameInputKeyUp);
-            window.addEventListener('mousemove', handleGameViewportMouseMoveCapture, false);
-
-            const chatInput = document.getElementById('game-chat-input');
-            chatInput.onkeydown = (e) => {
-                if(e.key === 'Enter') {
-                    const text = chatInput.value.trim();
-                    if(text) {
-                        const log = document.getElementById('game-chat-display');
-                        log.innerHTML += `<div><b>${localUserDoc.username}</b>: ${text}</div>`;
-                        log.scrollTop = log.scrollHeight; chatInput.value = '';
-                    }
-                    chatInput.blur();
-                    box.requestPointerLock();
-                }
-                e.stopPropagation();
-            };
-
-            animateActiveGameSimulationLoop();
-        };
-
-        function handleGameViewportMouseMoveCapture(e) {
-            if (document.pointerLockElement !== document.getElementById('game-3d-scene-box')) return;
-            
-            // Adjust heading directions based on classic mouse coordinate delta offsets
-            gameActiveState.yaw -= e.movementX * 0.0025;
-            gameActiveState.pitch -= e.movementY * 0.0025;
-            
-            // Limit looking straight up or straight down to prevent camera flipping
-            gameActiveState.pitch = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, gameActiveState.pitch));
-        }
-
-        function updateGameViewportOrbitCamera() {
-            if(!activePlayerMeshObj) return;
-
-            // Compute exact direction vectors based on yaw angles
-            activePlayerMeshObj.rotation.y = gameActiveState.yaw;
-
-            // Offset the camera behind and above the avatar mesh
-            const offsetDist = 8;
-            const camX = activePlayerMeshObj.position.x + offsetDist * Math.sin(gameActiveState.yaw) * Math.cos(gameActiveState.pitch);
-            const camY = activePlayerMeshObj.position.y + 3.5 + offsetDist * Math.sin(gameActiveState.pitch);
-            const camZ = activePlayerMeshObj.position.z + offsetDist * Math.cos(gameActiveState.yaw) * Math.cos(gameActiveState.pitch);
-
-            activeGameCamera.position.set(camX, camY, camZ);
-            activeGameCamera.lookAt(activePlayerMeshObj.position.x, activePlayerMeshObj.position.y + 2, activePlayerMeshObj.position.z);
-        }
-
-        function handleGameInputKeyDown(e) { 
-            if(document.activeElement === document.getElementById('game-chat-input')) return;
-            gameActiveState.keys[e.key.toLowerCase()] = true; 
-        }
-        function handleGameInputKeyUp(e) { gameActiveState.keys[e.key.toLowerCase()] = false; }
-
-        function animateActiveGameSimulationLoop() {
-            if(document.getElementById('game-client-viewport').style.display === 'none') return;
-            requestAnimationFrame(animateActiveGameSimulationLoop);
-
-            let isMoving = false;
-            const speedModifier = 0.14;
-
-            // Move relative to the current camera look-at angle
-            if(gameActiveState.keys['w']) {
-                activePlayerMeshObj.position.x -= Math.sin(gameActiveState.yaw) * speedModifier;
-                activePlayerMeshObj.position.z -= Math.cos(gameActiveState.yaw) * speedModifier;
-                isMoving = true;
-            }
-            if(gameActiveState.keys['s']) {
-                activePlayerMeshObj.position.x += Math.sin(gameActiveState.yaw) * speedModifier;
-                activePlayerMeshObj.position.z += Math.cos(gameActiveState.yaw) * speedModifier;
-                isMoving = true;
-            }
-            if(gameActiveState.keys['a']) {
-                activePlayerMeshObj.position.x -= Math.cos(gameActiveState.yaw) * speedModifier;
-                activePlayerMeshObj.position.z += Math.sin(gameActiveState.yaw) * speedModifier;
-                isMoving = true;
-            }
-            if(gameActiveState.keys['d']) {
-                activePlayerMeshObj.position.x += Math.cos(gameActiveState.yaw) * speedModifier;
-                activePlayerMeshObj.position.z -= Math.sin(gameActiveState.yaw) * speedModifier;
-                isMoving = true;
-            }
-
-            if(isMoving) {
-                gameActiveState.animationFrame += 0.16;
-                const wave = Math.sin(gameActiveState.animationFrame) * 0.55;
-                activePlayerMeshObj.llNode.rotation.x = wave; activePlayerMeshObj.rlNode.rotation.x = -wave;
-                activePlayerMeshObj.laNode.rotation.x = -wave; activePlayerMeshObj.raNode.rotation.x = wave;
-            } else {
-                activePlayerMeshObj.llNode.rotation.x = 0; activePlayerMeshObj.rlNode.rotation.x = 0;
-                activePlayerMeshObj.laNode.rotation.x = 0; activePlayerMeshObj.raNode.rotation.x = 0;
-            }
-
-            updateGameViewportOrbitCamera();
-            activeGameRenderer.render(activeGameScene, activeGameCamera);
-        }
-
-        window.toggleGameEscMenu = () => {
-            const m = document.getElementById('game-esc-menu');
-            m.style.display = m.style.display === 'block' ? 'none' : 'block';
-            if(m.style.display === 'none') document.getElementById('game-3d-scene-box').requestPointerLock();
-            else document.exitPointerLock();
-        };
-        window.closeActiveGameSimulationClient = function() {
-            document.exitPointerLock();
-            window.removeEventListener('mousemove', handleGameViewportMouseMoveCapture);
-            document.getElementById('game-client-viewport').style.display = 'none';
-            document.getElementById('game-crosshair').style.display = 'none';
-            switchPage('home');
-        };
-
-        /* ==========================================
-           STUDIO CORE BLUEPRINT RESTORE LAYER
+           ROBLOX STUDIO CAMERA CONTROLS AND WORKSPACE PIPELINES
            ========================================== */
         window.changeActiveStudioTool = function(toolType) {
             activeStudioTool = toolType;
-            document.querySelectorAll('.studio-toolbar button').forEach(b => {
-                if(b.id && b.id.startsWith('tool-')) b.classList.remove('active-tool');
-            });
+            document.querySelectorAll('.studio-toolbar button').forEach(b => { if(b.id && b.id.startsWith('tool-')) b.classList.remove('active-tool'); });
             const selectedBtn = document.getElementById(`tool-${toolType}`); if(selectedBtn) selectedBtn.classList.add('active-tool');
         };
 
@@ -986,9 +864,9 @@
             getDoc(doc(db, "games", gameId)).then(snap => {
                 if(snap.exists()) {
                     document.getElementById('html-textarea-field').value = snap.data().htmlScript || "";
-                    const syncSyntax = snap.data().scriptType || "HTML";
-                    document.getElementById('script-syntax-select').value = syncSyntax;
+                    document.getElementById('script-syntax-select').value = snap.data().scriptType || "HTML";
                     blockSequenceData = snap.data().blocksArray || [];
+                    screenGuiElementsArray = snap.data().screenGuiArray || [];
                     toggleScriptWorkspaceLayoutView();
                     renderAssembledBlockChainInterface();
                 }
@@ -1000,39 +878,107 @@
             studioRenderer = new THREE.WebGLRenderer({ antialias: true });
             studioRenderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(studioRenderer.domElement);
 
-            studioScene.add(new THREE.GridHelper(50, 50, 0xffffff, 0x444444));
+            studioScene.add(new THREE.GridHelper(100, 100, 0xffffff, 0x444444));
             const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10,30,15); studioScene.add(dl);
-            updateStudioOrbitCameraPositionTransform();
+            
+            studioCamPositionVector.set(0, 10, 20);
+            recalculateStudioCameraTransformation();
 
-            box.onmousedown = (e) => { activeStudioControls.isTargetDragging = true; activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY; };
-            window.onmousemove = (e) => {
-                if(!activeStudioControls.isTargetDragging) return;
-                let deltaX = e.clientX - activeStudioControls.prevX; let deltaY = e.clientY - activeStudioControls.prevY;
-                const targetObj = objectsMatrix.find(o => o.id === selectedObjectId);
-                if(targetObj && !e.shiftKey) { 
-                    const scalarModifier = 0.05;
-                    if(activeStudioTool === 'move') { targetObj.mesh.position.x += deltaX * scalarModifier; targetObj.mesh.position.y -= deltaY * scalarModifier; }
-                    else if(activeStudioTool === 'scale') { targetObj.mesh.scale.x = Math.max(0.2, targetObj.mesh.scale.x + deltaX * scalarModifier); targetObj.mesh.scale.y = Math.max(0.2, targetObj.mesh.scale.y - deltaY * scalarModifier); }
-                    else if(activeStudioTool === 'rotate') { targetObj.mesh.rotation.y += deltaX * 0.02; targetObj.mesh.rotation.x += deltaY * 0.02; }
-                    openPropertiesInspector();
-                } else {
-                    activeStudioControls.theta -= deltaX * 0.007; activeStudioControls.phi += deltaY * 0.007; updateStudioOrbitCameraPositionTransform();
-                }
-                activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY;
+            // Intercept standard context menu prompts to allow holding right click
+            box.oncontextmenu = (e) => e.preventDefault();
+            
+            box.onmousedown = (e) => {
+                if(e.button === 2) { studioCamLookState.isRightMouseDown = true; box.style.cursor = 'none'; }
             };
-            window.onmouseup = () => activeStudioControls.isTargetDragging = false;
+            
+            window.onmousemove = (e) => {
+                if(studioCamLookState.isRightMouseDown) {
+                    // Update look-at orientation Euler angles
+                    studioCamLookState.yaw -= e.movementX * 0.003;
+                    studioCamLookState.pitch -= e.movementY * 0.003;
+                    studioCamLookState.pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, studioCamLookState.pitch));
+                    recalculateStudioCameraTransformation();
+                } else if(activeStudioControls.isTargetDragging && selectedObjectId) {
+                    // Classic axis dragging transformations mapping logic
+                    let deltaX = e.movementX * 0.05; let deltaY = -e.movementY * 0.05;
+                    const targetObj = objectsMatrix.find(o => o.id === selectedObjectId);
+                    if(targetObj) {
+                        if(activeStudioTool === 'move') { targetObj.mesh.position.x += deltaX; targetObj.mesh.position.y += deltaY; }
+                        else if(activeStudioTool === 'scale') { targetObj.mesh.scale.x = Math.max(0.2, targetObj.mesh.scale.x + deltaX); targetObj.mesh.scale.y = Math.max(0.2, targetObj.mesh.scale.y + deltaY); }
+                        else if(activeStudioTool === 'rotate') { targetObj.mesh.rotation.y += deltaX; }
+                        openPropertiesInspector();
+                    }
+                }
+            };
 
-            function loop() { if(document.getElementById('page-studio').classList.contains('active')) { requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); } }
+            window.onmouseup = (e) => {
+                if(e.button === 2) { studioCamLookState.isRightMouseDown = false; box.style.cursor = 'default'; }
+                activeStudioControls.isTargetDragging = false;
+            };
+
+            // Bind flying movement patterns
+            window.addEventListener('keydown', handleStudioWorkspaceKeyDownMatrix);
+            window.addEventListener('keyup', handleStudioWorkspaceKeyUpMatrix);
+
+            function loop() {
+                if(document.getElementById('page-studio').classList.contains('active')) {
+                    requestAnimationFrame(loop);
+                    processStudioCameraFlightTick();
+                    studioRenderer.render(studioScene, studioCamera);
+                }
+            }
             loop(); objectsMatrix = []; renderExplorerStudioHierarchy();
         };
 
-        window.exitStudioModeWorkspace = function() { selectedObjectId = null; switchPage('create-hub'); };
+        function handleStudioWorkspaceKeyDownMatrix(e) {
+            if(document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
+            studioCamLookState.keys[e.key.toLowerCase()] = true;
+        }
+        function handleStudioWorkspaceKeyUpMatrix(e) { studioCamLookState.keys[e.key.toLowerCase()] = false; }
+
+        function processStudioCameraFlightTick() {
+            if(!studioCamLookState.isRightMouseDown) return;
+            const flySpeed = 0.4;
+            const forwardVector = new THREE.Vector3(0, 0, -1).applyQuaternion(studioCamera.quaternion).normalize();
+            const rightVector = new THREE.Vector3(1, 0, 0).applyQuaternion(studioCamera.quaternion).normalize();
+
+            if(studioCamLookState.keys['w']) studioCamPositionVector.addScaledVector(forwardVector, flySpeed);
+            if(studioCamLookState.keys['s']) studioCamPositionVector.addScaledVector(forwardVector, -flySpeed);
+            if(studioCamLookState.keys['a']) studioCamPositionVector.addScaledVector(rightVector, -flySpeed);
+            if(studioCamLookState.keys['d']) studioCamPositionVector.addScaledVector(rightVector, flySpeed);
+            
+            recalculateStudioCameraTransformation();
+        }
+
+        function recalculateStudioCameraTransformation() {
+            studioCamera.position.copy(studioCamPositionVector);
+            const targetDirection = new THREE.Vector3(
+                Math.sin(studioCamLookState.yaw) * Math.cos(studioCamLookState.pitch),
+                Math.sin(studioCamLookState.pitch),
+                Math.cos(studioCamLookState.yaw) * Math.cos(studioCamLookState.pitch)
+            );
+            const lookTarget = new THREE.Vector3().copy(studioCamPositionVector).add(targetDirection);
+            studioCamera.lookAt(lookTarget);
+        }
+
+        window.exitStudioModeWorkspace = function() {
+            window.removeEventListener('keydown', handleStudioWorkspaceKeyDownMatrix);
+            window.removeEventListener('keyup', handleStudioWorkspaceKeyUpMatrix);
+            selectedObjectId = null; switchPage('create-hub');
+        };
+
         window.spawn3DObject = function(type) {
-            let mesh; const mat = new THREE.MeshLambertMaterial({ color: 0xcccccc });
-            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), mat);
-            else mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mat);
-            mesh.position.set(0, 1, 0); studioScene.add(mesh);
-            objectsMatrix.push({ id: "node_"+Date.now(), name: `Part_${type}`, type, mesh });
+            let mesh;
+            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), new THREE.MeshLambertMaterial({ color: 0xcccccc }));
+            else if(type === 'SpawnPoint') {
+                // Generate flat specialized check matrix representation
+                mesh = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 3), new THREE.MeshLambertMaterial({ color: 0x0284c7 }));
+            } else {
+                mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0xcccccc }));
+            }
+            mesh.position.set(studioCamera.position.x + Math.sin(studioCamLookState.yaw)*5, 1, studioCamera.position.z + Math.cos(studioCamLookState.yaw)*5);
+            studioScene.add(mesh);
+            objectsMatrix.push({ id: "node_"+Date.now(), name: `Instance_${type}`, type, mesh, hexColor: "#cccccc" });
             renderExplorerStudioHierarchy();
         };
 
@@ -1054,88 +1000,272 @@
             const win = document.getElementById('properties-window'); const obj = objectsMatrix.find(o => o.id === selectedObjectId); if(!obj) return;
             win.innerHTML = `
                 <div class="prop-group"><label>Label Name</label><input type='text' id='p-name' value='${obj.name}'></div>
+                <div class="prop-group"><label>Color Swatch Customization</label><input type="color" id="p-color" value="${obj.hexColor || '#cccccc'}"></div>
                 <div class="prop-group"><label>Position (X, Y, Z)</label><div style="display:flex; gap:3px;"><input type="number" step="0.5" id="p-pos-x" value="${obj.mesh.position.x.toFixed(2)}"><input type="number" step="0.5" id="p-pos-y" value="${obj.mesh.position.y.toFixed(2)}"><input type="number" step="0.5" id="p-pos-z" value="${obj.mesh.position.z.toFixed(2)}"></div></div>
-                <div class="prop-group"><label>Rotation (X, Y, Z)</label><div style="display:flex; gap:3px;"><input type="number" step="0.1" id="p-rot-x" value="${obj.mesh.rotation.x.toFixed(2)}"><input type="number" step="0.1" id="p-rot-y" value="${obj.mesh.rotation.y.toFixed(2)}"><input type="number" step="0.1" id="p-rot-z" value="${obj.mesh.rotation.z.toFixed(2)}"></div></div>
                 <div class="prop-group"><label>Scale (X, Y, Z)</label><div style="display:flex; gap:3px;"><input type="number" step="0.2" id="p-scale-x" value="${obj.mesh.scale.x.toFixed(2)}"><input type="number" step="0.2" id="p-scale-y" value="${obj.mesh.scale.y.toFixed(2)}"><input type="number" step="0.2" id="p-scale-z" value="${obj.mesh.scale.z.toFixed(2)}"></div></div>
             `;
             document.getElementById('p-name').onchange = (e) => { obj.name = e.target.value; renderExplorerStudioHierarchy(); };
+            
+            document.getElementById('p-color').oninput = (e) => {
+                obj.hexColor = e.target.value;
+                obj.mesh.material.color.set(e.target.value);
+            };
+
             const updateSelectedObjectGeometry = () => {
                 obj.mesh.position.set(parseFloat(document.getElementById('p-pos-x').value)||0, parseFloat(document.getElementById('p-pos-y').value)||0, parseFloat(document.getElementById('p-pos-z').value)||0);
-                obj.mesh.rotation.set(parseFloat(document.getElementById('p-rot-x').value)||0, parseFloat(document.getElementById('p-rot-y').value)||0, parseFloat(document.getElementById('p-rot-z').value)||0);
                 obj.mesh.scale.set(parseFloat(document.getElementById('p-scale-x').value)||1, parseFloat(document.getElementById('p-scale-y').value)||1, parseFloat(document.getElementById('p-scale-z').value)||1);
             };
-            ['p-pos-x','p-pos-y','p-pos-z','p-rot-x','p-rot-y','p-rot-z','p-scale-x','p-scale-y','p-scale-z'].forEach(id => { document.getElementById(id).addEventListener('input', updateSelectedObjectGeometry); });
+            ['p-pos-x','p-pos-y','p-pos-z','p-scale-x','p-scale-y','p-scale-z'].forEach(id => { document.getElementById(id).addEventListener('input', updateSelectedObjectGeometry); });
         }
 
-        function updateStudioOrbitCameraPositionTransform() {
-            studioCamera.position.x = activeStudioControls.radius * Math.sin(activeStudioControls.phi) * Math.sin(activeStudioControls.theta);
-            studioCamera.position.y = activeStudioControls.radius * Math.cos(activeStudioControls.phi);
-            studioCamera.position.z = activeStudioControls.radius * Math.sin(activeStudioControls.phi) * Math.cos(activeStudioControls.theta);
-            studioCamera.lookAt(0, 0, 0);
+        /* SCREEN GUI CORE LAYER BUILDER FUNCTIONS */
+        window.openGuiBuilderWorkspacePanel = function() {
+            document.getElementById('gui-builder-panel').style.display = 'flex';
+            renderGuiBuilderSidebarTreeAndCanvas();
+        };
+        window.closeGuiBuilderWorkspacePanel = function() {
+            document.getElementById('gui-builder-panel').style.display = 'none';
+        };
+
+        window.addNewGuiNodeElement = function(type) {
+            const newNode = {
+                id: "gui_" + Date.now(),
+                type: type,
+                text: "Label text handle",
+                imageUrl: "https://images.rbxcdn.com/92482192ce33a0b368731d7aa84da9b6.png",
+                posX: 20, posY: 20, sizeX: 150, sizeY: 40, color: "#ffffff"
+            };
+            screenGuiElementsArray.push(newNode);
+            renderGuiBuilderSidebarTreeAndCanvas();
+        };
+
+        function renderGuiBuilderSidebarTreeAndCanvas() {
+            const tree = document.getElementById('gui-node-tree-list'); tree.innerHTML = '';
+            const dropzone = document.getElementById('gui-box-dropzone');
+            
+            // Clean up old dynamic child wrappers safely
+            document.querySelectorAll('.live-preview-gui-tag').forEach(e => e.remove());
+
+            screenGuiElementsArray.forEach(gui => {
+                const item = document.createElement('div');
+                item.className = `explorer-item ${selectedGuiNodeId === gui.id ? 'selected' : ''}`;
+                item.innerHTML = `<span>🖥️ [${gui.type.toUpperCase()}]</span><span style="color:#ef4444;cursor:pointer;" id="del-gui-${gui.id}">❌</span>`;
+                tree.appendChild(item);
+
+                item.onclick = () => { selectedGuiNodeId = gui.id; renderGuiBuilderSidebarTreeAndCanvas(); openGuiPropertiesInspectorPanel(gui); };
+                document.getElementById(`del-gui-${gui.id}`).onclick = (e) => {
+                    e.stopPropagation(); screenGuiElementsArray = screenGuiElementsArray.filter(g => g.id !== gui.id);
+                    selectedGuiNodeId = null; renderGuiBuilderSidebarTreeAndCanvas();
+                };
+
+                // Inject visual representations into dropframe live
+                const el = document.createElement('div'); el.className = 'live-preview-gui-tag';
+                el.style.position = 'absolute'; el.style.left = gui.posX + 'px'; el.style.top = gui.posY + 'px';
+                el.style.width = gui.sizeX + 'px'; el.style.height = gui.sizeY + 'px';
+                
+                if(gui.type === 'text') {
+                    el.style.background = gui.color || '#fff'; el.style.border = '1px solid #222';
+                    el.style.color = '#000'; el.style.fontSize = '12px'; el.style.padding = '4px';
+                    el.textContent = gui.text;
+                } else {
+                    const img = document.createElement('img'); img.src = gui.imageUrl;
+                    img.style.width = '100%'; img.style.height = '100%'; el.appendChild(img);
+                }
+                dropzone.appendChild(el);
+            });
         }
 
+        function openGuiPropertiesInspectorPanel(gui) {
+            const win = document.getElementById('properties-window');
+            win.innerHTML = `
+                <div class="prop-group"><label>Screen Position X (px)</label><input type="number" id="g-px" value="${gui.posX}"></div>
+                <div class="prop-group"><label>Screen Position Y (px)</label><input type="number" id="g-py" value="${gui.posY}"></div>
+                <div class="prop-group"><label>Size Width (px)</label><input type="number" id="g-sx" value="${gui.sizeX}"></div>
+                <div class="prop-group"><label>Size Height (px)</label><input type="number" id="g-sy" value="${gui.sizeY}"></div>
+            `;
+            if(gui.type === 'text') {
+                win.innerHTML += `
+                    <div class="prop-group"><label>Label Text String</label><input type="text" id="g-text" value="${gui.text}"></div>
+                    <div class="prop-group"><label>Bg Color Hex</label><input type="color" id="g-color" value="${gui.color || '#ffffff'}"></div>
+                `;
+            } else {
+                win.innerHTML += `<div class="prop-group"><label>Image Source Asset URL</label><input type="text" id="g-img" value="${gui.imageUrl}"></div>`;
+            }
+
+            // Hook Event Matrix Subscriptions
+            document.getElementById('g-px').oninput = (e) => { gui.posX = parseInt(e.target.value)||0; renderGuiBuilderSidebarTreeAndCanvas(); };
+            document.getElementById('g-py').oninput = (e) => { gui.posY = parseInt(e.target.value)||0; renderGuiBuilderSidebarTreeAndCanvas(); };
+            document.getElementById('g-sx').oninput = (e) => { gui.sizeX = parseInt(e.target.value)||10; renderGuiBuilderSidebarTreeAndCanvas(); };
+            document.getElementById('g-sy').oninput = (e) => { gui.sizeY = parseInt(e.target.value)||10; renderGuiBuilderSidebarTreeAndCanvas(); };
+            if(gui.type === 'text') {
+                document.getElementById('g-text').oninput = (e) => { gui.text = e.target.value; renderGuiBuilderSidebarTreeAndCanvas(); };
+                document.getElementById('g-color').oninput = (e) => { gui.color = e.target.value; renderGuiBuilderSidebarTreeAndCanvas(); };
+            } else {
+                document.getElementById('g-img').onchange = (e) => { gui.imageUrl = e.target.value; renderGuiBuilderSidebarTreeAndCanvas(); };
+            }
+        }
+
+        /* TEXT EDITORS SCRIPTS ENGINE */
         window.toggleScriptWorkspaceLayoutView = function() {
             const syntax = document.getElementById('script-syntax-select').value;
             const blockPane = document.getElementById('block-code-pane');
             if(syntax === 'BHTML') { blockPane.style.display = 'flex'; compileBlocksIntoMarkupTextarea(); } 
             else { blockPane.style.display = 'none'; }
         };
-
         window.appendVisualCodeBlock = function(blockType) {
             let promptVal = prompt(`Enter context payload content for [${blockType}]:`); if(promptVal === null) return;
             blockSequenceData.push({ id: "block_" + Date.now(), type: blockType, value: promptVal });
             renderAssembledBlockChainInterface(); compileBlocksIntoMarkupTextarea();
         };
-
         window.removeVisualCodeBlockNode = function(id) {
             blockSequenceData = blockSequenceData.filter(b => b.id !== id);
             renderAssembledBlockChainInterface(); compileBlocksIntoMarkupTextarea();
         };
-
         function renderAssembledBlockChainInterface() {
             const line = document.getElementById('block-assembly-line'); line.innerHTML = '';
-            if(blockSequenceData.length === 0) { line.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:20px;">No code blocks attached.</div>'; return; }
             blockSequenceData.forEach(b => {
                 const div = document.createElement('div'); div.className = 'assembled-block';
-                div.innerHTML = `<div><strong>[${b.type.toUpperCase()}]</strong>: <span style="font-family:monospace;color:#334155;">"${b.value}"</span></div><span style="color:#ef4444;cursor:pointer;font-size:14px;" onclick="removeVisualCodeBlockNode('${b.id}')">❌</span>`;
+                div.innerHTML = `<div><strong>[${b.type.toUpperCase()}]</strong>: <span>"${b.value}"</span></div><span style="color:#ef4444;cursor:pointer;" onclick="removeVisualCodeBlockNode('${b.id}')">❌</span>`;
                 line.appendChild(div);
             });
         }
-
         function compileBlocksIntoMarkupTextarea() {
             let textOutput = ''; blockSequenceData.forEach(b => { textOutput += `<${b.type}>${b.value}</${b.type}>\n`; });
             document.getElementById('html-textarea-field').value = textOutput;
         }
-
         window.openHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='flex'; };
         window.closeHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='none'; };
+        
         window.saveActiveStudioProject = async function() {
-            await updateDoc(doc(db, "games", currentlyEditingGameId), { htmlScript: document.getElementById('html-textarea-field').value, scriptType: document.getElementById('script-syntax-select').value, blocksArray: blockSequenceData });
-            alert("Saved blueprint updates directly to Cloud Registry!");
+            await updateDoc(doc(db, "games", currentlyEditingGameId), { 
+                htmlScript: document.getElementById('html-textarea-field').value, 
+                scriptType: document.getElementById('script-syntax-select').value, 
+                blocksArray: blockSequenceData,
+                screenGuiArray: screenGuiElementsArray 
+            });
+            alert("Saved updates to Cloud Registry!");
         };
 
         window.triggerHtmlLivePlaytest = function() {
             const codePayload = document.getElementById('html-textarea-field').value;
             const zone = document.getElementById('html-playtest-render-zone');
             let parsed = codePayload
-                .replace(/<game_title>/g, "<h1 style='color: #1a4380; font-size: 28px; text-decoration: underline;'>🎮 Retro Server Terminal Instance</h1>")
+                .replace(/<game_title>/g, "<h1 style='color: #1a4380; font-size: 28px;'>🎮 Playtest Output Layer Matrix</h1>")
                 .replace(/<\/game_title>/g, "")
-                .replace(/<glow>/g, "<span style='text-shadow: 0 0 12px #ff4500, 0 0 4px #ffea00; color: #fff; font-weight:900; background:#333; padding:2px;'>")
-                .replace(/<\/glow>/g, "</span>")
-                .replace(/<card>/g, "<div style='background: #fff; border: 3px double #3570c5; padding: 12px; border-radius: 6px; margin: 8px 0;'>")
-                .replace(/<\/card>/g, "</div>")
-                .replace(/<alert>/g, "<div style='background: #ffea00; border: 2px dashed red; padding: 8px; color: black;'>⚠️ SYSTEM NOTICE: ")
-                .replace(/<\/alert>/g, "</div>");
+                .replace(/<glow>/g, "<span style='text-shadow: 0 0 12px #ff4500, 0 0 4px #ffea00; color: #fff;'>")
+                .replace(/<\/glow>/g, "</span>");
             zone.innerHTML = parsed;
             document.getElementById('html-playtest-overlay').style.display = 'block';
         };
 
-        window.commitNewGameToCloudRegistry = async function() {
-            const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
-            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, htmlScript: "", scriptType: "HTML", blocksArray: [], isFeatured: false, isBanned: false });
-            document.getElementById('new-game-modal').style.display='none'; renderCreationsLandingDashboard();
+        /* ACTIVE MULTIPLAYER SIMULATION EXPERIENCE EXECUTION CLIENT */
+        window.launchActiveGameSimulationInstance = async function(gameId, title, creator) {
+            if(!localUserDoc.recentGames) localUserDoc.recentGames = [];
+            localUserDoc.recentGames.push(title);
+            await updateDoc(doc(db, "users", localUserDoc.uid), { recentGames: localUserDoc.recentGames });
+
+            document.getElementById('game-client-viewport').style.display = 'block';
+            document.getElementById('game-crosshair').style.display = 'block';
+            
+            // Build live custom screen HUD elements
+            const guiContainer = document.getElementById('game-runtime-gui-layer'); guiContainer.innerHTML = '';
+            const gameDocSnap = await getDoc(doc(db, "games", gameId));
+            if(gameDocSnap.exists() && gameDocSnap.data().screenGuiArray) {
+                gameDocSnap.data().screenGuiArray.forEach(gui => {
+                    const layer = document.createElement('div');
+                    layer.style.position = 'absolute'; layer.style.left = gui.posX + 'px'; layer.style.top = gui.posY + 'px';
+                    layer.style.width = gui.sizeX + 'px'; layer.style.height = gui.sizeY + 'px';
+                    if(gui.type === 'text') {
+                        layer.style.background = gui.color || 'rgba(0,0,0,0.4)'; layer.style.color = '#fff';
+                        layer.style.padding = '6px'; layer.style.borderRadius = '4px'; layer.textContent = gui.text;
+                    } else {
+                        const img = document.createElement('img'); img.src = gui.imageUrl; img.style.width='100%'; img.style.height='100%';
+                        layer.appendChild(img);
+                    }
+                    guiContainer.appendChild(layer);
+                });
+            }
+
+            const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
+            activeGameScene = new THREE.Scene(); activeGameScene.background = new THREE.Color(0xb0e0e6);
+            activeGameCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            activeGameRenderer = new THREE.WebGLRenderer({ antialias: true });
+            activeGameRenderer.setSize(window.innerWidth, window.innerHeight); box.appendChild(activeGameRenderer.domElement);
+
+            activeGameScene.add(new THREE.AmbientLight(0xaaaaaa));
+            activeGameScene.add(new THREE.GridHelper(100, 100));
+
+            const fit = localUserDoc.activeOutfit || { shirt: '#4a90e2', leggings: '#1d3557', gender: 'boy' };
+            activePlayerMeshObj = generateRigK6ComplexMesh(fit.shirt, fit.leggings, fit.gender); activeGameScene.add(activePlayerMeshObj);
+
+            // ATTACH OVERHEAD BILLBOARD STRING COMPONENT ABOVE AVATAR MESH NODE HEAD
+            const tag = createOverheadNameTagCanvasNode(localUserDoc.username);
+            activePlayerMeshObj.add(tag);
+
+            gameActiveState.yaw = 0; gameActiveState.pitch = 0;
+            updateGameViewportOrbitCamera();
+
+            box.requestPointerLock = box.requestPointerLock || box.mozRequestPointerLock;
+            box.onclick = () => { if(document.pointerLockElement !== box) box.requestPointerLock(); };
+
+            window.addEventListener('keydown', handleGameInputKeyDown);
+            window.addEventListener('keyup', handleGameInputKeyUp);
+            window.addEventListener('mousemove', handleGameViewportMouseMoveCapture, false);
+
+            animateActiveGameSimulationLoop();
         };
 
+        function handleGameViewportMouseMoveCapture(e) {
+            if (document.pointerLockElement !== document.getElementById('game-3d-scene-box')) return;
+            gameActiveState.yaw -= e.movementX * 0.0025; gameActiveState.pitch -= e.movementY * 0.0025;
+            gameActiveState.pitch = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, gameActiveState.pitch));
+        }
+
+        function updateGameViewportOrbitCamera() {
+            if(!activePlayerMeshObj) return;
+            activePlayerMeshObj.rotation.y = gameActiveState.yaw;
+            const offsetDist = 8;
+            const camX = activePlayerMeshObj.position.x + offsetDist * Math.sin(gameActiveState.yaw) * Math.cos(gameActiveState.pitch);
+            const camY = activePlayerMeshObj.position.y + 3.5 + offsetDist * Math.sin(gameActiveState.pitch);
+            const camZ = activePlayerMeshObj.position.z + offsetDist * Math.cos(gameActiveState.yaw) * Math.cos(gameActiveState.pitch);
+            activeGameCamera.position.set(camX, camY, camZ);
+            activeGameCamera.lookAt(activePlayerMeshObj.position.x, activePlayerMeshObj.position.y + 2, activePlayerMeshObj.position.z);
+        }
+
+        function handleGameInputKeyDown(e) { if(document.activeElement === document.getElementById('game-chat-input')) return; gameActiveState.keys[e.key.toLowerCase()] = true; }
+        function handleGameInputKeyUp(e) { gameActiveState.keys[e.key.toLowerCase()] = false; }
+
+        function animateActiveGameSimulationLoop() {
+            if(document.getElementById('game-client-viewport').style.display === 'none') return;
+            requestAnimationFrame(animateActiveGameSimulationLoop);
+
+            let isMoving = false; const speedModifier = 0.14;
+            if(gameActiveState.keys['w']) { activePlayerMeshObj.position.x -= Math.sin(gameActiveState.yaw) * speedModifier; activePlayerMeshObj.position.z -= Math.cos(gameActiveState.yaw) * speedModifier; isMoving = true; }
+            if(gameActiveState.keys['s']) { activePlayerMeshObj.position.x += Math.sin(gameActiveState.yaw) * speedModifier; activePlayerMeshObj.position.z += Math.cos(gameActiveState.yaw) * speedModifier; isMoving = true; }
+            if(gameActiveState.keys['a']) { activePlayerMeshObj.position.x -= Math.cos(gameActiveState.yaw) * speedModifier; activePlayerMeshObj.position.z += Math.sin(gameActiveState.yaw) * speedModifier; isMoving = true; }
+            if(gameActiveState.keys['d']) { activePlayerMeshObj.position.x += Math.cos(gameActiveState.yaw) * speedModifier; activePlayerMeshObj.position.z -= Math.sin(gameActiveState.yaw) * speedModifier; isMoving = true; }
+
+            if(isMoving) {
+                gameActiveState.animationFrame += 0.16; const wave = Math.sin(gameActiveState.animationFrame) * 0.55;
+                activePlayerMeshObj.llNode.rotation.x = wave; activePlayerMeshObj.rlNode.rotation.x = -wave;
+            }
+            updateGameViewportOrbitCamera(); activeGameRenderer.render(activeGameScene, activeGameCamera);
+        }
+
+        window.toggleGameEscMenu = () => {
+            const m = document.getElementById('game-esc-menu'); m.style.display = m.style.display === 'block' ? 'none' : 'block';
+            if(m.style.display === 'none') document.getElementById('game-3d-scene-box').requestPointerLock(); else document.exitPointerLock();
+        };
+        window.closeActiveGameSimulationClient = function() {
+            document.exitPointerLock(); window.removeEventListener('mousemove', handleGameViewportMouseMoveCapture);
+            document.getElementById('game-client-viewport').style.display = 'none'; switchPage('home');
+        };
+
+        window.commitNewGameToCloudRegistry = async function() {
+            const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
+            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, htmlScript: "", scriptType: "HTML", blocksArray: [], screenGuiArray: [], isBanned: false });
+            document.getElementById('new-game-modal').style.display='none'; renderCreationsLandingDashboard();
+        };
         async function renderCreationsLandingDashboard() {
             const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
             const q = query(collection(db, "games"), where("creator", "==", localUserDoc.username));
@@ -1143,12 +1273,10 @@
             snap.forEach(d => {
                 const data = d.data(); if(data.isBanned) return;
                 const card = document.createElement('div'); card.className = 'market-card';
-                card.innerHTML = `<div style="background:#555; height:75px; color:white; display:flex; align-items:center; justify-content:center;">🎮 Studio Scene</div><div><strong>${data.title}</strong></div><button class="btn-action" style="padding:4px; margin-top:5px; background:#007acc;" id="open-engine-${d.id}">Open Engine</button>`;
-                grid.appendChild(card);
-                document.getElementById(`open-engine-${d.id}`).onclick = () => window.launchStudioDevelopmentInstance(d.id, data.title);
+                card.innerHTML = `<div><strong>${data.title}</strong></div><button class="btn-action" style="padding:4px; margin-top:5px; background:#007acc;" id="open-engine-${d.id}">Open Engine</button>`;
+                grid.appendChild(card); document.getElementById(`open-engine-${d.id}`).onclick = () => window.launchStudioDevelopmentInstance(d.id, data.title);
             });
         }
-
         async function syncGamesDiscoverGrid() {
             const grid = document.getElementById('games-market-list'); grid.innerHTML = '';
             const snap = await getDocs(collection(db, "games"));
@@ -1156,8 +1284,7 @@
                 const game = d.data(); if(game.isBanned) return;
                 const card = document.createElement('div'); card.className = 'market-card';
                 card.innerHTML = `<h3>${game.title}</h3><button class="btn-action" style="background:#ffea00; color:#000;" id='pg-${d.id}'>Play</button>`;
-                grid.appendChild(card);
-                document.getElementById(`pg-${d.id}`).onclick = () => launchActiveGameSimulationInstance(d.id, game.title, game.creator);
+                grid.appendChild(card); document.getElementById(`pg-${d.id}`).onclick = () => launchActiveGameSimulationInstance(d.id, game.title, game.creator);
             });
         }
 
@@ -1165,23 +1292,18 @@
         window.moderateExperience = async function(type) {
             const gName = document.getElementById('admin-game-name').value.trim();
             const snap = await getDocs(query(collection(db, "games"), where("title", "==", gName)));
-            snap.forEach(async (d) => {
-                if(type === 'ban') { await updateDoc(doc(db, "games", d.id), { isBanned: true }); alert("Suspended."); } 
-                else if(type === 'feature') { const nextVal = !(d.data().isFeatured); await updateDoc(doc(db, "games", d.id), { isFeatured: nextVal }); alert(`Toggled: ${nextVal}`); }
-            });
+            snap.forEach(async (d) => { if(type === 'ban') { await updateDoc(doc(db, "games", d.id), { isBanned: true }); } });
         };
-
         window.banUserAccountNode = async function() {
             const target = document.getElementById('admin-target-account').value.trim();
             const snap = await getDocs(query(collection(db, "users"), where("username", "==", target)));
-            snap.forEach(async (d) => { await updateDoc(doc(db, "users", d.id), { isBanned: true }); alert(`Suspended user account: ${target}`); });
+            snap.forEach(async (d) => { await updateDoc(doc(db, "users", d.id), { isBanned: true }); });
         };
-
         window.mintLimitedCatalogItem = async function() {
             const title = document.getElementById('admin-ltd-title').value.trim();
             const color = document.getElementById('admin-ltd-color').value.trim() || "#ff0000";
             const price = parseInt(document.getElementById('admin-ltd-price').value) || 50; if(!title) return;
-            await addDoc(collection(db, "catalog"), { title, color, price, isLimited: true }); alert(`Injected limited asset wrapper: ${title}`);
+            await addDoc(collection(db, "catalog"), { title, color, price, isLimited: true }); alert(`Injected asset: ${title}`);
         };
     </script>
 </body>
