@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2KBlox - Retro Engine Core</title>
+    <title>2KBlox - Retro Sandbox Environment</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght=700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
@@ -30,10 +30,10 @@
             font-size: 32px; font-style: italic; color: white;
             text-shadow: -2px -2px 0 #d12424, 2px -2px 0 #d12424, -2px 2px 0 #d12424, 2px 2px 0 #d12424;
         }
-        nav { display: flex; gap: 4px; background: rgba(0,0,0,0.15); padding: 4px; border-radius: 4px; }
+        nav { display: flex; gap: 4px; background: rgba(0,0,0,0.15); padding: 4px; border-radius: 4px; overflow-x: auto; }
         nav button {
             background: #f8f9fa; color: #222; border: 2px solid #777;
-            padding: 5px 12px; cursor: pointer; border-radius: 3px;
+            padding: 5px 12px; cursor: pointer; border-radius: 3px; white-space: nowrap;
         }
         nav button.active { background: #ffea00; border-color: #cc9900; }
 
@@ -49,7 +49,7 @@
         .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; position: relative; }
         .badge-limited { position: absolute; top: 5px; right: 5px; background: #ff4500; color: white; padding: 2px 6px; font-size: 10px; border-radius: 3px; }
 
-        /* STUDIO */
+        /* STUDIO LAYOUT */
         .studio-container { display: flex; width: 100%; height: 100%; background: #222; }
         .studio-sidebar { width: 300px; background: #2d2d2d; color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
         .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; text-align:center; }
@@ -67,6 +67,11 @@
         #html-textarea-field { width: 100%; flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 15px; background: #1e1e1e; color: #7ec699; border: none; resize: none; }
         .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
 
+        /* FORUM & SOCIAL STRUCTURES */
+        .forum-row { background: white; padding: 12px; margin-bottom: 8px; border: 2px solid #aaa; border-radius: 4px; display: flex; justify-content: space-between; cursor: pointer; }
+        .forum-row:hover { border-color: #3570c5; }
+        .post-container { background: white; padding: 15px; margin-bottom: 10px; border: 2px solid #bbb; border-radius: 4px; }
+
         /* GAME CLIENT OVERLAYS */
         #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
         .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
@@ -75,7 +80,7 @@
         .game-chat-log { flex: 1; overflow-y: auto; color: #fff; font-family: monospace; font-size: 13px; margin-bottom: 5px; }
         .game-esc-menu { position: absolute; top: 25%; left: 35%; width: 30%; background: white; border: 4px solid #333; padding: 20px; border-radius: 8px; display: none; pointer-events: auto; text-align: center; }
 
-        /* ADMIN ACCESS PANEL */
+        /* ADMIN DASHBOARD */
         .admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 15px 0; }
         .admin-module-card { background: #1e293b; border: 1px solid #38bdf8; padding: 15px; border-radius: 6px; color: #38bdf8; }
     </style>
@@ -87,7 +92,7 @@
             <div class="logo-2kblox">2KBLOX</div>
             <div style="display:flex; gap:15px; align-items:center;">
                 <div style="background: white; color: #333; padding: 5px 12px; border-radius: 4px;">💵 <span id="user-tickets">0</span> Tickets</div>
-                <span id="header-username" style="color: white;">Guest Node</span>
+                <span id="header-username" style="color: white; cursor:pointer;" onclick="switchPage('profile')">Guest Player</span>
                 <span class="gear-hidden" onclick="triggerAdminPrompt()">⚙️</span>
             </div>
         </div>
@@ -96,6 +101,8 @@
             <button onclick="switchPage('games-discover')">Games</button>
             <button onclick="switchPage('avatar-editor')">Avatar</button>
             <button onclick="switchPage('marketplace')">Catalog</button>
+            <button onclick="switchPage('forums')">Forums</button>
+            <button onclick="switchPage('groups')">Groups</button>
             <button onclick="switchPage('create-hub')">Create</button>
         </nav>
     </header>
@@ -104,38 +111,52 @@
 
         <div id="page-auth" class="page active">
             <div class="auth-container">
-                <h2>2KBlox Portal</h2>
+                <h2>Welcome to 2KBlox</h2>
                 <input type="email" id="auth-email" placeholder="Email Address">
-                <input type="text" id="auth-user" placeholder="Create Username">
-                <input type="password" id="auth-pass" placeholder="Password PIN">
+                <input type="text" id="auth-user" placeholder="Username">
+                <input type="password" id="auth-pass" placeholder="Password">
                 <button class="btn-action" onclick="handleAuth('login')">Log In</button>
                 <button class="btn-action" style="background:#007bff; margin-top:6px; border-color:#0062cc;" onclick="handleAuth('signup')">Sign Up</button>
             </div>
         </div>
 
         <div id="page-home" class="page">
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
+            <div style="display:grid; grid-template-columns: 3fr 1fr; gap:20px;">
                 <div>
-                    <div style="background:white; padding:15px; border-radius:6px; border:2px solid #a2bce0;">
-                        <h3>Active Avatar Layout Canvas</h3>
-                        <div id="home-avatar-canvas" style="height: 350px; background:#b0e0e6; border-radius:4px;"></div>
+                    <div style="background:white; padding:20px; border-radius:6px; border:2px solid #a2bce0; margin-bottom:20px;">
+                        <h2 style="margin-top:0;">Hello, <span class="user-placeholder-name">Player</span>!</h2>
+                        <p>Welcome back to your 2KBlox homepage. Explore games, check out your profile, or build in studio.</p>
+                    </div>
+                    <div style="background:white; padding:20px; border-radius:6px; border:2px solid #a2bce0;">
+                        <h3>Featured Games</h3>
+                        <div class="item-grid" id="home-featured-games"></div>
                     </div>
                 </div>
                 <div>
-                    <div style="background:white; padding:15px; border-radius:6px; border:2px solid #a2bce0;">
-                        <h3>User Navigation Shortcuts</h3>
-                        <p>Welcome back to the build terminal network environment.</p>
+                    <div style="background:white; padding:15px; border-radius:6px; border:2px solid #a2bce0; text-align:center;">
+                        <h3>Your Avatar</h3>
+                        <div id="home-avatar-canvas" style="height: 220px; background:#b0e0e6; border-radius:4px; margin-bottom:10px;"></div>
+                        <button class="btn-action" onclick="switchPage('avatar-editor')">Customize</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-profile" class="page">
+            <div style="background:white; padding:20px; border-radius:6px; border:2px solid #aaa;">
+                <h2 id="profile-title">User Profile</h2>
+                <div style="display:flex; gap:30px; margin-top:20px;">
+                    <div id="profile-avatar-box" style="width:250px; height:300px; background:#b0e0e6; border:2px solid #888;"></div>
+                    <div style="flex:1;">
+                        <h3>Inventory Collectibles</h3>
+                        <div class="item-grid" id="profile-inventory-list"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="page-games-discover" class="page">
-            <div id="featured-games-container" style="display:none; margin-bottom: 25px; background: #fffbdf; border: 3px solid #ffea00; padding: 15px; border-radius: 8px;">
-                <h2 style="margin-top:0; color: #b8860b;">🌟 Featured Experiences</h2>
-                <div class="item-grid" id="featured-games-list"></div>
-            </div>
-            <h2>Public Map Servers</h2>
+            <h2>Public Games</h2>
             <div class="item-grid" id="games-market-list"></div>
         </div>
 
@@ -151,8 +172,34 @@
         </div>
 
         <div id="page-marketplace" class="page">
-            <h2>Asset Matrix Shop</h2>
+            <h2>Catalog Shop</h2>
             <div class="item-grid" id="catalog-item-list"></div>
+        </div>
+
+        <div id="page-forums" class="page">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2>Community Forums</h2>
+                <button class="btn-action" style="width:180px;" onclick="openNewForumPostModal()">Create Thread</button>
+            </div>
+            <div id="forum-threads-list"></div>
+        </div>
+
+        <div id="page-forum-view" class="page">
+            <button class="btn-action" style="width:120px; margin-bottom:15px; background:#6c757d;" onclick="switchPage('forums')">← Back</button>
+            <h2 id="view-thread-title">Thread</h2>
+            <div id="forum-replies-container"></div>
+            <hr>
+            <h3>Leave a Reply</h3>
+            <textarea id="forum-reply-body" placeholder="Write your community response message here..."></textarea>
+            <button class="btn-action" style="width:150px; margin-top:5px;" onclick="submitForumReply()">Post Reply</button>
+        </div>
+
+        <div id="page-groups" class="page">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2>Community Groups</h2>
+                <button class="btn-action" style="width:180px;" onclick="openNewGroupModal()">Form Group</button>
+            </div>
+            <div class="item-grid" id="groups-matrix-grid"></div>
         </div>
 
         <div id="page-create-hub" class="page">
@@ -185,7 +232,7 @@
                             </select>
                             <button style="margin-left:auto; background:#28a745;" onclick="closeHtmlEditorWindow()">Save & Close</button>
                         </div>
-                        <textarea id="html-textarea-field" placeholder="Try adding custom elements like: <game_title>Hello World</game_title> or <alert>Caution Node!</alert> or <card><glow>Glow text</glow></card>"></textarea>
+                        <textarea id="html-textarea-field"></textarea>
                     </div>
                 </div>
 
@@ -214,7 +261,7 @@
                 </div>
                 <div class="admin-module-card">
                     <h3>Inject Limited Store Item</h3>
-                    <input type="text" id="admin-ltd-title" placeholder="Item Name (e.g. Diamond Crown)">
+                    <input type="text" id="admin-ltd-title" placeholder="Item Name (e.g. Blue Crown)">
                     <input type="text" id="admin-ltd-color" placeholder="Hex Color Code (#ff00ff)">
                     <input type="number" id="admin-ltd-price" placeholder="Ticket Asset Valuation Cost">
                     <button class="btn-action" style="background:#a855f7; color:#fff; border:none; margin-top:5px;" onclick="mintLimitedCatalogItem()">Inject Limited Matrix Asset</button>
@@ -228,6 +275,21 @@
             <input type="text" id="new-game-title-input" value="Untitled Map Instance">
             <button class="btn-action" onclick="commitNewGameToCloudRegistry()">Launch Workspace Canvas</button>
             <button class="btn-action" style="background:#666; border-color:#555; margin-top:6px;" onclick="document.getElementById('new-game-modal').style.display='none'">Cancel</button>
+        </div>
+
+        <div id="new-forum-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px;">
+            <h3>Create Forum Thread</h3>
+            <input type="text" id="forum-title-input" placeholder="Thread Title">
+            <textarea id="forum-body-input" placeholder="Write your post details here..."></textarea>
+            <button class="btn-action" onclick="submitForumThreadCloud()">Publish Thread</button>
+            <button class="btn-action" style="background:#666; margin-top:5px;" onclick="document.getElementById('new-forum-modal').style.display='none'">Cancel</button>
+        </div>
+
+        <div id="new-group-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px;">
+            <h3>Form New Group</h3>
+            <input type="text" id="group-title-input" placeholder="Group Name">
+            <button class="btn-action" onclick="submitGroupCloud()">Establish Group</button>
+            <button class="btn-action" style="background:#666; margin-top:5px;" onclick="document.getElementById('new-group-modal').style.display='none'">Cancel</button>
         </div>
 
     </div>
@@ -280,11 +342,11 @@
         let activeStudioControls = { theta: 0.5, phi: 1.0, radius: 15, isTargetDragging: false, prevX: 0, prevY: 0 };
         
         let activeGameScene, activeGameCamera, activeGameRenderer, activePlayerMeshObj;
-        let gameActiveState = { keys: {}, velY: 0, isJumping: false };
-        let gameCameraControls = { theta: 0, phi: Math.PI / 2.5, radius: 12, isDragging: false, prevX: 0, prevY: 0 };
+        let gameActiveState = { keys: {}, velY: 0, isJumping: false, animationFrame: 0 };
         
         let objectsMatrix = [];
         let currentlyEditingGameId = null;
+        let activeThreadId = null;
 
         window.handleAuth = async function(type) {
             const email = document.getElementById('auth-email').value.trim();
@@ -305,10 +367,12 @@
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 const snap = await getDoc(doc(db, "users", u.uid));
-                if(snap.exists() && snap.data().isBanned) { alert("Banned profile node."); auth.signOut(); return; }
+                if(snap.exists() && snap.data().isBanned) { alert("Account has been banned."); auth.signOut(); return; }
                 localUserDoc = { uid: u.uid, ...snap.data() };
                 document.getElementById('page-auth').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
+                
+                document.querySelectorAll('.user-placeholder-name').forEach(el => el.textContent = localUserDoc.username);
                 document.getElementById('header-username').textContent = localUserDoc.username;
                 document.getElementById('user-tickets').textContent = localUserDoc.tickets;
                 switchPage('home');
@@ -317,17 +381,21 @@
 
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('#main-nav button').forEach(b => b.classList.remove('active'));
             const target = document.getElementById(`page-${p}`);
             if(target) target.classList.add('active');
 
-            if(p === 'home') init3DAvatarViewerCanvas('home-avatar-canvas', false);
+            if(p === 'home') { init3DAvatarViewerCanvas('home-avatar-canvas', false); syncHomeFeaturedGames(); }
             if(p === 'avatar-editor') init3DAvatarViewerCanvas('avatar-3d-canvas', true);
             if(p === 'marketplace') syncCatalogMarketplaceUI();
             if(p === 'games-discover') syncGamesDiscoverGrid();
             if(p === 'create-hub') renderCreationsLandingDashboard();
+            if(p === 'forums') syncForumsDashboard();
+            if(p === 'groups') syncGroupsDashboard();
+            if(p === 'profile') showUserProfilePage(localUserDoc.username);
         };
 
-        /* FIX: TRACK TWO LEGS SEPARATELY WITHOUT DUPLICITY PIVOT OVERWRITING */
+        /* FIXED: RIG COMPLEX SEPARATE LEG STRUCTURE PREVENTS BROKEN JOIN REFERENCES */
         function generateRigK6ComplexMesh(shirt, pants) {
             const group = new THREE.Group();
             const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
@@ -340,12 +408,10 @@
             const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); la.position.set(-1.0, 2.0, 0); group.add(la);
             const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); ra.position.set(1.0, 2.0, 0); group.add(ra);
             
-            // Left Leg Setup
             const llPivot = new THREE.Group(); llPivot.position.set(-0.35, 1.1, 0);
             const ll = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.8, 0.48), pantsMat); ll.position.y = -0.7; 
             llPivot.add(ll); group.add(llPivot);
             
-            // Right Leg Setup Fixed (No nested parent call)
             const rlPivot = new THREE.Group(); rlPivot.position.set(0.35, 1.1, 0);
             const rl = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.8, 0.48), pantsMat); rl.position.y = -0.7; 
             rlPivot.add(rl); group.add(rlPivot);
@@ -373,6 +439,165 @@
             if(bindControls) renderFabricInventoryGrid();
         }
 
+        /* PROFILE SPECIFICS */
+        async function showUserProfilePage(username) {
+            document.getElementById('profile-title').textContent = `${username}'s Profile`;
+            const box = document.getElementById('profile-avatar-box'); box.innerHTML = '';
+            
+            const scene = new THREE.Scene(); scene.background = new THREE.Color(0xb0e0e6);
+            const camera = new THREE.PerspectiveCamera(45, 250 / 300, 0.1, 100);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(250, 300); box.appendChild(renderer.domElement);
+            scene.add(new THREE.AmbientLight(0x999999));
+            
+            const rig = generateRigK6ComplexMesh(localUserDoc.activeOutfit.shirt, localUserDoc.activeOutfit.leggings);
+            scene.add(rig); rig.position.y = -1.5; camera.position.set(0, 0, 5); camera.lookAt(0, 0, 0);
+            
+            function loop() { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); }
+            loop();
+
+            const invList = document.getElementById('profile-inventory-list'); invList.innerHTML = '';
+            if(localUserDoc.inventory && localUserDoc.inventory.length > 0) {
+                localUserDoc.inventory.forEach(item => {
+                    invList.innerHTML += `<div class="market-card">📦 <b>${item}</b></div>`;
+                });
+            } else {
+                invList.innerHTML = '<p>No catalog items owned yet.</p>';
+            }
+        }
+
+        /* FORUMS LOGIC */
+        window.openNewForumPostModal = () => document.getElementById('new-forum-modal').style.display = 'block';
+        window.submitForumThreadCloud = async () => {
+            const title = document.getElementById('forum-title-input').value.trim();
+            const body = document.getElementById('forum-body-input').value.trim();
+            if(!title || !body) return;
+            await addDoc(collection(db, "forums"), { title, author: localUserDoc.username, body, replies: [], timestamp: Date.now() });
+            document.getElementById('new-forum-modal').style.display = 'none';
+            syncForumsDashboard();
+        };
+
+        async function syncForumsDashboard() {
+            const list = document.getElementById('forum-threads-list'); list.innerHTML = '';
+            const snap = await getDocs(collection(db, "forums"));
+            snap.forEach(d => {
+                const f = d.data();
+                const row = document.createElement('div'); row.className = 'forum-row';
+                row.innerHTML = `<div>📌 <b>${f.title}</b> <small>by ${f.author}</small></div><div>💬 ${f.replies ? f.replies.length : 0}</div>`;
+                row.onclick = () => viewForumThreadInstance(d.id);
+                list.appendChild(row);
+            });
+        }
+
+        async function viewForumThreadInstance(id) {
+            activeThreadId = id; switchPage('forum-view');
+            const snap = await getDoc(doc(db, "forums", id));
+            if(!snap.exists()) return;
+            const f = snap.data();
+            document.getElementById('view-thread-title').textContent = f.title;
+            
+            const container = document.getElementById('forum-replies-container');
+            container.innerHTML = `
+                <div class="post-container" style="background:#f1f5f9;">
+                    <b>${f.author}</b> <small>(Original Poster)</small>
+                    <p style="font-size:16px; margin-top:10px;">${f.body}</p>
+                </div>
+            `;
+            if(f.replies) {
+                f.replies.forEach(r => {
+                    container.innerHTML += `
+                        <div class="post-container">
+                            <b>${r.author}</b>
+                            <p style="margin-top:5px;">${r.body}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        window.submitForumReply = async () => {
+            const body = document.getElementById('forum-reply-body').value.trim();
+            if(!body) return;
+            const ref = doc(db, "forums", activeThreadId);
+            const snap = await getDoc(ref);
+            const curReplies = snap.data().replies || [];
+            curReplies.push({ author: localUserDoc.username, body });
+            await updateDoc(ref, { replies: curReplies });
+            document.getElementById('forum-reply-body').value = '';
+            viewForumThreadInstance(activeThreadId);
+        };
+
+        /* GROUPS LOGIC */
+        window.openNewGroupModal = () => document.getElementById('new-group-modal').style.display = 'block';
+        window.submitGroupCloud = async () => {
+            const name = document.getElementById('group-title-input').value.trim();
+            if(!name) return;
+            await addDoc(collection(db, "groups"), { name, owner: localUserDoc.username, members: [localUserDoc.username] });
+            document.getElementById('new-group-modal').style.display = 'none';
+            syncGroupsDashboard();
+        };
+
+        async function syncGroupsDashboard() {
+            const grid = document.getElementById('groups-matrix-grid'); grid.innerHTML = '';
+            const snap = await getDocs(collection(db, "groups"));
+            snap.forEach(d => {
+                const g = d.data();
+                const card = document.createElement('div'); card.className = 'market-card';
+                card.innerHTML = `
+                    <h3>👥 ${g.name}</h3>
+                    <p><small>Owner: ${g.owner}</small></p>
+                    <button class="btn-action" style="background:#007bff;" id="join-g-${d.id}">Join Group</button>
+                `;
+                grid.appendChild(card);
+                document.getElementById(`join-g-${d.id}`).onclick = async () => {
+                    await updateDoc(doc(db, "groups", d.id), { members: arrayUnion(localUserDoc.username) });
+                    alert(`Joined ${g.name}!`);
+                };
+            });
+        }
+
+        /* CATALOG BUY SYSTEM RESTORATION */
+        async function syncCatalogMarketplaceUI() {
+            const grid = document.getElementById('catalog-item-list'); grid.innerHTML = '';
+            const snap = await getDocs(collection(db, "catalog"));
+            snap.forEach(d => {
+                const item = d.data(); const card = document.createElement('div'); card.className = 'market-card';
+                if(item.isLimited) card.innerHTML += `<span class="badge-limited">LTD</span>`;
+                card.innerHTML += `
+                    <div style="width:100%; height:80px; background:${item.color || '#ccc'}; border-radius:4px; margin-bottom:5px;"></div>
+                    <strong>${item.title}</strong><br>
+                    <span>💵 ${item.price} Tickets</span>
+                    <button class="btn-action" style="margin-top:5px;" id="buy-${d.id}">Purchase</button>
+                `;
+                grid.appendChild(card);
+                document.getElementById(`buy-${d.id}`).onclick = () => purchaseCatalogAssetItem(d.id, item);
+            });
+        }
+
+        async function purchaseCatalogAssetItem(id, item) {
+            if(localUserDoc.tickets < item.price) return alert("Insufficient tickets.");
+            const userRef = doc(db, "users", localUserDoc.uid);
+            const nextTickets = localUserDoc.tickets - item.price;
+            await updateDoc(userRef, { tickets: nextTickets, inventory: arrayUnion(item.title) });
+            localUserDoc.tickets = nextTickets;
+            document.getElementById('user-tickets').textContent = nextTickets;
+            alert(`Purchased ${item.title}!`);
+        }
+
+        /* RENDER HOMEPAGE FEATURED GAMES LIST */
+        async function syncHomeFeaturedGames() {
+            const grid = document.getElementById('home-featured-games'); grid.innerHTML = '';
+            const q = query(collection(db, "games"), where("isFeatured", "==", true));
+            const snap = await getDocs(q);
+            snap.forEach(d => {
+                const game = d.data();
+                const card = document.createElement('div'); card.className = 'market-card';
+                card.innerHTML = `<h3>🌟 ${game.title}</h3><button class="btn-action" style="background:#ffea00; color:#000;" id='home-g-${d.id}'>Play</button>`;
+                grid.appendChild(card);
+                document.getElementById(`home-g-${d.id}`).onclick = () => launchActiveGameSimulationInstance(d.id, game.title, game.creator);
+            });
+        }
+
         async function renderCreationsLandingDashboard() {
             const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
             const q = query(collection(db, "games"), where("creator", "==", localUserDoc.username));
@@ -389,6 +614,7 @@
             });
         }
 
+        /* STUDIO CORE INTERFACE */
         function launchStudioDevelopmentInstance(gameId, title) {
             currentlyEditingGameId = gameId; switchPage('studio');
             getDoc(doc(db, "games", gameId)).then(snap => {
@@ -449,27 +675,27 @@
             });
         }
 
-        /* FIX: ASSIGN REALTIME MUTATION CONTEXTS TO MOVE, ROTATE, SCALE INSTANTLY */
+        /* REALTIME TRANSFORM FIXES UNDER PROPERTIES INTERACTION MAP */
         function openPropertiesInspector() {
             const win = document.getElementById('properties-window'); const obj = objectsMatrix.find(o => o.id === selectedObjectId);
             if(!obj) return;
             win.innerHTML = `
-                <div class="prop-group"><label>Label Identification Name</label><input type='text' id='p-name' value='${obj.name}'></div>
-                <div class="prop-group"><label>Position Vector (X, Y, Z)</label>
+                <div class="prop-group"><label>Label Name</label><input type='text' id='p-name' value='${obj.name}'></div>
+                <div class="prop-group"><label>Position (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
                         <input type="number" step="0.5" id="p-pos-x" value="${obj.mesh.position.x}">
                         <input type="number" step="0.5" id="p-pos-y" value="${obj.mesh.position.y}">
                         <input type="number" step="0.5" id="p-pos-z" value="${obj.mesh.position.z}">
                     </div>
                 </div>
-                <div class="prop-group"><label>Rotation Radian Vector (X, Y, Z)</label>
+                <div class="prop-group"><label>Rotation (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
                         <input type="number" step="0.1" id="p-rot-x" value="${obj.mesh.rotation.x}">
                         <input type="number" step="0.1" id="p-rot-y" value="${obj.mesh.rotation.y}">
                         <input type="number" step="0.1" id="p-rot-z" value="${obj.mesh.rotation.z}">
                     </div>
                 </div>
-                <div class="prop-group"><label>Scale Vector (X, Y, Z)</label>
+                <div class="prop-group"><label>Scale (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
                         <input type="number" step="0.2" id="p-scale-x" value="${obj.mesh.scale.x}">
                         <input type="number" step="0.2" id="p-scale-y" value="${obj.mesh.scale.y}">
@@ -498,7 +724,7 @@
             alert("Saved blueprint!");
         };
 
-        /* FIX: COMPREHENSIVE GLOBAL SYSTEM PARSER BLOCK TRANSLATIONS FOR BHTML */
+        /* FIXED: BHTML REGEX MATCHERS PARSED GLOBALLY */
         window.triggerHtmlLivePlaytest = function() {
             const codePayload = document.getElementById('html-textarea-field').value;
             const syntaxStandard = document.getElementById('script-syntax-select').value;
@@ -521,7 +747,7 @@
             document.getElementById('html-playtest-overlay').style.display = 'block';
         };
 
-        /* FIX: DEDICATED INPUT INTERCEPTION PIPELINES FOR TEXT INPUT TO UNLOCK CHAT SENDS */
+        /* ACTIVE GAME PLAYER SIMULATION PIPELINE WITH CHAT FIXES & RESTORED WALKING ANIMATION */
         window.launchActiveGameSimulationInstance = function(gameId, title, creator) {
             document.getElementById('game-client-viewport').style.display = 'block';
             const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
@@ -542,7 +768,7 @@
             window.addEventListener('keydown', handleGameInputKeyDown);
             window.addEventListener('keyup', handleGameInputKeyUp);
 
-            // Clean Chat Send Listener Integration
+            // Clean Chat Send Focus Separation Setup
             const chatInput = document.getElementById('game-chat-input');
             chatInput.onkeydown = (e) => {
                 if(e.key === 'Enter') {
@@ -554,7 +780,7 @@
                     }
                     chatInput.blur();
                 }
-                e.stopPropagation(); // Prevents walking input bugs while typing
+                e.stopPropagation();
             };
 
             animateActiveGameSimulationLoop();
@@ -576,22 +802,42 @@
             if(document.getElementById('game-client-viewport').style.display === 'none') return;
             requestAnimationFrame(animateActiveGameSimulationLoop);
 
-            if(gameActiveState.keys['w']) activePlayerMeshObj.position.z -= 0.12;
-            if(gameActiveState.keys['s']) activePlayerMeshObj.position.z += 0.12;
-            if(gameActiveState.keys['a']) activePlayerMeshObj.position.x -= 0.12;
-            if(gameActiveState.keys['d']) activePlayerMeshObj.position.x += 0.12;
+            let isMoving = false;
+            if(gameActiveState.keys['w']) { activePlayerMeshObj.position.z -= 0.12; isMoving = true; }
+            if(gameActiveState.keys['s']) { activePlayerMeshObj.position.z += 0.12; isMoving = true; }
+            if(gameActiveState.keys['a']) { activePlayerMeshObj.position.x -= 0.12; isMoving = true; }
+            if(gameActiveState.keys['d']) { activePlayerMeshObj.position.x += 0.12; isMoving = true; }
+
+            // Restored Walking Limb Swinging Math Animation Core
+            if(isMoving) {
+                gameActiveState.animationFrame += 0.15;
+                const wave = Math.sin(gameActiveState.animationFrame) * 0.5;
+                activePlayerMeshObj.llNode.rotation.x = wave;
+                activePlayerMeshObj.rlNode.rotation.x = -wave;
+                activePlayerMeshObj.laNode.rotation.x = -wave;
+                activePlayerMeshObj.raNode.rotation.x = wave;
+            } else {
+                activePlayerMeshObj.llNode.rotation.x = 0;
+                activePlayerMeshObj.rlNode.rotation.x = 0;
+                activePlayerMeshObj.laNode.rotation.x = 0;
+                activePlayerMeshObj.raNode.rotation.x = 0;
+            }
 
             updateGameViewportOrbitCamera();
             activeGameRenderer.render(activeGameScene, activeGameCamera);
         }
 
+        window.toggleGameEscMenu = () => {
+            const m = document.getElementById('game-esc-menu');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        };
         window.closeActiveGameSimulationClient = function() {
             document.getElementById('game-client-viewport').style.display = 'none';
         };
 
         window.commitNewGameToCloudRegistry = async function() {
             const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
-            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, iconColor: '#ffea00', htmlScript: "", scriptType: "BHTML", isFeatured: false, isBanned: false });
+            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, htmlScript: "", scriptType: "BHTML", isFeatured: false, isBanned: false });
             document.getElementById('new-game-modal').style.display='none'; renderCreationsLandingDashboard();
         };
 
@@ -607,25 +853,44 @@
             });
         }
 
-        async function syncCatalogMarketplaceUI() {
-            const grid = document.getElementById('catalog-item-list'); grid.innerHTML = '';
-            const snap = await getDocs(collection(db, "catalog"));
-            snap.forEach(d => {
-                const item = d.data(); const card = document.createElement('div'); card.className = 'market-card';
-                card.innerHTML = `<strong>${item.title}</strong><br><button class="btn-action" id="buy-${d.id}">Buy</button>`;
-                grid.appendChild(card);
-            });
-        }
-
         function renderFabricInventoryGrid() {
-            const box = document.getElementById('avatar-inventory-list'); box.innerHTML = '<p>Fabric storage catalog active.</p>';
+            const box = document.getElementById('avatar-inventory-list'); box.innerHTML = '<p>Closet inventory active.</p>';
         }
 
+        /* EXTENDED UN-SIMPLIFIED ADMIN PANEL LOGIC OPERATIONS */
         window.triggerAdminPrompt = function() { if(prompt("Enter Access Pin:") === "080112") switchPage('admin'); };
-        window.commitNewGameToCloudRegistry = async function() {
-            const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
-            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, htmlScript: "", scriptType: "BHTML", isFeatured: false, isBanned: false });
-            document.getElementById('new-game-modal').style.display='none'; renderCreationsLandingDashboard();
+        
+        window.moderateExperience = async function(type) {
+            const gName = document.getElementById('admin-game-name').value.trim();
+            const q = query(collection(db, "games"), where("title", "==", gName));
+            const snap = await getDocs(q);
+            snap.forEach(async (d) => {
+                if(type === 'ban') {
+                    await updateDoc(doc(db, "games", d.id), { isBanned: true }); alert("Game place instance suspended.");
+                } else if(type === 'feature') {
+                    const nextVal = !(d.data().isFeatured);
+                    await updateDoc(doc(db, "games", d.id), { isFeatured: nextVal }); alert(`Game featured status toggled to: ${nextVal}`);
+                }
+            });
+        };
+
+        window.banUserAccountNode = async function() {
+            const target = document.getElementById('admin-target-account').value.trim();
+            const q = query(collection(db, "users"), where("username", "==", target));
+            const snap = await getDocs(q);
+            snap.forEach(async (d) => {
+                await updateDoc(doc(db, "users", d.id), { isBanned: true });
+                alert(`Account profile target node: ${target} suspended successfully.`);
+            });
+        };
+
+        window.mintLimitedCatalogItem = async function() {
+            const title = document.getElementById('admin-ltd-title').value.trim();
+            const color = document.getElementById('admin-ltd-color').value.trim() || "#ff0000";
+            const price = parseInt(document.getElementById('admin-ltd-price').value) || 50;
+            if(!title) return;
+            await addDoc(collection(db, "catalog"), { title, color, price, isLimited: true });
+            alert(`Injected limited asset wrapper: ${title}`);
         };
     </script>
 </body>
