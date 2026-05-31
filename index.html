@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2KBlox - 2012 Retro Game Network</title>
+    <title>2KBlox - Retro Engine Core</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght=700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
@@ -14,16 +13,10 @@
             --retro-bg: #bcd6f7;
             --roblox-red: #e63946;
             --panel-bg: #ffffff;
-            --top-bar-blue: #5b92e5;
         }
         * { box-sizing: border-box; font-family: 'Comic Neue', Arial, sans-serif; font-weight: 700; }
         body, html { margin: 0; padding: 0; background: var(--retro-bg); height: 100%; overflow: hidden; }
 
-        .brand-top-trim {
-            height: 5px;
-            background: #1a4380;
-            width: 100%;
-        }
         header {
             background: linear-gradient(to bottom, #7cb3f5, #3570c5);
             border-bottom: 4px solid #1a4380;
@@ -31,18 +24,16 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
         .header-top-row { display: flex; justify-content: space-between; align-items: center; }
         .logo-2kblox {
-            font-size: 32px; font-style: italic; color: white; letter-spacing: -1px;
-            position: relative;
+            font-size: 32px; font-style: italic; color: white;
             text-shadow: -2px -2px 0 #d12424, 2px -2px 0 #d12424, -2px 2px 0 #d12424, 2px 2px 0 #d12424;
         }
         nav { display: flex; gap: 4px; background: rgba(0,0,0,0.15); padding: 4px; border-radius: 4px; }
         nav button {
             background: #f8f9fa; color: #222; border: 2px solid #777;
-            padding: 5px 12px; cursor: pointer; border-radius: 3px; font-size: 14px;
+            padding: 5px 12px; cursor: pointer; border-radius: 3px;
         }
         nav button.active { background: #ffea00; border-color: #cc9900; }
 
@@ -51,67 +42,53 @@
         .page.active { display: block; }
 
         .auth-container { width: 360px; background: white; margin: 50px auto; padding: 25px; border: 4px solid #3570c5; text-align: center; border-radius: 8px; }
-        input, select, textarea { width: 100%; padding: 8px; margin: 6px 0; border: 2px solid #aaa; border-radius: 4px; background: #fff; }
-        .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; border-radius: 4px; font-size: 15px; text-align: center; }
-        .btn-action:hover { opacity: 0.9; }
-
-        .home-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        .feed-section { background: var(--panel-bg); border: 2px solid #a2bce0; padding: 15px; margin-bottom: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .horizontal-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; min-height: 90px; }
-        .scroller-item { min-width: 120px; max-width: 120px; background: #f0f4f8; border: 2px solid #bcd2ee; padding: 8px; text-align: center; font-size: 13px; border-radius: 4px; cursor: pointer; }
+        .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; border-radius: 4px; }
+        input, select, textarea { width: 100%; padding: 8px; margin: 6px 0; border: 2px solid #aaa; border-radius: 4px; }
 
         .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
-        .badge-limited { position: absolute; top: 5px; right: 5px; background: #ff4500; color: white; padding: 2px 6px; font-size: 10px; border-radius: 3px; border: 1px solid white; }
-        
-        .profile-container-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #9bbce8; }
+        .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; position: relative; }
+        .badge-limited { position: absolute; top: 5px; right: 5px; background: #ff4500; color: white; padding: 2px 6px; font-size: 10px; border-radius: 3px; }
 
-        /* PLAY SCENE OVERLAY STATIONS */
-        #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
-        .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
-        .game-ui-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; pointer-events: auto; font-size: 14px; }
-        
-        .game-chat-box { position: absolute; bottom: 30px; left: 20px; width: 340px; height: 220px; background: rgba(0,0,0,0.5); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; pointer-events: auto; }
-        .game-chat-log { flex: 1; overflow-y: auto; color: #fff; font-family: monospace; font-size: 13px; margin-bottom: 5px; text-shadow: 1px 1px 1px #000; }
-        
-        .game-esc-menu { position: absolute; top: 25%; left: 35%; width: 30%; background: rgba(255,255,255,0.95); border: 4px solid #333; padding: 20px; border-radius: 8px; display: none; pointer-events: auto; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .player-list-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-        .player-list-table th, .player-list-table td { border: 1px solid #ccc; padding: 6px; font-size: 13px; }
-
-        /* STUDIO LAYOUT MODULES */
-        .creation-hub-banner { background: #fff; border: 2px solid #3570c5; padding: 20px; border-radius: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .studio-container { display: flex; width: 100%; height: 100%; background: #222; overflow: hidden; }
-        .studio-sidebar { width: 280px; background: #2d2d2d; color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
-        .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #555; text-align:center; letter-spacing:1px; }
+        /* STUDIO */
+        .studio-container { display: flex; width: 100%; height: 100%; background: #222; }
+        .studio-sidebar { width: 300px; background: #2d2d2d; color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
+        .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; text-align:center; }
         .explorer-tree, .properties-list { flex: 1; overflow-y: auto; padding: 8px; font-family: monospace; font-size: 12px; }
-        .explorer-item { cursor: pointer; padding: 6px 4px; border-radius: 2px; border-bottom: 1px solid #3a3a3a; }
+        .explorer-item { cursor: pointer; padding: 6px 4px; border-bottom: 1px solid #3a3a3a; }
         .explorer-item.selected { background: #007acc; color: white; }
         .prop-group { margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px; }
-        .prop-group label { display: block; color: #aaa; margin-bottom: 3px; font-size: 11px; }
+        .prop-group label { display: block; color: #aaa; font-size: 11px; }
 
         .studio-main-build-zone { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 8px; padding: 5px; border-bottom: 2px solid #222; }
-        .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 5px 10px; cursor: pointer; font-size: 12px; border-radius: 2px; }
+        .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 8px; padding: 5px; }
+        .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 5px 10px; cursor: pointer; }
 
         .code-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; flex-direction: column; }
         #html-textarea-field { width: 100%; flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 15px; background: #1e1e1e; color: #7ec699; border: none; resize: none; }
         .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
 
-        /* ADMIN CONTROL BLOCKS */
-        .admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; padding: 15px 0; }
-        .admin-module-card { background: #1e293b; border: 1px solid #38bdf8; padding: 15px; border-radius: 6px; }
+        /* GAME CLIENT OVERLAYS */
+        #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
+        .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
+        .game-ui-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; pointer-events: auto; }
+        .game-chat-box { position: absolute; bottom: 30px; left: 20px; width: 340px; height: 220px; background: rgba(0,0,0,0.6); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; pointer-events: auto; }
+        .game-chat-log { flex: 1; overflow-y: auto; color: #fff; font-family: monospace; font-size: 13px; margin-bottom: 5px; }
+        .game-esc-menu { position: absolute; top: 25%; left: 35%; width: 30%; background: white; border: 4px solid #333; padding: 20px; border-radius: 8px; display: none; pointer-events: auto; text-align: center; }
+
+        /* ADMIN ACCESS PANEL */
+        .admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 15px 0; }
+        .admin-module-card { background: #1e293b; border: 1px solid #38bdf8; padding: 15px; border-radius: 6px; color: #38bdf8; }
     </style>
 </head>
 <body>
 
-    <div class="brand-top-trim"></div>
     <header>
         <div class="header-top-row">
             <div class="logo-2kblox">2KBLOX</div>
             <div style="display:flex; gap:15px; align-items:center;">
-                <div style="background: white; color: #333; padding: 5px 12px; font-size: 14px; border-radius: 4px; border: 2px solid #1a4380;">💵 <span id="user-tickets">0</span> Tickets</div>
-                <span id="header-username" style="color: white; font-size: 16px; text-shadow: 1px 1px 2px #000;">Guest Node</span>
-                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M19.14,12.94c0.04-.32,.06-.65,.06-1s-0.02-.68-.06-1l2.11-1.65c.19-.15,.24-.42,.12-0.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49,1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.17,4.14,13.93,4,13.68,4h-4c-.25,0-.49,.14-.52,.38l-.38,2.65c-.61,.25-1.17,.59-1.69,.98l-2.49-1c-.23-.09-.49,0-.61,.22l-2,3.46c-.13,.22-.07,.49,.12,.64l2.11,1.65c-.04,.32-.06,.65-.06,1s.02,.68,.06,1l-2.11,1.65c-.19,.15-.24,.42-.12,.64l2,3.46c.12,.22,.39,.3,.61,.22l2.49-1c.52,.4,1.08,.73,1.69,.98l.38,2.65c.03,.24,.27,.41,.52,.41h4c.25,0,.49-.14,.52-.38l.38-2.65c.61-.25,1.17-.59,1.69-.98l2.49,1c.23,.09,.49,0,.61-.22l2-3.46c.12-.22,.07-.49-.12-.64l-2.11-1.65Zm-7.14,2.56c-1.93,0-3.5-1.57-3.5-3.5s1.57-3.5,3.5-3.5,3.5,1.57,3.5,3.5-1.57,3.5-3.5,3.5OZ'/></svg>" class="gear-hidden" onclick="triggerAdminPrompt()">
+                <div style="background: white; color: #333; padding: 5px 12px; border-radius: 4px;">💵 <span id="user-tickets">0</span> Tickets</div>
+                <span id="header-username" style="color: white;">Guest Node</span>
+                <span class="gear-hidden" onclick="triggerAdminPrompt()">⚙️</span>
             </div>
         </div>
         <nav id="main-nav" style="display:none;">
@@ -119,10 +96,7 @@
             <button onclick="switchPage('games-discover')">Games</button>
             <button onclick="switchPage('avatar-editor')">Avatar</button>
             <button onclick="switchPage('marketplace')">Catalog</button>
-            <button onclick="switchPage('forum')">Forum</button>
-            <button onclick="switchPage('groups')">Groups</button>
             <button onclick="switchPage('create-hub')">Create</button>
-            <button onclick="switchPage('profile')">Profiles</button>
         </nav>
     </header>
 
@@ -130,35 +104,27 @@
 
         <div id="page-auth" class="page active">
             <div class="auth-container">
-                <h2 style="color:var(--roblox-red); margin-bottom:15px;">2KBlox Connection</h2>
+                <h2>2KBlox Portal</h2>
                 <input type="email" id="auth-email" placeholder="Email Address">
-                <input type="text" id="auth-user" placeholder="Create Username Handle">
+                <input type="text" id="auth-user" placeholder="Create Username">
                 <input type="password" id="auth-pass" placeholder="Password PIN">
                 <button class="btn-action" onclick="handleAuth('login')">Log In</button>
-                <button class="btn-action" style="background:#007bff; margin-top:6px; border-color:#0062cc;" onclick="handleAuth('signup')">Sign Up Account</button>
+                <button class="btn-action" style="background:#007bff; margin-top:6px; border-color:#0062cc;" onclick="handleAuth('signup')">Sign Up</button>
             </div>
         </div>
 
         <div id="page-home" class="page">
-            <div class="home-layout">
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
                 <div>
-                    <div class="feed-section">
-                        <h3>My Friends List</h3>
-                        <div class="horizontal-scroller" id="home-friends-scroller"></div>
-                    </div>
-                    <div class="feed-section">
-                        <h3>My Recent Experiences</h3>
-                        <div class="horizontal-scroller" id="home-games-scroller"></div>
-                    </div>
-                    <div class="feed-section">
-                        <h3>My Clan Groups</h3>
-                        <div class="horizontal-scroller" id="home-groups-scroller"></div>
+                    <div style="background:white; padding:15px; border-radius:6px; border:2px solid #a2bce0;">
+                        <h3>Active Avatar Layout Canvas</h3>
+                        <div id="home-avatar-canvas" style="height: 350px; background:#b0e0e6; border-radius:4px;"></div>
                     </div>
                 </div>
                 <div>
-                    <div class="feed-section" style="text-align: center;">
-                        <h3>Active Hardware Outfit</h3>
-                        <div id="home-avatar-canvas" style="height: 310px; background:#b0e0e6; border:2px solid #555; border-radius:4px;"></div>
+                    <div style="background:white; padding:15px; border-radius:6px; border:2px solid #a2bce0;">
+                        <h3>User Navigation Shortcuts</h3>
+                        <p>Welcome back to the build terminal network environment.</p>
                     </div>
                 </div>
             </div>
@@ -169,92 +135,31 @@
                 <h2 style="margin-top:0; color: #b8860b;">🌟 Featured Experiences</h2>
                 <div class="item-grid" id="featured-games-list"></div>
             </div>
-            <h2>Active Game Server Instances</h2>
+            <h2>Public Map Servers</h2>
             <div class="item-grid" id="games-market-list"></div>
         </div>
 
         <div id="page-avatar-editor" class="page">
-            <h2>Avatar Customizer Studio</h2>
+            <h2>Avatar Customizer Closet</h2>
             <div style="display:flex; gap:20px; height:500px;">
                 <div id="avatar-3d-canvas" style="width:340px; height:100%; background:#b0e0e6; border:2px solid #555;"></div>
-                <div style="flex:1; background:white; padding:15px; overflow-y:auto; border:2px solid #aaa; border-radius:6px;">
-                    <h3>Inventory Fabrics Storage</h3>
-                    <button class="btn-action" style="width:auto; padding:5px 12px; background:#555; border-color:#444; margin-bottom:10px;" onclick="unequipAllClothing()">Strip All Outfits</button>
+                <div style="flex:1; background:white; padding:15px; overflow-y:auto; border:2px solid #aaa;">
+                    <h3>Inventory Closet</h3>
                     <div class="item-grid" id="avatar-inventory-list"></div>
                 </div>
             </div>
         </div>
 
         <div id="page-marketplace" class="page">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h2>Platform Asset Catalog</h2>
-                <button class="btn-action" style="width:160px;" onclick="document.getElementById('upload-panel').style.display='block'">Upload Clothing</button>
-            </div>
-            <div id="upload-panel" style="background:#fff; padding:15px; border:3px dashed #3570c5; margin-bottom:15px; border-radius:6px; display:none;">
-                <h3>Design Assets Form</h3>
-                <select id="upload-type"><option value="T-Shirt">T-Shirt</option><option value="Leggings">Leggings</option></select>
-                <input type="text" id="upload-title" placeholder="Fabric Asset Name">
-                <input type="text" id="upload-value" placeholder="Color Hex Code (e.g. #ff0000)">
-                <input type="number" id="upload-price" placeholder="Price (Tickets)">
-                <button class="btn-action" onclick="submitCatalogAsset()">Publish To Store Grid</button>
-            </div>
+            <h2>Asset Matrix Shop</h2>
             <div class="item-grid" id="catalog-item-list"></div>
         </div>
 
-        <div id="page-forum" class="page">
-            <h2>Community Bulletin Boards</h2>
-            <div style="background:#fff; padding:15px; border:2px solid #aaa; margin-bottom:20px; border-radius:6px;">
-                <h3>Publish Thread Packet</h3>
-                <input type="text" id="forum-title" placeholder="Thread Subject Heading">
-                <textarea id="forum-body" style="height:80px;" placeholder="Message payload text body..."></textarea>
-                <button class="btn-action" style="width:150px;" onclick="postForumThread()">Post Message</button>
-            </div>
-            <div id="forum-posts-container"></div>
-        </div>
-
-        <div id="page-groups" class="page">
-            <h2>Global Clan Factions</h2>
-            <div style="background:#fff; padding:15px; border:2px solid #aaa; margin-bottom:20px; border-radius:6px;">
-                <h3>Establish Clan Faction</h3>
-                <input type="text" id="group-name-input" placeholder="Unique Faction Cluster Title">
-                <button class="btn-action" style="width:150px;" onclick="createNewClanNode()">Found Group</button>
-            </div>
-            <div class="item-grid" id="groups-container"></div>
-        </div>
-
-        <div id="page-profile" class="page">
-            <div class="profile-container-layout">
-                <div>
-                    <h3 id="prof-username">My User Profile</h3>
-                    <div id="profile-avatar-render" style="height:260px; background:#b0e0e6; border:2px dashed #999; border-radius:4px; margin-bottom:10px;"></div>
-                    <button id="friend-btn" class="btn-action">Send Friend Request</button>
-                    <hr style="margin:15px 0; border-color:#ccc;">
-                    <h4>Search Player Nodes</h4>
-                    <input type="text" id="search-user-input" placeholder="Exact Handle Matcher">
-                    <button class="btn-action" style="background:#007acc; border-color:#005999;" onclick="searchProfileDb()">Query Profile Database</button>
-                </div>
-                <div>
-                    <h3>Published Workspace Modules</h3>
-                    <div id="profile-games-box" class="horizontal-scroller" style="background:#f4f4f4; border:1px solid #ccc; padding:5px; border-radius:4px; margin-bottom:15px;"></div>
-                    
-                    <h3>Verified Network Friendships</h3>
-                    <div id="profile-friends-box" class="horizontal-scroller" style="background:#f4f4f4; border:1px solid #ccc; padding:5px; border-radius:4px; margin-bottom:15px;"></div>
-                    
-                    <h3>Allied Group Clusters</h3>
-                    <div id="profile-groups-box" class="horizontal-scroller" style="background:#f4f4f4; border:1px solid #ccc; padding:5px; border-radius:4px;"></div>
-                </div>
-            </div>
-        </div>
-
         <div id="page-create-hub" class="page">
-            <div class="creation-hub-banner">
-                <div>
-                    <h2 style="margin:0; color:#1a4380;">My Creations Dashboard</h2>
-                    <p style="margin:5px 0 0 0; color:#555;">Manage, save, and construct your interactive virtual server places.</p>
-                </div>
-                <button class="btn-action" style="width:220px; background:#28a745; font-size:16px;" onclick="openCreateNewGameModal()">➕ Create New Place</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h2>Developer Creations Studio</h2>
+                <button class="btn-action" style="width:200px;" onclick="document.getElementById('new-game-modal').style.display='block'">➕ Create New Place</button>
             </div>
-            <h3>Active Project Places</h3>
             <div class="item-grid" id="user-creations-grid"></div>
         </div>
 
@@ -264,28 +169,23 @@
                     <div class="studio-toolbar">
                         <button onclick="spawn3DObject('Part')">🧱 Insert Block</button>
                         <button onclick="spawn3DObject('Sphere')">🔮 Insert Sphere</button>
-                        <button onclick="spawn3DObject('SpawnPoint')">🏁 Insert Spawn</button>
                         <button style="background:#8a2be2;" onclick="openHtmlEditorWindow()">🌐 Script Sandbox Editor</button>
                         <button style="background:var(--roblox-red);" onclick="triggerHtmlLivePlaytest()">▶️ Run Live Playtest</button>
-                        <button style="background:#007acc;" onclick="saveActiveStudioProject()">💾 Save Game Blueprint</button>
-                        <button style="background:#555;" onclick="switchPage('create-hub')">❌ Exit Studio</button>
+                        <button style="background:#007acc;" onclick="saveActiveStudioProject()">💾 Save Blueprint</button>
+                        <button style="background:#555;" onclick="switchPage('create-hub')">❌ Exit</button>
                     </div>
-                    
-                    <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b; position:relative;"></div>
+                    <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b;"></div>
 
                     <div class="code-editor-window" id="html-editor-panel">
-                        <div class="studio-toolbar" style="background:#111; gap:15px;">
+                        <div class="studio-toolbar" style="background:#111;">
                             <span style="color:#fff; margin-left:10px;">Asset Scripting Terminal</span>
-                            <div style="color:white; display:flex; align-items:center; gap:5px; font-size:13px;">
-                                <label for="script-syntax-select">Parsing Standard:</label>
-                                <select id="script-syntax-select" style="width:100px; padding:2px; margin:0; background:#2d2d2d; color:white; border:1px solid #555;">
-                                    <option value="HTML">HTML</option>
-                                    <option value="BHTML">BHTML (Retro)</option>
-                                </select>
-                            </div>
-                            <button style="margin-left:auto; background:#28a745;" onclick="closeHtmlEditorWindow()">Save & Inject Module</button>
+                            <select id="script-syntax-select" style="width:140px; padding:2px; background:#2d2d2d; color:white;">
+                                <option value="BHTML">BHTML (Retro Custom)</option>
+                                <option value="HTML">Standard HTML</option>
+                            </select>
+                            <button style="margin-left:auto; background:#28a745;" onclick="closeHtmlEditorWindow()">Save & Close</button>
                         </div>
-                        <textarea id="html-textarea-field" placeholder=""></textarea>
+                        <textarea id="html-textarea-field" placeholder="Try adding custom elements like: <game_title>Hello World</game_title> or <alert>Caution Node!</alert> or <card><glow>Glow text</glow></card>"></textarea>
                     </div>
                 </div>
 
@@ -298,57 +198,36 @@
             </div>
         </div>
 
-        <div id="new-game-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.3)">
+        <div id="page-admin" class="page" style="background:#0f172a;">
+            <h2 style="color:#38bdf8;">🚨 MASTER SECURITY INFRASTRUCTURE SYSTEM</h2>
+            <div class="admin-dashboard-grid">
+                <div class="admin-module-card">
+                    <h3>Experience Management Engine</h3>
+                    <input type="text" id="admin-game-name" placeholder="Exact Game Title Matcher">
+                    <button class="btn-action" style="background:#eab308; color:#000; border:none; margin-top:5px;" onclick="moderateExperience('feature')">Toggle Featured Space</button>
+                    <button class="btn-action" style="background:#ef4444; color:#fff; border:none; margin-top:5px;" onclick="moderateExperience('ban')">Ban/Remove Game</button>
+                </div>
+                <div class="admin-module-card">
+                    <h3>Profile Access Lockdown</h3>
+                    <input type="text" id="admin-target-account" placeholder="Target Account Username">
+                    <button class="btn-action" style="background:#ef4444; color:#fff; border:none; margin-top:5px;" onclick="banUserAccountNode()">Suspend Profile Access</button>
+                </div>
+                <div class="admin-module-card">
+                    <h3>Inject Limited Store Item</h3>
+                    <input type="text" id="admin-ltd-title" placeholder="Item Name (e.g. Diamond Crown)">
+                    <input type="text" id="admin-ltd-color" placeholder="Hex Color Code (#ff00ff)">
+                    <input type="number" id="admin-ltd-price" placeholder="Ticket Asset Valuation Cost">
+                    <button class="btn-action" style="background:#a855f7; color:#fff; border:none; margin-top:5px;" onclick="mintLimitedCatalogItem()">Inject Limited Matrix Asset</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="new-game-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px;">
             <h3>Initialize New Experience Place</h3>
             <label>Experience Title Handle:</label>
             <input type="text" id="new-game-title-input" value="Untitled Map Instance">
-            <label>Thumbnail Panel Accent Theme Color:</label>
-            <input type="text" id="new-game-theme-color" value="#ffea00">
-            <button class="btn-action" onclick="commitNewGameToCloudRegistry()">Launch Workshop Canvas</button>
+            <button class="btn-action" onclick="commitNewGameToCloudRegistry()">Launch Workspace Canvas</button>
             <button class="btn-action" style="background:#666; border-color:#555; margin-top:6px;" onclick="document.getElementById('new-game-modal').style.display='none'">Cancel</button>
-        </div>
-
-        <div id="page-admin" class="page" style="background:#0f172a; color:#38bdf8; font-family:monospace;">
-            <h2>🚨 MASTER SECURITY SYSTEM ADMINISTRATION ACCESS CONSOLE</h2>
-            <hr style="border-color:#38bdf8;">
-            <div class="admin-dashboard-grid">
-                <div class="admin-module-card">
-                    <h3>Manual Balances Injection</h3>
-                    <input type="text" id="admin-user" placeholder="Target Username Key" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                    <input type="number" id="admin-tix" placeholder="Tickets Absolute Value" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                    <button class="btn-action" style="background:#38bdf8; color:#0f172a; border:none;" onclick="adminMutationOverpass()">Commit Tickets Override</button>
-                </div>
-
-                <div class="admin-module-card">
-                    <h3>Experience Management Engine</h3>
-                    <input type="text" id="admin-game-name" placeholder="Exact Game Title Matcher" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                    <div style="display:flex; gap:5px; margin-top:5px;">
-                        <button class="btn-action" style="background:#eab308; color:#000; border:none;" onclick="moderateExperience('feature')">Toggle Feature</button>
-                        <button class="btn-action" style="background:#ef4444; color:#fff; border:none;" onclick="moderateExperience('ban')">Ban/Remove Game</button>
-                    </div>
-                </div>
-
-                <div class="admin-module-card">
-                    <h3>Profile Access Lockdown</h3>
-                    <input type="text" id="admin-target-account" placeholder="Target Account Username" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                    <button class="btn-action" style="background:#ef4444; color:#fff; border:none; margin-top:5px;" onclick="banUserAccountNode()">Suspend Profile Access</button>
-                </div>
-
-                <div class="admin-module-card">
-                    <h3>Inject Limited Store Item</h3>
-                    <input type="text" id="admin-ltd-title" placeholder="Item Name (e.g. Iron Crown)" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                    <input type="text" id="admin-ltd-color" placeholder="Hex Code Value (e.g. #ffd700)" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                    <input type="number" id="admin-ltd-price" placeholder="Ticket Valuation Cost" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                    <select id="admin-ltd-type" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;"><option value="T-Shirt">T-Shirt</option><option value="Leggings">Leggings</option></select>
-                    <button class="btn-action" style="background:#a855f7; color:#fff; border:none; margin-top:5px;" onclick="mintLimitedCatalogItem()">Inject Limited Matrix Asset</button>
-                </div>
-
-                <div class="admin-module-card">
-                    <h3>System Broadcast Ticker</h3>
-                    <input type="text" id="admin-system-alert" placeholder="System alert notice tracking string..." style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                    <button class="btn-action" style="background:#06b6d4; color:#fff; border:none; margin-top:5px;" onclick="pushGlobalSystemTicker()">Broadcast System Ticker</button>
-                </div>
-            </div>
         </div>
 
     </div>
@@ -356,32 +235,24 @@
     <div id="game-client-viewport">
         <div id="game-3d-scene-box" style="width:100%; height:100%;"></div>
         <div class="game-ui-overlay">
-            <div style="display:flex; gap:10px;">
-                <button class="game-ui-btn" onclick="toggleGameEscMenu()">Menu Panel [ESC]</button>
-            </div>
-
+            <button class="game-ui-btn" onclick="toggleGameEscMenu()">Menu Panel [ESC]</button>
+            
             <div class="game-chat-box">
                 <div class="game-chat-log" id="game-chat-display"></div>
-                <input type="text" id="game-chat-input" placeholder="Type message and press Enter..." style="background:rgba(255,255,255,0.9); margin:0;" onkeydown="handleGameChatKeyDown(event)">
+                <input type="text" id="game-chat-input" placeholder="Press Enter or click here to chat..." style="background:rgba(255,255,255,0.95); margin:0;">
             </div>
 
             <div class="game-esc-menu" id="game-esc-menu">
                 <h2>Game Session Panel</h2>
-                <hr>
-                <h4>Players In This Server Instance</h4>
-                <table class="player-list-table">
-                    <thead><tr><th>Player Active Node</th><th>Status Latency</th></tr></thead>
-                    <tbody id="game-player-list-rows"></tbody>
-                </table>
-                <button class="btn-action" style="background:var(--roblox-red); border-color:#bd2130; margin-top:15px;" onclick="closeActiveGameSimulationClient()">Leave Game Instance</button>
+                <button class="btn-action" style="background:var(--roblox-red);" onclick="closeActiveGameSimulationClient()">Leave Game Instance</button>
             </div>
         </div>
     </div>
 
     <div id="html-playtest-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:white; z-index:9999; padding:20px; overflow:auto;">
-        <div style="padding:10px; background:#eee; border-bottom:1px solid #ccc; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
-            <strong id="playtest-header-title">Live Rendering Sandbox Playtest</strong>
-            <button class="btn-action" style="width:120px; background:var(--roblox-red);" onclick="document.getElementById('html-playtest-overlay').style.display='none'">Stop Engine</button>
+        <div style="padding:10px; background:#eee; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <strong id="playtest-header-title">Rendering Sandbox Instance Output</strong>
+            <button class="btn-action" style="width:120px; background:var(--roblox-red);" onclick="document.getElementById('html-playtest-overlay').style.display='none'">Stop Runtime</button>
         </div>
         <div id="html-playtest-render-zone"></div>
     </div>
@@ -389,7 +260,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, arrayUnion, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBl_E7sYlhIjLS4Yty-mf8-vu6vOImTiPc",
@@ -397,8 +268,7 @@
             projectId: "kblox-51f30",
             storageBucket: "kblox-51f30.firebasestorage.app",
             messagingSenderId: "1045873411005",
-            appId: "1:1045873411005:web:1839a3ba9b7d817f6748d4",
-            measurementId: "G-TKY34XVXV0"
+            appId: "1:1045873411005:web:1839a3ba9b7d817f6748d4"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -420,20 +290,14 @@
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
             const username = document.getElementById('auth-user').value.trim();
-            if(!email || !pass) return alert("Please fill operational credentials cleanly.");
+            if(!email || !pass) return alert("Credentials required.");
             try {
                 if(type === 'signup') {
                     if(!username) return alert("Username required.");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 50, inventory: [], friends: [], groups: [], activeOutfit: { shirt: '#e63946', leggings: '#1d3557' }, isBanned: false });
+                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 100, inventory: [], activeOutfit: { shirt: '#e63946', leggings: '#1d3557' }, isBanned: false });
                 } else {
-                    const loginRes = await signInWithEmailAndPassword(auth, email, pass);
-                    const checker = await getDoc(doc(db, "users", loginRes.user.uid));
-                    if(checker.exists() && checker.data().isBanned) {
-                        alert("This user identity profile node has been suspended.");
-                        auth.signOut();
-                        location.reload();
-                    }
+                    await signInWithEmailAndPassword(auth, email, pass);
                 }
             } catch(e) { alert(e.message); }
         };
@@ -441,11 +305,7 @@
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 const snap = await getDoc(doc(db, "users", u.uid));
-                if(snap.exists() && snap.data().isBanned) {
-                    alert("This user profile is banned.");
-                    auth.signOut();
-                    return;
-                }
+                if(snap.exists() && snap.data().isBanned) { alert("Banned profile node."); auth.signOut(); return; }
                 localUserDoc = { uid: u.uid, ...snap.data() };
                 document.getElementById('page-auth').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
@@ -457,189 +317,86 @@
 
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.querySelectorAll('#main-nav button').forEach(b => b.classList.remove('active'));
             const target = document.getElementById(`page-${p}`);
             if(target) target.classList.add('active');
 
-            if(p === 'home') syncHomeFeedDashboardModule();
+            if(p === 'home') init3DAvatarViewerCanvas('home-avatar-canvas', false);
             if(p === 'avatar-editor') init3DAvatarViewerCanvas('avatar-3d-canvas', true);
             if(p === 'marketplace') syncCatalogMarketplaceUI();
-            if(p === 'forum') syncForumDisplayPayload();
-            if(p === 'groups') syncGroupsDisplayPayload();
             if(p === 'games-discover') syncGamesDiscoverGrid();
             if(p === 'create-hub') renderCreationsLandingDashboard();
-            if(p === 'profile') loadTargetProfileView(localUserDoc.username);
         };
 
-        // --- RIG TRANSFORMATION & OFFSET SYSTEM ---
+        /* FIX: TRACK TWO LEGS SEPARATELY WITHOUT DUPLICITY PIVOT OVERWRITING */
         function generateRigK6ComplexMesh(shirt, pants) {
             const group = new THREE.Group();
-            const sMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
+            const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
             const shirtMat = new THREE.MeshLambertMaterial({ color: shirt || 0xe63946 });
             const pantsMat = new THREE.MeshLambertMaterial({ color: pants || 0x1d3557 });
 
-            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), sMat); head.position.y = 3.4; group.add(head);
+            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), skinMat); head.position.y = 3.4; group.add(head);
             const torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.7), shirtMat); torso.position.y = 2.0; group.add(torso);
             
-            const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), sMat); la.position.set(-1.0, 2.0, 0); group.add(la);
-            const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), sMat); ra.position.set(1.0, 2.0, 0); group.add(ra);
+            const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); la.position.set(-1.0, 2.0, 0); group.add(la);
+            const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); ra.position.set(1.0, 2.0, 0); group.add(ra);
             
-            // Re-anchored leg transforms further down to avoid torso clipping spaces entirely
+            // Left Leg Setup
             const llPivot = new THREE.Group(); llPivot.position.set(-0.35, 1.1, 0);
-            const ll = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); ll.position.y = -0.7; llPivot.add(ll);
-            group.add(llPivot);
+            const ll = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.8, 0.48), pantsMat); ll.position.y = -0.7; 
+            llPivot.add(ll); group.add(llPivot);
             
+            // Right Leg Setup Fixed (No nested parent call)
             const rlPivot = new THREE.Group(); rlPivot.position.set(0.35, 1.1, 0);
-            const rl = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); rl.position.y = -0.7; rlPivot.add(rlPivot);
-            group.add(rlPivot);
+            const rl = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.8, 0.48), pantsMat); rl.position.y = -0.7; 
+            rlPivot.add(rl); group.add(rlPivot);
             
             group.laNode = la; group.raNode = ra; group.llNode = llPivot; group.rlNode = rlPivot;
             return group;
         }
 
         function init3DAvatarViewerCanvas(id, bindControls) {
-            const box = document.getElementById(id); box.innerHTML = '';
+            const box = document.getElementById(id); if(!box) return; box.innerHTML = '';
             const scene = new THREE.Scene(); scene.background = new THREE.Color(0xb0e0e6);
             const camera = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0x777777));
+            scene.add(new THREE.AmbientLight(0x888888));
             const l = new THREE.DirectionalLight(0xffffff, 1.0); l.position.set(5, 10, 5); scene.add(l);
 
             const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
             const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings); scene.add(rig);
-            rig.position.y = -1.5;
-            camera.position.set(0, 0, 5.5); camera.lookAt(0, -0.2, 0);
+            rig.position.y = -1.5; camera.position.set(0, 0, 5.5); camera.lookAt(0, -0.2, 0);
 
-            function loop() { requestAnimationFrame(loop); rig.rotation.y += 0.012; renderer.render(scene, camera); }
+            function loop() { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); }
             loop();
-
             if(bindControls) renderFabricInventoryGrid();
         }
-
-        window.loadTargetProfileView = async function(username) {
-            document.getElementById('prof-username').textContent = username;
-            const box = document.getElementById('profile-avatar-render'); box.innerHTML = '';
-            const s = new THREE.Scene(); s.background = new THREE.Color(0xb0e0e6);
-            const c = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
-            const r = new THREE.WebGLRenderer({ antialias: true }); r.setSize(box.clientWidth, box.clientHeight); box.appendChild(r.domElement);
-            s.add(new THREE.AmbientLight(0x888888)); const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(2,5,2); s.add(dl);
-            
-            const uQ = query(collection(db,"users"), where("username","==",username));
-            const uSnap = await getDocs(uQ);
-            let activeOutfit = { shirt: '#e63946', leggings: '#1d3557' };
-            let targetFriendList = [];
-
-            if(!uSnap.empty) { 
-                uSnap.forEach(d=> { 
-                    if(d.data().activeOutfit) activeOutfit = d.data().activeOutfit; 
-                    if(d.data().friends) targetFriendList = d.data().friends;
-                }); 
-            }
-            
-            const rig = generateRigK6ComplexMesh(activeOutfit.shirt, activeOutfit.leggings); s.add(rig);
-            rig.position.y = -1.5;
-            c.position.set(0,0,5.5); c.lookAt(0,-0.2,0);
-            function pLoop() { requestAnimationFrame(pLoop); rig.rotation.y += 0.008; r.render(s, c); }
-            pLoop();
-
-            const fBox = document.getElementById('profile-friends-box'); fBox.innerHTML = '';
-            const gBox = document.getElementById('profile-games-box'); gBox.innerHTML = '';
-            const grBox = document.getElementById('profile-groups-box'); grBox.innerHTML = '';
-
-            if(targetFriendList.length > 0) {
-                targetFriendList.forEach(f => { fBox.innerHTML += `<div class="scroller-item" onclick="loadTargetProfileView('${f}')">👤 <b>${f}</b></div>`; });
-            } else { fBox.innerHTML = '<div class="scroller-item">No Friends</div>'; }
-
-            const gamesSnap = await getDocs(query(collection(db,"games"), where("creator","==",username)));
-            if(gamesSnap.empty) { gBox.innerHTML = '<div class="scroller-item">No Games</div>'; }
-            else { gamesSnap.forEach(doc => { gBox.innerHTML += `<div class="scroller-item" style="background:${doc.data().iconColor || '#f0f4f8'}">🎮 <b>${doc.data().title}</b></div>`; }); }
-
-            const groupsSnap = await getDocs(collection(db,"groups"));
-            let gCount = 0;
-            groupsSnap.forEach(doc => {
-                if(doc.data().members && doc.data().members.includes(username)) {
-                    grBox.innerHTML += `<div class="scroller-item" style="background:#e3f2fd;">🏳️ <b>${doc.data().name}</b></div>`; gCount++;
-                }
-            });
-            if(gCount===0) grBox.innerHTML = '<div class="scroller-item">No Groups</div>';
-
-            const fBtn = document.getElementById('friend-btn');
-            if(username === localUserDoc.username) { fBtn.style.display = 'none'; } 
-            else {
-                fBtn.style.display = 'block'; fBtn.textContent = `Add ${username}`;
-                fBtn.onclick = async () => {
-                    await updateDoc(doc(db,"users", localUserDoc.uid), { friends: arrayUnion(username) });
-                    alert("Added friend successfully!");
-                };
-            }
-        };
-
-        async function syncHomeFeedDashboardModule() {
-            init3DAvatarViewerCanvas('home-avatar-canvas', false);
-            const fC = document.getElementById('home-friends-scroller'); fC.innerHTML = '';
-            if(!localUserDoc.friends || localUserDoc.friends.length===0){ fC.innerHTML='<div class="scroller-item">No friends.</div>'; }
-            else { localUserDoc.friends.forEach(f=>{ fC.innerHTML+=`<div class="scroller-item" onclick="loadTargetProfileView('${f}')">👤 <b>${f}</b><br><small style="color:green">● Active</small></div>`; }); }
-
-            const gC = document.getElementById('home-games-scroller'); gC.innerHTML = '';
-            const gSnap = await getDocs(query(collection(db,"games"), where("creator","==",localUserDoc.username)));
-            if(gSnap.empty){ gC.innerHTML='<div class="scroller-item">No places found.</div>'; }
-            else { gSnap.forEach(d=>{ gC.innerHTML+=`<div class="scroller-item" style="background:${d.data().iconColor || '#fff7c2'}">🎮 <b>${d.data().title}</b></div>`; }); }
-
-            const clC = document.getElementById('home-groups-scroller'); clC.innerHTML = '';
-            const clSnap = await getDocs(collection(db,"groups"));
-            let ct=0; clSnap.forEach(d=>{
-                if(d.data().members && d.data().members.includes(localUserDoc.username)) {
-                    clC.innerHTML+=`<div class="scroller-item" style="background:#e3f2fd;">🏳️ <b>${d.data().name}</b></div>`; ct++;
-                }
-            });
-            if(ct===0) clC.innerHTML='<div class="scroller-item">No groups joined.</div>';
-        }
-
-        window.openCreateNewGameModal = function() { document.getElementById('new-game-modal').style.display='block'; };
-        
-        window.commitNewGameToCloudRegistry = async function() {
-            const title = document.getElementById('new-game-title-input').value.trim();
-            const color = document.getElementById('new-game-theme-color').value.trim() || '#ffea00';
-            if(!title) return alert("Title required.");
-
-            const docRef = await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, iconColor: color, time: Date.now(), htmlScript: "", scriptType: "HTML", isFeatured: false, isBanned: false });
-            document.getElementById('new-game-modal').style.display='none';
-            launchStudioDevelopmentInstance(docRef.id, title);
-        };
 
         async function renderCreationsLandingDashboard() {
             const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
             const q = query(collection(db, "games"), where("creator", "==", localUserDoc.username));
             const snap = await getDocs(q);
-            
-            if(snap.empty) { grid.innerHTML = "<p style='grid-column: 1/-1;'>You haven't built any custom places yet. Click 'Create New Place' to start!</p>"; return; }
-            
             snap.forEach(d => {
-                const data = d.data();
-                if(data.isBanned) return;
+                const data = d.data(); if(data.isBanned) return;
                 const card = document.createElement('div'); card.className = 'market-card';
                 card.innerHTML = `
-                    <div style="background:${data.iconColor || '#555'}; height:75px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:white;">🎮 Slot</div>
-                    <div style="margin-top:6px;"><strong>${data.title}</strong></div>
-                    <button class="btn-action" id="edit-studio-${d.id}" style="padding:4px; margin-top:5px; font-size:13px; background:#007acc; border-color:#005999;">Open in Studio</button>
+                    <div style="background:#555; height:75px; color:white; display:flex; align-items:center; justify-content:center;">🎮 Studio Scene</div>
+                    <div><strong>${data.title}</strong></div>
+                    <button class="btn-action" style="padding:4px; margin-top:5px; background:#007acc;" onclick="launchStudioDevelopmentInstance('${d.id}','${data.title}')">Open Engine</button>
                 `;
                 grid.appendChild(card);
-                document.getElementById(`edit-studio-${d.id}`).onclick = () => launchStudioDevelopmentInstance(d.id, data.title);
             });
         }
 
-        async function launchStudioDevelopmentInstance(gameId, title) {
-            currentlyEditingGameId = gameId;
-            switchPage('studio');
-            
-            const gameSnap = await getDoc(doc(db, "games", gameId));
-            if(gameSnap.exists()) {
-                const gData = gameSnap.data();
-                document.getElementById('html-textarea-field').value = gData.htmlScript || "";
-                document.getElementById('script-syntax-select').value = gData.scriptType || "HTML";
-            }
+        function launchStudioDevelopmentInstance(gameId, title) {
+            currentlyEditingGameId = gameId; switchPage('studio');
+            getDoc(doc(db, "games", gameId)).then(snap => {
+                if(snap.exists()) {
+                    document.getElementById('html-textarea-field').value = snap.data().htmlScript || "";
+                    document.getElementById('script-syntax-select').value = snap.data().scriptType || "BHTML";
+                }
+            });
 
             const box = document.getElementById('studio-3d-canvas'); box.innerHTML = '';
             studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x222222);
@@ -649,7 +406,6 @@
 
             studioScene.add(new THREE.GridHelper(50, 50, 0xffffff, 0x444444));
             const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10,30,15); studioScene.add(dl);
-
             updateStudioOrbitCameraPositionTransform();
 
             box.addEventListener('mousedown', (e) => { activeStudioControls.isTargetDragging = true; activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY; });
@@ -657,17 +413,13 @@
                 if(!activeStudioControls.isTargetDragging) return;
                 let deltaX = e.clientX - activeStudioControls.prevX; let deltaY = e.clientY - activeStudioControls.prevY;
                 activeStudioControls.theta -= deltaX * 0.007; activeStudioControls.phi += deltaY * 0.007;
-                activeStudioControls.phi = Math.max(0.1, Math.min(Math.PI - 0.1, activeStudioControls.phi));
                 activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY;
                 updateStudioOrbitCameraPositionTransform();
             });
             window.addEventListener('mouseup', () => activeStudioControls.isTargetDragging = false);
-            box.addEventListener('wheel', (e) => { activeStudioControls.radius += e.deltaY * 0.02; activeStudioControls.radius = Math.max(5, Math.min(60, activeStudioControls.radius)); updateStudioOrbitCameraPositionTransform(); }, { passive: true });
 
             function loop() { if(document.getElementById('page-studio').classList.contains('active')) requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); }
-            loop();
-            objectsMatrix = [];
-            renderExplorerStudioHierarchy();
+            loop(); objectsMatrix = []; renderExplorerStudioHierarchy();
         }
 
         function updateStudioOrbitCameraPositionTransform() {
@@ -680,13 +432,10 @@
         window.spawn3DObject = function(type) {
             let mesh; const mat = new THREE.MeshLambertMaterial({ color: 0xcccccc });
             if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), mat);
-            else if(type === 'SpawnPoint') mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 0.2, 4), new THREE.MeshLambertMaterial({ color: 0x00ff00 }));
             else mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mat);
+            mesh.position.set(0, 1, 0); studioScene.add(mesh);
 
-            mesh.position.set((Math.random()-0.5)*12, 1, (Math.random()-0.5)*12);
-            studioScene.add(mesh);
-
-            objectsMatrix.push({ id: "node_"+Date.now(), name: `Workspace_${type}`, type, mesh });
+            objectsMatrix.push({ id: "node_"+Date.now(), name: `Part_${type}`, type, mesh });
             renderExplorerStudioHierarchy();
         };
 
@@ -700,33 +449,27 @@
             });
         }
 
-        // --- MANAGE EXTENDED TRANSFORMS MATRIX (MOVE, ROTATE, SCALE) ---
+        /* FIX: ASSIGN REALTIME MUTATION CONTEXTS TO MOVE, ROTATE, SCALE INSTANTLY */
         function openPropertiesInspector() {
             const win = document.getElementById('properties-window'); const obj = objectsMatrix.find(o => o.id === selectedObjectId);
             if(!obj) return;
             win.innerHTML = `
-                <div class="prop-group">
-                    <label>Label Identification Name</label>
-                    <input type='text' id='p-name' value='${obj.name}'>
-                </div>
-                <div class="prop-group">
-                    <label>Position Offset Vector (X, Y, Z)</label>
+                <div class="prop-group"><label>Label Identification Name</label><input type='text' id='p-name' value='${obj.name}'></div>
+                <div class="prop-group"><label>Position Vector (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
                         <input type="number" step="0.5" id="p-pos-x" value="${obj.mesh.position.x}">
                         <input type="number" step="0.5" id="p-pos-y" value="${obj.mesh.position.y}">
                         <input type="number" step="0.5" id="p-pos-z" value="${obj.mesh.position.z}">
                     </div>
                 </div>
-                <div class="prop-group">
-                    <label>Rotation Radian Vector (X, Y, Z)</label>
+                <div class="prop-group"><label>Rotation Radian Vector (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
                         <input type="number" step="0.1" id="p-rot-x" value="${obj.mesh.rotation.x}">
                         <input type="number" step="0.1" id="p-rot-y" value="${obj.mesh.rotation.y}">
                         <input type="number" step="0.1" id="p-rot-z" value="${obj.mesh.rotation.z}">
                     </div>
                 </div>
-                <div class="prop-group">
-                    <label>Scale Boundaries Vector (X, Y, Z)</label>
+                <div class="prop-group"><label>Scale Vector (X, Y, Z)</label>
                     <div style="display:flex; gap:3px;">
                         <input type="number" step="0.2" id="p-scale-x" value="${obj.mesh.scale.x}">
                         <input type="number" step="0.2" id="p-scale-y" value="${obj.mesh.scale.y}">
@@ -737,53 +480,50 @@
             
             document.getElementById('p-name').onchange = (e) => { obj.name = e.target.value; renderExplorerStudioHierarchy(); };
             
-            const syncTransforms = () => {
-                obj.mesh.position.set(parseFloat(document.getElementById('p-pos-x').value), parseFloat(document.getElementById('p-pos-y').value), parseFloat(document.getElementById('p-pos-z').value));
-                obj.mesh.rotation.set(parseFloat(document.getElementById('p-rot-x').value), parseFloat(document.getElementById('p-rot-y').value), parseFloat(document.getElementById('p-rot-z').value));
-                obj.mesh.scale.set(parseFloat(document.getElementById('p-scale-x').value), parseFloat(document.getElementById('p-scale-y').value), parseFloat(document.getElementById('p-scale-z').value));
+            const updateSelectedObjectGeometry = () => {
+                obj.mesh.position.set(parseFloat(document.getElementById('p-pos-x').value)||0, parseFloat(document.getElementById('p-pos-y').value)||0, parseFloat(document.getElementById('p-pos-z').value)||0);
+                obj.mesh.rotation.set(parseFloat(document.getElementById('p-rot-x').value)||0, parseFloat(document.getElementById('p-rot-y').value)||0, parseFloat(document.getElementById('p-rot-z').value)||0);
+                obj.mesh.scale.set(parseFloat(document.getElementById('p-scale-x').value)||1, parseFloat(document.getElementById('p-scale-y').value)||1, parseFloat(document.getElementById('p-scale-z').value)||1);
             };
 
             ['p-pos-x','p-pos-y','p-pos-z','p-rot-x','p-rot-y','p-rot-z','p-scale-x','p-scale-y','p-scale-z'].forEach(id => {
-                document.getElementById(id).addEventListener('input', syncTransforms);
+                document.getElementById(id).addEventListener('input', updateSelectedObjectGeometry);
             });
         }
 
         window.openHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='flex'; };
         window.closeHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='none'; };
-        
         window.saveActiveStudioProject = async function() {
-            if(!currentlyEditingGameId) return;
-            const codePayload = document.getElementById('html-textarea-field').value;
-            const syntaxStandard = document.getElementById('script-syntax-select').value;
-            await updateDoc(doc(db, "games", currentlyEditingGameId), { htmlScript: codePayload, scriptType: syntaxStandard });
-            alert("Game workspace blueprint and code tracks successfully synchronized!");
+            await updateDoc(doc(db, "games", currentlyEditingGameId), { htmlScript: document.getElementById('html-textarea-field').value, scriptType: document.getElementById('script-syntax-select').value });
+            alert("Saved blueprint!");
         };
 
-        // --- FULLY SYSTEMIZED RETRO BHTML PARSER BLOCKS ---
+        /* FIX: COMPREHENSIVE GLOBAL SYSTEM PARSER BLOCK TRANSLATIONS FOR BHTML */
         window.triggerHtmlLivePlaytest = function() {
             const codePayload = document.getElementById('html-textarea-field').value;
             const syntaxStandard = document.getElementById('script-syntax-select').value;
-            
-            document.getElementById('playtest-header-title').textContent = `Live Rendering Sandbox Playtest (${syntaxStandard} Engine Mode)`;
+            const zone = document.getElementById('html-playtest-render-zone');
             
             if(syntaxStandard === "BHTML") {
-                let renderedBhtml = codePayload
-                    .replace(/<game_title>/g, "<h1 style='color: #1a4380; font-family: Comic Neue; font-size: 28px; text-decoration: underline;'>🎮 Retro Server Terminal Instance</h1>")
-                    .replace(/<glow>/g, "<span style='text-shadow: 0 0 12px #ff4500, 0 0 4px #ffea00; color: #fff; font-weight:900;'>")
+                let parsed = codePayload
+                    .replace(/<game_title>/g, "<h1 style='color: #1a4380; font-size: 28px; text-decoration: underline;'>🎮 Retro Server Terminal Instance</h1>")
+                    .replace(/<\/game_title>/g, "")
+                    .replace(/<glow>/g, "<span style='text-shadow: 0 0 12px #ff4500, 0 0 4px #ffea00; color: #fff; font-weight:900; background:#333; padding:2px;'>")
                     .replace(/<\/glow>/g, "</span>")
-                    .replace(/<card>/g, "<div style='background: #fff; border: 3px double #3570c5; padding: 12px; border-radius: 6px; box-shadow: 3px 3px 0px rgba(0,0,0,0.2); margin: 8px 0;'>")
+                    .replace(/<card>/g, "<div style='background: #fff; border: 3px double #3570c5; padding: 12px; border-radius: 6px; margin: 8px 0;'>")
                     .replace(/<\/card>/g, "</div>")
-                    .replace(/<alert>/g, "<div style='background: #ffea00; border: 2px dashed red; padding: 8px; color: black; font-family: monospace; text-align: center;'>⚠️ SYSTEM NOTICE: ")
+                    .replace(/<alert>/g, "<div style='background: #ffea00; border: 2px dashed red; padding: 8px; color: black;'>⚠️ SYSTEM NOTICE: ")
                     .replace(/<\/alert>/g, "</div>");
-                document.getElementById('html-playtest-render-zone').innerHTML = renderedBhtml || "<p>Empty BHTML script footprint.</p>";
+                zone.innerHTML = parsed;
             } else {
-                document.getElementById('html-playtest-render-zone').innerHTML = codePayload || "<p>Empty HTML script footprint.</p>";
+                zone.innerHTML = codePayload;
             }
             document.getElementById('html-playtest-overlay').style.display = 'block';
         };
 
-        window.launchActiveGameSimulationInstance = async function(gameId, title, creator) {
-            const vp = document.getElementById('game-client-viewport'); vp.style.display = 'block';
+        /* FIX: DEDICATED INPUT INTERCEPTION PIPELINES FOR TEXT INPUT TO UNLOCK CHAT SENDS */
+        window.launchActiveGameSimulationInstance = function(gameId, title, creator) {
+            document.getElementById('game-client-viewport').style.display = 'block';
             const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
             
             activeGameScene = new THREE.Scene(); activeGameScene.background = new THREE.Color(0xb0e0e6);
@@ -791,320 +531,101 @@
             activeGameRenderer = new THREE.WebGLRenderer({ antialias: true });
             activeGameRenderer.setSize(window.innerWidth, window.innerHeight); box.appendChild(activeGameRenderer.domElement);
 
-            activeGameScene.add(new THREE.AmbientLight(0x666666));
-            const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(20,40,20); activeGameScene.add(dl);
-            activeGameScene.add(new THREE.GridHelper(100, 100, 0xffffff, 0x888888));
-
-            const floor = new THREE.Mesh(new THREE.BoxGeometry(100, 0.5, 100), new THREE.MeshLambertMaterial({ color: 0x3a5fcd }));
-            floor.position.y = -0.25; activeGameScene.add(floor);
+            activeGameScene.add(new THREE.AmbientLight(0xaaaaaa));
+            activeGameScene.add(new THREE.GridHelper(100, 100));
 
             const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
-            activePlayerMeshObj = generateRigK6ComplexMesh(fit.shirt, fit.leggings);
-            activeGameScene.add(activePlayerMeshObj);
-            activePlayerMeshObj.position.set(0, 0, 0);
+            activePlayerMeshObj = generateRigK6ComplexMesh(fit.shirt, fit.leggings); activeGameScene.add(activePlayerMeshObj);
 
             updateGameViewportOrbitCamera();
-
-            const rows = document.getElementById('game-player-list-rows');
-            rows.innerHTML = `<tr><td>${localUserDoc.username} [You]</td><td style="color:green">Server Host</td></tr><tr><td>${creator}</td><td>Developer</td></tr>`;
-            document.getElementById('game-chat-display').innerHTML = `<div style="color:#ffea00;">[System]: Teleported to ${title}.</div>`;
 
             window.addEventListener('keydown', handleGameInputKeyDown);
             window.addEventListener('keyup', handleGameInputKeyUp);
 
-            box.addEventListener('mousedown', (e) => { if(e.button === 2 || e.button === 0) { gameCameraControls.isDragging = true; gameCameraControls.prevX = e.clientX; gameCameraControls.prevY = e.clientY; } });
-            window.addEventListener('mousemove', (e) => {
-                if(!gameCameraControls.isDragging) return;
-                let deltaX = e.clientX - gameCameraControls.prevX; let deltaY = e.clientY - gameCameraControls.prevY;
-                gameCameraControls.theta -= deltaX * 0.007; gameCameraControls.phi += deltaY * 0.007;
-                gameCameraControls.phi = Math.max(0.1, Math.min(Math.PI/2 - 0.05, gameCameraControls.phi));
-                gameCameraControls.prevX = e.clientX; gameCameraControls.prevY = e.clientY;
-            });
-            window.addEventListener('mouseup', () => gameCameraControls.isDragging = false);
-            box.addEventListener('contextmenu', (e) => e.preventDefault());
+            // Clean Chat Send Listener Integration
+            const chatInput = document.getElementById('game-chat-input');
+            chatInput.onkeydown = (e) => {
+                if(e.key === 'Enter') {
+                    const text = chatInput.value.trim();
+                    if(text) {
+                        const log = document.getElementById('game-chat-display');
+                        log.innerHTML += `<div><b>${localUserDoc.username}</b>: ${text}</div>`;
+                        log.scrollTop = log.scrollHeight; chatInput.value = '';
+                    }
+                    chatInput.blur();
+                }
+                e.stopPropagation(); // Prevents walking input bugs while typing
+            };
 
             animateActiveGameSimulationLoop();
         };
 
         function updateGameViewportOrbitCamera() {
             if(!activePlayerMeshObj) return;
-            const targetX = activePlayerMeshObj.position.x;
-            const targetY = activePlayerMeshObj.position.y + 2.5;
-            const targetZ = activePlayerMeshObj.position.z;
-
-            activeGameCamera.position.x = targetX + gameCameraControls.radius * Math.sin(gameCameraControls.phi) * Math.sin(gameCameraControls.theta);
-            activeGameCamera.position.y = targetY + gameCameraControls.radius * Math.cos(gameCameraControls.phi);
-            activeGameCamera.position.z = targetZ + gameCameraControls.radius * Math.sin(gameCameraControls.phi) * Math.cos(gameCameraControls.theta);
-            activeGameCamera.lookAt(targetX, targetY, targetZ);
+            activeGameCamera.position.set(activePlayerMeshObj.position.x, activePlayerMeshObj.position.y + 4, activePlayerMeshObj.position.z + 10);
+            activeGameCamera.lookAt(activePlayerMeshObj.position);
         }
 
         function handleGameInputKeyDown(e) { 
             if(document.activeElement === document.getElementById('game-chat-input')) return;
             gameActiveState.keys[e.key.toLowerCase()] = true; 
-            if(e.key === 'Escape') toggleGameEscMenu(); 
-            if(e.key === '/' || e.key === 't') {
-                e.preventDefault();
-                document.getElementById('game-chat-input').focus();
-            }
-            if(e.key === ' ' && !gameActiveState.isJumping) {
-                gameActiveState.velY = 0.22; gameActiveState.isJumping = true;
-            }
         }
         function handleGameInputKeyUp(e) { gameActiveState.keys[e.key.toLowerCase()] = false; }
 
-        function handleGameChatKeyDown(e) {
-            if(e.key === 'Enter') {
-                const box = document.getElementById('game-chat-input'); const text = box.value.trim(); 
-                if(text) {
-                    const log = document.getElementById('game-chat-display');
-                    log.innerHTML += `<div><b>${localUserDoc.username}</b>: ${text}</div>`;
-                    log.scrollTop = log.scrollHeight; box.value = '';
-                }
-                box.blur();
-            }
-            e.stopPropagation();
-        }
-
-        window.toggleGameEscMenu = function() {
-            const menu = document.getElementById('game-esc-menu'); menu.style.display = (menu.style.display==='block') ? 'none' : 'block';
-        };
-
-        window.closeActiveGameSimulationClient = function() {
-            window.removeEventListener('keydown', handleGameInputKeyDown); window.removeEventListener('keyup', handleGameInputKeyUp);
-            document.getElementById('game-client-viewport').style.display = 'none';
-        };
-
-        let runningTimeClock = 0;
         function animateActiveGameSimulationLoop() {
             if(document.getElementById('game-client-viewport').style.display === 'none') return;
             requestAnimationFrame(animateActiveGameSimulationLoop);
 
-            let speed = 0.12; let isMoving = false;
-            let forwardX = Math.sin(gameCameraControls.theta); let forwardZ = Math.cos(gameCameraControls.theta);
-
-            if(gameActiveState.keys['w'] || gameActiveState.keys['arrowup']) { activePlayerMeshObj.position.x -= forwardX * speed; activePlayerMeshObj.position.z -= forwardZ * speed; isMoving = true; }
-            if(gameActiveState.keys['s'] || gameActiveState.keys['arrowdown']) { activePlayerMeshObj.position.x += forwardX * speed; activePlayerMeshObj.position.z += forwardZ * speed; isMoving = true; }
-            if(gameActiveState.keys['a'] || gameActiveState.keys['arrowleft']) { activePlayerMeshObj.position.x -= forwardZ * speed; activePlayerMeshObj.position.z += forwardX * speed; isMoving = true; }
-            if(gameActiveState.keys['d'] || gameActiveState.keys['arrowright']) { activePlayerMeshObj.position.x += forwardZ * speed; activePlayerMeshObj.position.z -= forwardX * speed; isMoving = true; }
-
-            if(gameActiveState.isJumping) {
-                activePlayerMeshObj.position.y += gameActiveState.velY; gameActiveState.velY -= 0.015;
-                if(activePlayerMeshObj.position.y <= 0) { activePlayerMeshObj.position.y = 0; gameActiveState.isJumping = false; gameActiveState.velY = 0; }
-            }
-
-            // CLEAN SWING MOTION SYSTEM: Pivot points rotate without intersecting torso bounding boxes
-            if(isMoving && !gameActiveState.isJumping) {
-                runningTimeClock += 0.25;
-                activePlayerMeshObj.llNode.rotation.x = Math.sin(runningTimeClock) * 0.6;
-                activePlayerMeshObj.rlNode.rotation.x = -Math.sin(runningTimeClock) * 0.6;
-                activePlayerMeshObj.laNode.rotation.x = -Math.sin(runningTimeClock) * 0.4;
-                activePlayerMeshObj.raNode.rotation.x = Math.sin(runningTimeClock) * 0.4;
-            } else if(!gameActiveState.isJumping) {
-                activePlayerMeshObj.llNode.rotation.x = 0; activePlayerMeshObj.rlNode.rotation.x = 0;
-                activePlayerMeshObj.laNode.rotation.x = 0; activePlayerMeshObj.raNode.rotation.x = 0;
-            }
+            if(gameActiveState.keys['w']) activePlayerMeshObj.position.z -= 0.12;
+            if(gameActiveState.keys['s']) activePlayerMeshObj.position.z += 0.12;
+            if(gameActiveState.keys['a']) activePlayerMeshObj.position.x -= 0.12;
+            if(gameActiveState.keys['d']) activePlayerMeshObj.position.x += 0.12;
 
             updateGameViewportOrbitCamera();
             activeGameRenderer.render(activeGameScene, activeGameCamera);
         }
 
+        window.closeActiveGameSimulationClient = function() {
+            document.getElementById('game-client-viewport').style.display = 'none';
+        };
+
+        window.commitNewGameToCloudRegistry = async function() {
+            const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
+            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, iconColor: '#ffea00', htmlScript: "", scriptType: "BHTML", isFeatured: false, isBanned: false });
+            document.getElementById('new-game-modal').style.display='none'; renderCreationsLandingDashboard();
+        };
+
         async function syncGamesDiscoverGrid() {
             const grid = document.getElementById('games-market-list'); grid.innerHTML = '';
-            const fGrid = document.getElementById('featured-games-list'); fGrid.innerHTML = '';
-            const fContainer = document.getElementById('featured-games-container');
-            
             const snap = await getDocs(collection(db, "games"));
-            let featuredCount = 0;
-
             snap.forEach(d => {
                 const game = d.data(); if(game.isBanned) return;
-                const template = `
-                    <div style="background:${game.iconColor || '#333'}; height:75px; color:#fff; display:flex; justify-content:center; align-items:center; border-radius:4px; font-size:13px; text-shadow:1px 1px 1px #000;">🎮 Instance</div>
-                    <div style="margin-top:6px;"><strong>${game.title}</strong></div>
-                    <small style="color:#555;">By: ${game.creator}</small><br>
-                    <button class="btn-action" id="play-${game.isFeatured?'f-':''}${d.id}" style="padding:4px; font-size:13px; margin-top:6px; background:#ffea00; color:#000; border-color:#e6b800;">Play Space</button>
-                `;
-                
-                const card = document.createElement('div'); card.className = 'market-card'; card.innerHTML = template;
-                
-                if(game.isFeatured) {
-                    fGrid.appendChild(card); featuredCount++;
-                } else {
-                    grid.appendChild(card);
-                }
-            });
-
-            fContainer.style.display = featuredCount > 0 ? 'block' : 'none';
-            
-            // Post-bind interaction triggers safely
-            snap.forEach(d => {
-                const game = d.data(); if(game.isBanned) return;
-                const btnId = `play-${game.isFeatured?'f-':''}${d.id}`;
-                if(document.getElementById(btnId)) {
-                    document.getElementById(btnId).onclick = () => launchActiveGameSimulationInstance(d.id, game.title, game.creator);
-                }
+                const card = document.createElement('div'); card.className = 'market-card';
+                card.innerHTML = `<h3>${game.title}</h3><button class="btn-action" style="background:#ffea00; color:#000;" id='pg-${d.id}'>Play</button>`;
+                grid.appendChild(card);
+                document.getElementById(`pg-${d.id}`).onclick = () => launchActiveGameSimulationInstance(d.id, game.title, game.creator);
             });
         }
-
-        window.submitCatalogAsset = async function() {
-            const type = document.getElementById('upload-type').value;
-            const title = document.getElementById('upload-title').value.trim();
-            const val = document.getElementById('upload-value').value.trim();
-            const price = parseInt(document.getElementById('upload-price').value) || 0;
-
-            if(!title || !val) return alert("Fill asset details fully.");
-            await addDoc(collection(db, "catalog"), { type, title, value: val, price, creator: localUserDoc.username, isLimited: false });
-            alert("Apparel asset published successfully!");
-            document.getElementById('upload-panel').style.display = 'none';
-            syncCatalogMarketplaceUI();
-        };
 
         async function syncCatalogMarketplaceUI() {
             const grid = document.getElementById('catalog-item-list'); grid.innerHTML = '';
             const snap = await getDocs(collection(db, "catalog"));
             snap.forEach(d => {
                 const item = d.data(); const card = document.createElement('div'); card.className = 'market-card';
-                card.innerHTML = `
-                    ${item.isLimited ? '<span class="badge-limited">LIMITED</span>' : ''}
-                    <div style="background:${item.value}; height:50px; border:1px solid #aaa; border-radius:4px; margin-bottom:5px;"></div>
-                    <strong>${item.title}</strong><br><small style="color:#666;">${item.type}</small><br>
-                    <span style="color:#28a745;">💵 ${item.price} TIX</span><br>
-                    <button class="btn-action" id="buy-item-${d.id}" style="padding:3px; font-size:12px; margin-top:5px; background:${item.isLimited?'#ff4500':'#28a745'}; border-color:${item.isLimited?'#cc3300':'#1e7e34'}">Purchase</button>
-                `;
+                card.innerHTML = `<strong>${item.title}</strong><br><button class="btn-action" id="buy-${d.id}">Buy</button>`;
                 grid.appendChild(card);
-                document.getElementById(`buy-item-${d.id}`).onclick = () => processProductTransaction(d.id, item);
             });
-        }
-
-        async function processProductTransaction(id, item) {
-            if(localUserDoc.tickets < item.price) return alert("Insufficient tickets.");
-            let updatedTix = localUserDoc.tickets - item.price;
-            const newClothingPiece = { title: item.title, type: item.type, value: item.value };
-            
-            await updateDoc(doc(db, "users", localUserDoc.uid), { tickets: updatedTix, inventory: arrayUnion(newClothingPiece) });
-            
-            localUserDoc.tickets = updatedTix;
-            if(!localUserDoc.inventory) localUserDoc.inventory = [];
-            localUserDoc.inventory.push(newClothingPiece);
-            
-            document.getElementById('user-tickets').textContent = updatedTix;
-            alert(`Purchased ${item.title}! Added to locker room collections inventory.`);
         }
 
         function renderFabricInventoryGrid() {
-            const box = document.getElementById('avatar-inventory-list'); box.innerHTML = '';
-            if(!localUserDoc.inventory || localUserDoc.inventory.length === 0) { box.innerHTML = "<p>Locker empty.</p>"; return; }
-            localUserDoc.inventory.forEach((item, index) => {
-                const div = document.createElement('div'); div.className = 'market-card';
-                div.innerHTML = `<b>${item.title}</b><br><small>${item.type}</small><br><button class="btn-action" id="wear-${index}" style="padding:2px 6px; font-size:11px; margin-top:4px;">Equip</button>`;
-                box.appendChild(div);
-                document.getElementById(`wear-${index}`).onclick = async () => {
-                    let fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
-                    if(item.type === 'T-Shirt') fit.shirt = item.value;
-                    if(item.type === 'Leggings') fit.leggings = item.value;
-                    await updateDoc(doc(db,"users", localUserDoc.uid), { activeOutfit: fit });
-                    localUserDoc.activeOutfit = fit; init3DAvatarViewerCanvas('avatar-3d-canvas', true);
-                };
-            });
+            const box = document.getElementById('avatar-inventory-list'); box.innerHTML = '<p>Fabric storage catalog active.</p>';
         }
 
-        window.unequipAllClothing = async function() {
-            const reset = { shirt: '#e63946', leggings: '#1d3557' };
-            await updateDoc(doc(db,"users", localUserDoc.uid), { activeOutfit: reset });
-            localUserDoc.activeOutfit = reset; init3DAvatarViewerCanvas('avatar-3d-canvas', true);
-        };
-
-        window.postForumThread = async function() {
-            const title = document.getElementById('forum-title').value.trim();
-            const body = document.getElementById('forum-body').value.trim();
-            if(!title || !body) return alert("Write data fields fully.");
-            await addDoc(collection(db, "forum"), { title, body, author: localUserDoc.username, time: Date.now() });
-            document.getElementById('forum-title').value = ''; document.getElementById('forum-body').value = '';
-            syncForumDisplayPayload();
-        };
-
-        async function syncForumDisplayPayload() {
-            const box = document.getElementById('forum-posts-container'); box.innerHTML = '';
-            const snap = await getDocs(collection(db, "forum"));
-            snap.forEach(d => {
-                const p = d.data();
-                box.innerHTML += `<div style="background:#fff; border:2px solid #ccc; padding:15px; margin-bottom:10px; border-radius:6px;"><h3>${p.title}</h3><small style="color:#555;">Author node: ${p.author}</small><hr style="border-color:#eee;"><p>${p.body}</p></div>`;
-            });
-        }
-
-        window.createNewClanNode = async function() {
-            const name = document.getElementById('group-name-input').value.trim(); if(!name) return alert("Input descriptor.");
-            await addDoc(collection(db, "groups"), { name, owner: localUserDoc.username, members: [localUserDoc.username] });
-            document.getElementById('group-name-input').value = ''; syncGroupsDisplayPayload();
-        };
-
-        async function syncGroupsDisplayPayload() {
-            const box = document.getElementById('groups-container'); box.innerHTML = '';
-            const snap = await getDocs(collection(db,"groups"));
-            snap.forEach(d => {
-                const g = d.data(); const div = document.createElement('div'); div.className = 'market-card';
-                div.innerHTML = `<h3>${g.name}</h3><small>Leader: ${g.owner}</small><br><button class="btn-action" id="join-cl-${d.id}" style="padding:4px; margin-top:6px;">Join</button>`;
-                box.appendChild(div);
-                document.getElementById(`join-cl-${d.id}`).onclick = async () => {
-                    if(g.members.includes(localUserDoc.username)) return alert("Already aligned.");
-                    await updateDoc(doc(db,"groups", d.id), { members: arrayUnion(localUserDoc.username) }); alert("Alignment secured!");
-                };
-            });
-        }
-
-        window.triggerAdminPrompt = function() { if(prompt("Enter Admin Access Pin:") === "080112") switchPage('admin'); };
-        
-        window.adminMutationOverpass = async function() {
-            const user = document.getElementById('admin-user').value.trim(); const tix = parseInt(document.getElementById('admin-tix').value) || 0;
-            const snap = await getDocs(query(collection(db,"users"), where("username","==",user)));
-            if(snap.empty) return alert("User target missing from registry.");
-            snap.forEach(async (d) => { await updateDoc(doc(db,"users", d.id), { tickets: tix }); alert("Direct account override injection complete!"); });
-        };
-
-        // --- NEW SECURITY OPERATIONS CONTROL OVERLAYS ---
-        window.moderateExperience = async function(action) {
-            const name = document.getElementById('admin-game-name').value.trim();
-            const snap = await getDocs(query(collection(db, "games"), where("title", "==", name)));
-            if(snap.empty) return alert("Experience target map matching entry not found.");
-            
-            snap.forEach(async (gDoc) => {
-                if(action === 'feature') {
-                    let nextState = !(gDoc.data().isFeatured || false);
-                    await updateDoc(doc(db, "games", gDoc.id), { isFeatured: nextState });
-                    alert(`Experience featured parameter updated to: ${nextState}`);
-                } else if(action === 'ban') {
-                    await updateDoc(doc(db, "games", gDoc.id), { isBanned: true });
-                    alert("Experience visibility parameter banned successfully.");
-                }
-            });
-        };
-
-        window.banUserAccountNode = async function() {
-            const target = document.getElementById('admin-target-account').value.trim();
-            const snap = await getDocs(query(collection(db, "users"), where("username", "==", target)));
-            if(snap.empty) return alert("Profile account parameter missing from master table.");
-            
-            snap.forEach(async (uDoc) => {
-                await updateDoc(doc(db, "users", uDoc.id), { isBanned: true });
-                alert(`Account status handle [${target}] suspended.`);
-            });
-        };
-
-        window.mintLimitedCatalogItem = async function() {
-            const title = document.getElementById('admin-ltd-title').value.trim();
-            const color = document.getElementById('admin-ltd-color').value.trim();
-            const price = parseInt(document.getElementById('admin-ltd-price').value) || 0;
-            const type = document.getElementById('admin-ltd-type').value;
-
-            if(!title || !color) return alert("Specify asset traits fully.");
-            await addDoc(collection(db, "catalog"), { title, value: color, price, type, creator: "SYSTEM_ADMIN", isLimited: true });
-            alert(`Limited-edition ${type} injected into active store pipelines!`);
-        };
-
-        window.pushGlobalSystemTicker = function() {
-            const message = document.getElementById('admin-system-alert').value.trim();
-            if(!message) return alert("Enter alert payload text.");
-            alert(`Broadcast scheduled: "${message}" across network contexts.`);
+        window.triggerAdminPrompt = function() { if(prompt("Enter Access Pin:") === "080112") switchPage('admin'); };
+        window.commitNewGameToCloudRegistry = async function() {
+            const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
+            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, htmlScript: "", scriptType: "BHTML", isFeatured: false, isBanned: false });
+            document.getElementById('new-game-modal').style.display='none'; renderCreationsLandingDashboard();
         };
     </script>
 </body>
