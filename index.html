@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2KBlox - Ultimate 3D Creative Platform</title>
+    <title>2KBlox - 2012 Retro Game Network</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -11,79 +11,97 @@
 
     <style>
         :root {
-            --bux-blue: #3a7bd5;
-            --retro-bg: #e1e1e1;
-            --roblox-red: #d12424;
-            --panel-bg: #fff;
+            --bux-blue: #4a90e2;
+            --retro-bg: #bcd6f7;
+            --roblox-red: #e63946;
+            --panel-bg: #ffffff;
+            --top-bar-blue: #5b92e5;
         }
         * { box-sizing: border-box; font-family: 'Comic Neue', Arial, sans-serif; font-weight: 700; }
         body, html { margin: 0; padding: 0; background: var(--retro-bg); height: 100%; overflow: hidden; }
 
+        /* THE 2006-2017 BRAND HEADER LOOK */
         header {
-            background: linear-gradient(to bottom, #4a90e2, #2a6cbd);
-            border-bottom: 4px solid #1a4a8d;
+            background: linear-gradient(to bottom, #7cb3f5, #3570c5);
+            border-bottom: 4px solid #1a4380;
             padding: 8px 15px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
+        .header-top-row { display: flex; justify-content: space-between; align-items: center; }
         .logo-2kblox {
-            font-size: 28px; font-style: italic; color: white;
-            text-shadow: -2px -2px 0 #d12424, 2px -2px 0 #d12424, -2px 2px 0 #d12424, 2px 2px 0 #d12424;
+            font-size: 32px; font-style: italic; color: white; letter-spacing: -1px;
+            text-shadow: -3px -3px 0 #d12424, 3px -3px 0 #d12424, -3px 3px 0 #d12424, 3px 3px 0 #d12424;
         }
-        nav { display: flex; gap: 5px; }
+        nav { display: flex; gap: 4px; background: rgba(0,0,0,0.15); padding: 4px; border-radius: 4px; }
         nav button {
-            background: #f1f1f1; color: #333; border: 2px solid #999;
-            padding: 6px 12px; cursor: pointer; border-radius: 3px;
+            background: #f8f9fa; color: #222; border: 2px solid #777;
+            padding: 5px 12px; cursor: pointer; border-radius: 3px; font-size: 14px;
         }
-        nav button.active { background: #ffea00; border-color: #e6b800; }
+        nav button.active { background: #ffea00; border-color: #cc9900; }
 
-        #main-viewport { height: calc(100vh - 65px); width: 100%; position: relative; }
+        #main-viewport { height: calc(100vh - 105px); width: 100%; position: relative; }
         .page { width: 100%; height: 100%; display: none; padding: 20px; overflow-y: auto; }
         .page.active { display: block; }
 
-        .auth-container { width: 350px; background: white; margin: 80px auto; padding: 25px; border: 3px solid #555; text-align: center; }
-        input, select, textarea { width: 100%; padding: 8px; margin: 8px 0; border: 2px solid #aaa; border-radius: 3px; }
-        .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; border-radius:3px; }
+        .auth-container { width: 360px; background: white; margin: 50px auto; padding: 25px; border: 4px solid #3570c5; text-align: center; border-radius: 8px; }
+        input, select, textarea { width: 100%; padding: 8px; margin: 6px 0; border: 2px solid #aaa; border-radius: 4px; background: #fff; }
+        .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; border-radius: 4px; font-size: 15px; }
+        .btn-action:hover { opacity: 0.9; }
 
-        .split-view { display: flex; gap: 20px; height: 100%; }
-        .canvas-3d-viewport { width: 50%; background: #b0e0e6; border: 4px solid #333; position: relative; height: 450px; }
-
-        /* HOME PAGE SCROLLER */
+        /* GRID STRUCTS */
         .home-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        .feed-section { background: var(--panel-bg); border: 2px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
-        .horizontal-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; min-height: 80px; }
-        .scroller-item { min-width: 120px; max-width: 120px; background: #eee; border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 13px; border-radius: 4px; }
+        .feed-section { background: var(--panel-bg); border: 2px solid #a2bce0; padding: 15px; margin-bottom: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .horizontal-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; min-height: 90px; }
+        .scroller-item { min-width: 120px; max-width: 120px; background: #f0f4f8; border: 2px solid #bcd2ee; padding: 8px; text-align: center; font-size: 13px; border-radius: 4px; }
 
-        /* STUDIO LAYOUT */
+        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        /* PROFILE SPECIFIC PAGE ROW GRID SCHEMA */
+        .profile-container-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #9bbce8; }
+
+        /* ACTIVE 3D GAME SPACE RENDERING overlay AND MENU LAYOUT */
+        #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
+        .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
+        .game-ui-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; pointer-events: auto; font-size: 14px; }
+        
+        .game-chat-box { position: absolute; bottom: 30px; left: 20px; width: 340px; height: 220px; background: rgba(0,0,0,0.5); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; pointer-events: auto; }
+        .game-chat-log { flex: 1; overflow-y: auto; color: #fff; font-family: monospace; font-size: 13px; margin-bottom: 5px; text-shadow: 1px 1px 1px #000; }
+        
+        .game-esc-menu { position: absolute; top: 25%; left: 35%; width: 30%; background: rgba(255,255,255,0.95); border: 4px solid #333; padding: 20px; border-radius: 8px; display: none; pointer-events: auto; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .player-list-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        .player-list-table th, .player-list-table td { border: 1px solid #ccc; padding: 6px; font-size: 13px; }
+
+        /* STUDIO LAYOUT FRAME NODES */
         .studio-container { display: flex; width: 100%; height: 100%; background: #222; overflow: hidden; }
-        .studio-sidebar { width: 280px; background: #333; color: white; display: flex; flex-direction: column; }
-        .studio-panel-title { background: #444; padding: 6px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #555; text-align:center; }
+        .studio-sidebar { width: 280px; background: #2d2d2d; color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
+        .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #555; text-align:center; letter-spacing:1px; }
         .explorer-tree, .properties-list { flex: 1; overflow-y: auto; padding: 8px; font-family: monospace; font-size: 12px; }
-        .explorer-item { cursor: pointer; padding: 5px; border-radius: 2px; }
-        .explorer-item.selected { background: #007acc; }
+        .explorer-item { cursor: pointer; padding: 6px 4px; border-radius: 2px; border-bottom: 1px solid #3a3a3a; }
+        .explorer-item.selected { background: #007acc; color: white; }
 
         .studio-main-build-zone { flex: 1; display: flex; flex-direction: column; position: relative; }
         .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 8px; padding: 5px; border-bottom: 2px solid #222; }
-        .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 5px 10px; cursor: pointer; font-size: 12px; }
+        .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 5px 10px; cursor: pointer; font-size: 12px; border-radius: 2px; }
 
         .blockly-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; flex-direction: column; }
         #blockly-div { width: 100%; flex: 1; }
-
-        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-        .market-card { background: white; border: 2px solid #bbb; padding: 10px; text-align: center; border-radius: 4px; }
-        .forum-post { background: white; border: 2px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 4px; }
         .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-container">
+        <div class="header-top-row">
             <div class="logo-2kblox">2K<span>BLOX</span></div>
-            <div style="background: white; color: #333; padding: 5px 10px; font-size: 14px; border-radius: 4px;">💵 <span id="user-tickets">0</span> 2ICKETS</div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <div style="background: white; color: #333; padding: 5px 12px; font-size: 14px; border-radius: 4px; border: 2px solid #1a4380;">💵 <span id="user-tickets">0</span> Tickets</div>
+                <span id="header-username" style="color: white; font-size: 16px; text-shadow: 1px 1px 2px #000;">Guest Node</span>
+                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M19.14,12.94c0.04-.32,.06-.65,.06-1s-0.02-.68-.06-1l2.11-1.65c.19-.15,.24-.42,.12-0.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49,1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.17,4.14,13.93,4,13.68,4h-4c-.25,0-.49,.14-.52,.38l-.38,2.65c-.61,.25-1.17,.59-1.69,.98l-2.49-1c-.23-.09-.49,0-.61,.22l-2,3.46c-.13,.22-.07,.49,.12,.64l2.11,1.65c-.04,.32-.06,.65-.06,1s.02,.68,.06,1l-2.11,1.65c-.19,.15-.24,.42-.12,.64l2,3.46c.12,.22,.39,.3,.61,.22l2.49-1c.52,.4,1.08,.73,1.69,.98l.38,2.65c.03,.24,.27,.41,.52,.41h4c.25,0,.49-.14,.52-.38l.38-2.65c.61-.25,1.17-.59,1.69-.98l2.49,1c.23,.09,.49,0,.61-.22l2-3.46c.12-.22,.07-.49-.12-.64l-2.11-1.65Zm-7.14,2.56c-1.93,0-3.5-1.57-3.5-3.5s1.57-3.5,3.5-3.5,3.5,1.57,3.5,3.5-1.57,3.5-3.5,3.5OZ'/></svg>" class="gear-hidden" onclick="triggerAdminPrompt()">
+            </div>
         </div>
         <nav id="main-nav" style="display:none;">
             <button onclick="switchPage('home')" class="active">Home</button>
@@ -95,118 +113,121 @@
             <button onclick="switchPage('studio')">Create</button>
             <button onclick="switchPage('profile')">Profiles</button>
         </nav>
-        <div>
-            <span id="header-username">Guest</span>
-            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M19.14,12.94c0.04-.32,.06-.65,.06-1s-0.02-.68-.06-1l2.11-1.65c.19-.15,.24-.42,.12-0.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49,1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.17,4.14,13.93,4,13.68,4h-4c-.25,0-.49,.14-.52,.38l-.38,2.65c-.61,.25-1.17,.59-1.69,.98l-2.49-1c-.23-.09-.49,0-.61,.22l-2,3.46c-.13,.22-.07,.49,.12,.64l2.11,1.65c-.04,.32-.06,.65-.06,1s.02,.68,.06,1l-2.11,1.65c-.19,.15-.24,.42-.12,.64l2,3.46c.12,.22,.39,.3,.61,.22l2.49-1c.52,.4,1.08,.73,1.69,.98l.38,2.65c.03,.24,.27,.41,.52,.41h4c.25,0,.49-.14,.52-.38l.38-2.65c.61-.25,1.17-.59,1.69-.98l2.49,1c.23,.09,.49,0,.61-.22l2-3.46c.12-.22,.07-.49-.12-.64l-2.11-1.65Zm-7.14,2.56c-1.93,0-3.5-1.57-3.5-3.5s1.57-3.5,3.5-3.5,3.5,1.57,3.5,3.5-1.57,3.5-3.5,3.5Z'/></svg>" class="gear-hidden" onclick="triggerAdminPrompt()">
-        </div>
     </header>
 
     <div id="main-viewport">
 
         <div id="page-auth" class="page active">
             <div class="auth-container">
-                <h2 style="color:var(--roblox-red)">Welcome to 2KBlox</h2>
+                <h2 style="color:var(--roblox-red); margin-bottom:15px;">2KBlox Connection</h2>
                 <input type="email" id="auth-email" placeholder="Email Address">
-                <input type="text" id="auth-user" placeholder="Username">
-                <input type="password" id="auth-pass" placeholder="Password">
+                <input type="text" id="auth-user" placeholder="Create Username Handle">
+                <input type="password" id="auth-pass" placeholder="Password PIN">
                 <button class="btn-action" onclick="handleAuth('login')">Log In</button>
-                <button class="btn-action" style="background:#007bff; margin-top:5px;" onclick="handleAuth('signup')">Sign Up Account</button>
+                <button class="btn-action" style="background:#007bff; margin-top:6px; border-color:#0062cc;" onclick="handleAuth('signup')">Sign Up Account</button>
             </div>
         </div>
 
         <div id="page-home" class="page">
-            <h2>Welcome Back, <span class="user-render-name">Player</span>!</h2>
             <div class="home-layout">
                 <div>
                     <div class="feed-section">
-                        <h3>My Friends</h3>
+                        <h3>My Friends List</h3>
                         <div class="horizontal-scroller" id="home-friends-scroller"></div>
                     </div>
                     <div class="feed-section">
-                        <h3>My Recent Games</h3>
+                        <h3>My Recent Experiences</h3>
                         <div class="horizontal-scroller" id="home-games-scroller"></div>
                     </div>
                     <div class="feed-section">
-                        <h3>My Groups</h3>
+                        <h3>My Clan Groups</h3>
                         <div class="horizontal-scroller" id="home-groups-scroller"></div>
                     </div>
                 </div>
                 <div>
                     <div class="feed-section" style="text-align: center;">
-                        <h3>My 3D K6 Avatar</h3>
-                        <div id="home-avatar-canvas" style="height: 320px; background:#b0e0e6; border:2px solid #555;"></div>
+                        <h3>Active Hardware Outfit</h3>
+                        <div id="home-avatar-canvas" style="height: 310px; background:#b0e0e6; border:2px solid #555; border-radius:4px;"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="page-games-discover" class="page">
-            <h2>Discover Games</h2>
+            <h2>Active Game Server Instances</h2>
             <div class="item-grid" id="games-market-list"></div>
         </div>
 
         <div id="page-avatar-editor" class="page">
-            <h2>Avatar Customizer</h2>
+            <h2>Avatar Customizer Studio</h2>
             <div class="split-view">
                 <div id="avatar-3d-canvas" class="canvas-3d-viewport"></div>
-                <div style="flex:1; background:white; padding:15px; overflow-y:auto; border:2px solid #ccc;">
-                    <h3>My Clothing Inventory</h3>
-                    <div style="margin-bottom:10px;">
-                        <button class="btn-action" style="width:auto; padding:5px 10px; background:#666;" onclick="unequipAllClothing()">Remove All Clothes</button>
-                    </div>
+                <div style="flex:1; background:white; padding:15px; overflow-y:auto; border:2px solid #aaa; border-radius:6px;">
+                    <h3>Inventory Fabrics Storage</h3>
+                    <button class="btn-action" style="width:auto; padding:5px 12px; background:#555; border-color:#444; margin-bottom:10px;" onclick="unequipAllClothing()">Strip All Outfits</button>
                     <div class="item-grid" id="avatar-inventory-list"></div>
                 </div>
             </div>
         </div>
 
         <div id="page-marketplace" class="page">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Shop Catalog</h2>
-                <button class="btn-action" style="width:150px;" onclick="document.getElementById('upload-panel').style.display='block'">Create Clothing</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2>Platform Asset Catalog</h2>
+                <button class="btn-action" style="width:160px;" onclick="document.getElementById('upload-panel').style.display='block'">Upload Clothing</button>
             </div>
-            <div id="upload-panel" style="display:none; background:#fff; padding:15px; border:2px dashed blue; margin:10px 0;">
-                <h3>Upload Custom Apparel</h3>
-                <label>Item Type:</label>
+            <div id="upload-panel" style="display:none; background:#fff; padding:15px; border:3px dashed #3570c5; margin-bottom:15px; border-radius:6px;">
+                <h3>Design Assets Form</h3>
                 <select id="upload-type"><option value="T-Shirt">T-Shirt</option><option value="Leggings">Leggings</option></select>
-                <input type="text" id="upload-title" placeholder="Item Name">
-                <input type="text" id="upload-value" placeholder="Color Hex Code (e.g. #ff0000 or #00ff00)">
-                <input type="number" id="upload-price" placeholder="Price (In 2ICKETS)">
-                <button class="btn-action" onclick="submitCatalogAsset()">Publish Item to Shop</button>
+                <input type="text" id="upload-title" placeholder="Fabric Asset Name">
+                <input type="text" id="upload-value" placeholder="Color Hex Code (e.g. #ff0000)">
+                <input type="number" id="upload-price" placeholder="Price (Tickets)">
+                <button class="btn-action" onclick="submitCatalogAsset()">Publish To Store Grid</button>
             </div>
             <div class="item-grid" id="catalog-item-list"></div>
         </div>
 
         <div id="page-forum" class="page">
-            <h2>Community Forums</h2>
-            <div style="background:#fff; padding:15px; border:2px solid #ccc; margin-bottom:20px;">
-                <h3>Create a New Thread</h3>
-                <input type="text" id="forum-title" placeholder="Thread Subject Line">
-                <textarea id="forum-body" placeholder="Write your message post here..."></textarea>
-                <button class="btn-action" style="width:150px;" onclick="postForumThread()">Post Thread</button>
+            <h2>Community Bulletin Boards</h2>
+            <div style="background:#fff; padding:15px; border:2px solid #aaa; margin-bottom:20px; border-radius:6px;">
+                <h3>Publish Thread Packet</h3>
+                <input type="text" id="forum-title" placeholder="Thread Subject Heading">
+                <textarea id="forum-body" style="height:80px;" placeholder="Message payload text body..."></textarea>
+                <button class="btn-action" style="width:150px;" onclick="postForumThread()">Post Message</button>
             </div>
             <div id="forum-posts-container"></div>
         </div>
 
         <div id="page-groups" class="page">
-            <h2>Groups & Factions</h2>
-            <div style="background:#fff; padding:15px; border:2px solid #ccc; margin-bottom:20px;">
-                <h3>Create a New Group</h3>
-                <input type="text" id="group-name-input" placeholder="Group Name">
+            <h2>Global Clan Factions</h2>
+            <div style="background:#fff; padding:15px; border:2px solid #aaa; margin-bottom:20px; border-radius:6px;">
+                <h3>Establish Clan Faction</h3>
+                <input type="text" id="group-name-input" placeholder="Unique Faction Cluster Title">
                 <button class="btn-action" style="width:150px;" onclick="createNewClanNode()">Found Group</button>
             </div>
             <div class="item-grid" id="groups-container"></div>
         </div>
 
         <div id="page-profile" class="page">
-            <h2>Player Profiles Search</h2>
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <input type="text" id="search-user-input" placeholder="Search exact username...">
-                <button class="btn-action" style="width:120px;" onclick="searchProfileDb()">Search</button>
-            </div>
-            <div id="profile-card" style="background:#fff; padding:20px; border:2px solid #aaa; display:none;">
-                <h3 id="prof-username">Username</h3>
-                <p>Status: Active Account Member</p>
-                <button id="friend-btn" class="btn-action" style="width:150px;">Add Friend</button>
+            <div class="profile-container-layout">
+                <div>
+                    <h3 id="prof-username">My User Profile</h3>
+                    <div id="profile-avatar-render" style="height:260px; background:#b0e0e6; border:2px dashed #999; border-radius:4px; margin-bottom:10px;"></div>
+                    <button id="friend-btn" class="btn-action">Send Friend Request</button>
+                    <hr style="margin:15px 0; border-color:#ccc;">
+                    <h4>Search Player Nodes</h4>
+                    <input type="text" id="search-user-input" placeholder="Exact Handle Matcher">
+                    <button class="btn-action" style="background:#007acc; border-color:#005999;" onclick="searchProfileDb()">Query Profile Database</button>
+                </div>
+                <div>
+                    <h3>Published Workspace Modules</h3>
+                    <div id="profile-games-box" class="horizontal-scroller" style="background:#f4f4f4; border:1px solid #ccc; padding:5px; border-radius:4px; margin-bottom:15px;"></div>
+                    
+                    <h3>Verified Network Friendships</h3>
+                    <div id="profile-friends-box" class="horizontal-scroller" style="background:#f4f4f4; border:1px solid #ccc; padding:5px; border-radius:4px; margin-bottom:15px;"></div>
+                    
+                    <h3>Allied Group Clusters</h3>
+                    <div id="profile-groups-box" class="horizontal-scroller" style="background:#f4f4f4; border:1px solid #ccc; padding:5px; border-radius:4px;"></div>
+                </div>
             </div>
         </div>
 
@@ -217,74 +238,124 @@
                         <button onclick="spawn3DObject('Part')">🧱 Insert Block</button>
                         <button onclick="spawn3DObject('Sphere')">🔮 Insert Sphere</button>
                         <button onclick="spawn3DObject('SpawnPoint')">🏁 Insert Spawn</button>
-                        <button onclick="spawn3DObject('Script')">📜 Add Block Script</button>
-                        <button style="background:var(--roblox-red);" onclick="toggle3DPlaytest()">▶️ Playtest Game</button>
-                        <button style="background:#007acc;" onclick="document.getElementById('publish-modal').style.display='block'">💾 Publish Game</button>
+                        <button onclick="spawn3DObject('Script')">📜 Add Script Part</button>
+                        <button style="background:var(--roblox-red);" onclick="toggle3DPlaytest()">▶️ Run Engine Playtest</button>
+                        <button style="background:#007acc;" onclick="openPublishStudioModal()">💾 Publish World Stack</button>
                     </div>
                     
-                    <div id="studio-3d-canvas" style="flex:1; background:#111;"></div>
+                    <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b; position:relative;">
+                        <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:#fff; padding:6px; font-size:11px; font-family:monospace; pointer-events:none; border-radius:4px;">
+                            Studio View Controls:<br>Hold Mouse Click + Drag = Orbit Space Cam<br>Scroll Wheel = Zoom Focus Depth
+                        </div>
+                    </div>
 
                     <div class="blockly-editor-window" id="blockly-editor">
-                        <div class="studio-toolbar" style="background:#222;">
-                            <span style="color:#fff; margin-left:10px;">Visual Scratch Script Builder</span>
-                            <button style="margin-left:auto; background:#28a745;" onclick="closeBlocklyWorkspace()">Save Script</button>
+                        <div class="studio-toolbar" style="background:#111;">
+                            <span style="color:#fff; margin-left:10px;">BHTML Script Graph Engine Compilation Array</span>
+                            <button style="margin-left:auto; background:#28a745;" onclick="closeBlocklyWorkspace()">Compile & Inject Assembly</button>
                         </div>
                         <div id="blockly-div"></div>
                     </div>
                 </div>
 
                 <div class="studio-sidebar">
-                    <div class="studio-panel-title">Game Explorer Hierarchy</div>
+                    <div class="studio-panel-title">Asset Explorer Window Tree</div>
                     <div class="explorer-tree" id="explorer-list"></div>
-                    <div class="studio-panel-title">Properties Window</div>
+                    <div class="studio-panel-title">Properties Matrix inspector</div>
                     <div class="properties-list" id="properties-window"></div>
                 </div>
             </div>
         </div>
 
-        <div id="publish-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:3px solid #333; z-index:1000; padding:20px;">
-            <h3>Publish World Online</h3>
-            <input type="text" id="game-title" value="My Awesome 3D Game World">
-            <button class="btn-action" onclick="publishWorldStreamToServer()">Upload & Launch Live</button>
-            <button class="btn-action" style="background:#666; margin-top:5px;" onclick="document.getElementById('publish-modal').style.display='none'">Cancel</button>
+        <div id="publish-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.3)">
+            <h3>Publish & Update Experience</h3>
+            <label>World File Handle Title:</label>
+            <input type="text" id="game-title" value="My Awesome 3D World Build">
+            <label>Custom Thumbnail Cover Design Icon Hex:</label>
+            <input type="text" id="game-icon-color" value="#ffea00" placeholder="#ffea00 or #ff00ff">
+            <button class="btn-action" onclick="publishWorldStreamToServer()">Synchronize Cloud Package</button>
+            <button class="btn-action" style="background:#666; border-color:#555; margin-top:6px;" onclick="document.getElementById('publish-modal').style.display='none'">Cancel</button>
         </div>
 
-        <div id="page-admin" class="page" style="background:#111; color:#00ff00; font-family:monospace;">
-            <h2>🚨 CENTRAL ROOT SYSTEM ADMINISTRATION OVERRIDE</h2>
-            <p>Direct live mutation command over the Firebase database grid.</p>
-            <hr style="border-color:#00ff00;">
-            <div style="max-width:400px; background:#222; padding:20px; border:1px solid #00ff00;">
-                <h3>Modify User Balances</h3>
-                <input type="text" id="admin-user" placeholder="Exact Target Username" style="background:#000; color:#00ff00; border:1px solid #00ff00;">
-                <input type="number" id="admin-tix" placeholder="New Ticket Amount" style="background:#000; color:#00ff00; border:1px solid #00ff00;">
-                <button class="btn-action" style="background:#00ff00; color:#000; font-family:monospace;" onclick="adminMutationOverpass()">Execute Direct Override Balance</button>
+        <div id="page-admin" class="page" style="background:#0f172a; color:#38bdf8; font-family:monospace;">
+            <h2>🚨 MASTER SECURITY SYSTEM ADMINISTRATION ACCESS CONSOLE</h2>
+            <hr style="border-color:#38bdf8;">
+            <div style="max-width:450px; background:#1e293b; padding:20px; border:2px solid #38bdf8; border-radius:6px; margin-top:20px;">
+                <h3>Manual Account Balances Manipulation Injection</h3>
+                <input type="text" id="admin-user" placeholder="Target Profile Username Key" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                <input type="number" id="admin-tix" placeholder="Target Absolute Tickets Ceiling" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                <button class="btn-action" style="background:#38bdf8; color:#0f172a;" onclick="adminMutationOverpass()">Commit Matrix Injection Sequence</button>
             </div>
         </div>
 
     </div>
 
+    <div id="game-client-viewport">
+        <div id="game-3d-scene-box" style="width:100%; height:100%;"></div>
+        <div class="game-ui-overlay">
+            <div style="display:flex; gap:10px;">
+                <button class="game-ui-btn" onclick="toggleGameEscMenu()">Menu Panel [ESC]</button>
+                <button class="game-ui-btn" onclick="document.getElementById('game-chat-input').focus()">Open Chat [ / ]</button>
+            </div>
+
+            <div class="game-chat-box">
+                <div class="game-chat-log" id="game-chat-display"></div>
+                <input type="text" id="game-chat-input" placeholder="Type message and press Enter..." style="background:rgba(255,255,255,0.9); margin:0;" onkeydown="handleGameChatKeyDown(event)">
+            </div>
+
+            <div class="game-esc-menu" id="game-esc-menu">
+                <h2>Game Session Panel</h2>
+                <hr>
+                <h4>Players In This Server Instance</h4>
+                <table class="player-list-table">
+                    <thead><tr><th>Player Active Node</th><th>Status Latency</th></tr></thead>
+                    <tbody id="game-player-list-rows"></tbody>
+                </table>
+                <button class="btn-action" style="background:var(--roblox-red); border-color:#bd2130; margin-top:15px;" onclick="closeActiveGameSimulationClient()">Leave Game Instance</button>
+            </div>
+        </div>
+    </div>
+
     <xml id="toolbox" style="display: none">
-        <category name="Game Loops" colour="120">
-            <block type="bhtml_loop"></block>
-            <block type="bhtml_wait"></block>
+        <category name="🌐 HTML Web Layout Blocks" colour="355">
+            <block type="bhtml_html_tag"></block>
+            <block type="bhtml_div_tag"></block>
+            <block type="bhtml_heading"></block>
+            <block type="bhtml_paragraph"></block>
+            <block type="bhtml_button"></block>
+            <block type="bhtml_input_field"></block>
         </category>
-        <category name="Logic & Decisions" colour="210">
+        <category name="🏁 Trigger Events" colour="20">
+            <block type="bhtml_on_click"></block>
+            <block type="bhtml_on_hover"></block>
+            <block type="bhtml_on_load"></block>
+        </category>
+        <category name="🧱 3D World Motion" colour="230">
+            <block type="bhtml_move_steps"></block>
+            <block type="bhtml_turn_deg"></block>
+            <block type="bhtml_set_pos"></block>
+            <block type="bhtml_point_dir"></block>
+        </category>
+        <category name="🎵 Sound Engine Array" colour="290">
+            <block type="bhtml_play_sound"></block>
+            <block type="bhtml_stop_sounds"></block>
+            <block type="bhtml_set_volume"></block>
+        </category>
+        <category name="🔄 Process Execution Loops" colour="120">
+            <block type="controls_repeat_ext"></block>
+            <block type="controls_whileUntil"></block>
+            <block type="bhtml_loop_forever"></block>
+            <block type="bhtml_wait_time"></block>
+        </category>
+        <category name="🌿 Decisions Logic" colour="210">
             <block type="controls_if"></block>
             <block type="logic_compare"></block>
             <block type="logic_operation"></block>
             <block type="logic_boolean"></block>
         </category>
-        <category name="Movement & Math" colour="230">
+        <category name="🔢 Math Coordinates" colour="160">
             <block type="math_number"></block>
             <block type="math_arithmetic"></block>
-            <block type="bhtml_set_pos"></block>
-            <block type="bhtml_get_pos"></block>
-        </category>
-        <category name="Actions & Effects" colour="20">
-            <block type="bhtml_color"></block>
-            <block type="bhtml_scale"></block>
-            <block type="bhtml_print"></block>
-            <block type="bhtml_destroy"></block>
         </category>
     </xml>
 
@@ -309,32 +380,43 @@
 
         let localUserDoc = null;
         let studioScene, studioCamera, studioRenderer, selectedObjectId = null;
-        let avatarScene, avatarCamera, avatarRenderer, k6ModelGroup;
+        let activeStudioControls = { theta: 0.5, phi: 1.0, radius: 15, isTargetDragging: false, prevX: 0, prevY: 0 };
+        let activeGameScene, activeGameCamera, activeGameRenderer, activePlayerMeshObj;
+        let gameActiveState = { keys: {}, targetAngle: 0 };
         let blocklyWorkspace;
         let objectsMatrix = [];
 
-        // --- EXPANDED VISUAL LANGUAGES SPECIFICATION GENERATORS ---
-        Blockly.Blocks['bhtml_loop'] = { init: function() { this.appendDummyInput().appendField("🔄 Run Constantly (Every 1s)"); this.appendStatementInput("DO").appendField("do"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(120); } };
-        Blockly.Blocks['bhtml_wait'] = { init: function() { this.appendDummyInput().appendField("⏱️ Wait").appendField(new Blockly.FieldNumber(1), "SECS").appendField("seconds"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(120); } };
-        Blockly.Blocks['bhtml_color'] = { init: function() { this.appendDummyInput().appendField("🎨 Change Color to").appendField(new Blockly.FieldColor("#ff0000"), "COL"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(20); } };
-        Blockly.Blocks['bhtml_scale'] = { init: function() { this.appendDummyInput().appendField("📐 Multiply Size by").appendField(new Blockly.FieldNumber(2), "NUM"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(20); } };
-        Blockly.Blocks['bhtml_print'] = { init: function() { this.appendDummyInput().appendField("💬 Send chat alert text:").appendField(new Blockly.FieldTextInput("Hello World!"), "TXT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(20); } };
-        Blockly.Blocks['bhtml_destroy'] = { init: function() { this.appendDummyInput().appendField("💥 Delete this object"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(20); } };
-        Blockly.Blocks['bhtml_set_pos'] = { init: function() { this.appendDummyInput().appendField("📍 Move X Coordinate to:"); this.appendValueInput("X").setCheck("Number"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
-        Blockly.Blocks['bhtml_get_pos'] = { init: function() { this.appendDummyInput().appendField("🔍 Get Current Position Coordinate"); this.setOutput(true, "Number"); this.setColour(230); } };
+        // --- ALL CUSTOM INTERACTIVE BHTML BLOCK LEXICAL SCHEMAS EXTENSION ASSEMBLY ---
+        Blockly.Blocks['bhtml_html_tag'] = { init: function() { this.appendDummyInput().appendField("🌐 HTML Document Frame wrapper"); this.appendStatementInput("CONTENT").setCheck(null); this.setColour(355); } };
+        Blockly.Blocks['bhtml_div_tag'] = { init: function() { this.appendDummyInput().appendField("📦 Content Box Container Layer <div>"); this.appendStatementInput("INNER").setCheck(null); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
+        Blockly.Blocks['bhtml_heading'] = { init: function() { this.appendDummyInput().appendField("Header Text Typography <h1>").appendField(new Blockly.FieldTextInput("My Big Title"), "TEXT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
+        Blockly.Blocks['bhtml_paragraph'] = { init: function() { this.appendDummyInput().appendField("Paragraph Text block <p>").appendField(new Blockly.FieldTextInput("Regular text description data"), "TEXT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
+        Blockly.Blocks['bhtml_button'] = { init: function() { this.appendDummyInput().appendField("Clickable Interface Button <button>").appendField(new Blockly.FieldTextInput("Submit Action"), "TEXT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
+        Blockly.Blocks['bhtml_input_field'] = { init: function() { this.appendDummyInput().appendField("Keyboard Text Input Box <input>").appendField(new Blockly.FieldTextInput("Type data here..."), "HINT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
+        Blockly.Blocks['bhtml_on_click'] = { init: function() { this.appendDummyInput().appendField("⚡ When Mouse Left Clicks Item Element"); this.appendStatementInput("DO"); this.setColour(20); } };
+        Blockly.Blocks['bhtml_on_hover'] = { init: function() { this.appendDummyInput().appendField("⚡ When Mouse Pointer Swipes Over Element"); this.appendStatementInput("DO"); this.setColour(20); } };
+        Blockly.Blocks['bhtml_on_load'] = { init: function() { this.appendDummyInput().appendField("🚀 Upon Application Window Scene Initialization"); this.appendStatementInput("DO"); this.setColour(20); } };
+        Blockly.Blocks['bhtml_move_steps'] = { init: function() { this.appendDummyInput().appendField("🏃 Move Object forward").appendField(new Blockly.FieldNumber(10), "STEPS").appendField("units"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
+        Blockly.Blocks['bhtml_turn_deg'] = { init: function() { this.appendDummyInput().appendField("🔄 Turn Direction Heading").appendField(new Blockly.FieldNumber(15), "DEG").appendField("degrees clockwise"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
+        Blockly.Blocks['bhtml_set_pos'] = { init: function() { this.appendDummyInput().appendField("📍 Vector Snap Position Transform X:").appendField(new Blockly.FieldNumber(0), "X").appendField("Y:").appendField(new Blockly.FieldNumber(0), "Y"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
+        Blockly.Blocks['bhtml_point_dir'] = { init: function() { this.appendDummyInput().appendField("🧭 Force Face Compass Direction").appendField(new Blockly.FieldNumber(90), "DIR").appendField("degrees"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
+        Blockly.Blocks['bhtml_play_sound'] = { init: function() { this.appendDummyInput().appendField("🔊 Play Synthesizer Sound").appendField(new Blockly.FieldDropdown([["Retro Meow Tone","meow"],["Explosion Blast","boom"],["Coin Jump Sound","ping"]]), "SND"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(290); } };
+        Blockly.Blocks['bhtml_stop_sounds'] = { init: function() { this.appendDummyInput().appendField("🔇 Terminate All Waveform Synthesizers"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(290); } };
+        Blockly.Blocks['bhtml_set_volume'] = { init: function() { this.appendDummyInput().appendField("🎚️ Overwrite Master Audio Gain to").appendField(new Blockly.FieldNumber(100), "VOL").appendField("%"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(290); } };
+        Blockly.Blocks['bhtml_loop_forever'] = { init: function() { this.appendDummyInput().appendField("🔄 Loop Sequence Continuously [Forever]"); this.appendStatementInput("DO"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(120); } };
+        Blockly.Blocks['bhtml_wait_time'] = { init: function() { this.appendDummyInput().appendField("⏱️ Halt Thread Execution for").appendField(new Blockly.FieldNumber(1), "SEC").appendField("seconds"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(120); } };
 
-        // --- AUTH CONNECTIONS ---
+        // --- SECURITY USER CONTEXT SYSTEM HOOKS ---
         window.handleAuth = async function(type) {
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
             const username = document.getElementById('auth-user').value.trim();
-            if(!email || !pass) return alert("Please fill out email and password fields.");
+            if(!email || !pass) return alert("Fill operational verification grids cleanly.");
             try {
                 if(type === 'signup') {
-                    if(!username) return alert("Username required for registration.");
+                    if(!username) return alert("Username descriptor required.");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 10, inventory: [], friends: [], groups: [], activeOutfit: { shirt: '#3a7bd5', leggings: '#555555' } });
-                    alert("Account registered successfully!");
+                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 25, inventory: [], friends: [], groups: [], activeOutfit: { shirt: '#e63946', leggings: '#1d3557' } });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
                 }
@@ -345,8 +427,6 @@
             if(u) {
                 const snap = await getDoc(doc(db, "users", u.uid));
                 localUserDoc = { uid: u.uid, ...snap.data() };
-                if(!localUserDoc.activeOutfit) localUserDoc.activeOutfit = { shirt: '#3a7bd5', leggings: '#555555' };
-                
                 document.getElementById('page-auth').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
                 document.getElementById('header-username').textContent = localUserDoc.username;
@@ -361,259 +441,272 @@
             const target = document.getElementById(`page-${p}`);
             if(target) target.classList.add('active');
 
-            if(p === 'home') initHomeFeedDashboard();
-            if(p === 'avatar-editor') init3DAvatarViewer('avatar-3d-canvas', true);
-            if(p === 'studio') init3DStudioViewport();
-            if(p === 'marketplace') syncCatalogMarketplace();
-            if(p === 'forum') syncForumDisplay();
-            if(p === 'groups') syncGroupsDisplay();
-            if(p === 'games-discover') syncGamesDiscoverDisplay();
+            if(p === 'home') syncHomeFeedDashboardModule();
+            if(p === 'avatar-editor') init3DAvatarViewerCanvas('avatar-3d-canvas', true);
+            if(p === 'studio') init3DStudioViewportContext();
+            if(p === 'marketplace') syncCatalogMarketplaceUI();
+            if(p === 'forum') syncForumDisplayPayload();
+            if(p === 'groups') syncGroupsDisplayPayload();
+            if(p === 'games-discover') syncGamesDiscoverGrid();
+            if(p === 'profile') loadTargetProfileView(localUserDoc.username);
         };
 
-        // --- COMPLETE 3D RIG BUILDER (HEAD, TORSO, BOTH ARMS, BOTH LEGS) ---
-        function createCompleteK6RigMesh(shirtColor, leggingsColor) {
+        // --- RIG DESIGN STRUCTS MATRIX BUILDER ENGINE ---
+        function generateRigK6ComplexMesh(shirt, pants) {
             const group = new THREE.Group();
-            const skinMat = new THREE.MeshLambertMaterial({ color: 0xffcd94 });
-            const torsoMat = new THREE.MeshLambertMaterial({ color: shirtColor || 0x3a7bd5 });
-            const legMat = new THREE.MeshLambertMaterial({ color: leggingsColor || 0x555555 });
+            const sMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
+            const shirtMat = new THREE.MeshLambertMaterial({ color: shirt || 0xe63946 });
+            const pantsMat = new THREE.MeshLambertMaterial({ color: pants || 0x1d3557 });
 
-            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), skinMat); head.position.y = 1.7; group.add(head);
-            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2, 0.8), torsoMat); torso.position.y = 0.2; group.add(torso);
-            
-            const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), skinMat); leftArm.position.set(-1.05, 0.2, 0); group.add(leftArm);
-            const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), skinMat); rightArm.position.set(1.05, 0.2, 0); group.add(rightArm);
-            
-            const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), legMat); leftLeg.position.set(-0.4, -1.8, 0); group.add(leftLeg);
-            const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), legMat); rightLeg.position.set(0.4, -1.8, 0); group.add(rightLeg);
-
+            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), sMat); head.position.y = 1.6; group.add(head);
+            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.7), shirtMat); torso.position.y = 0.2; group.add(torso);
+            const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), sMat); la.position.set(-1.0, 0.2, 0); group.add(la);
+            const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), sMat); ra.position.set(1.0, 0.2, 0); group.add(ra);
+            const ll = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); ll.position.set(-0.35, -1.6, 0); group.add(ll);
+            const rl = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); rl.position.set(0.35, -1.6, 0); group.add(rl);
             return group;
         }
 
-        function init3DAvatarViewer(containerId, isEditor) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-
+        function init3DAvatarViewerCanvas(id, bindControls) {
+            const box = document.getElementById(id); box.innerHTML = '';
             const scene = new THREE.Scene(); scene.background = new THREE.Color(0xb0e0e6);
-            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const camera = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
             const renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
+            renderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(renderer.domElement);
 
-            scene.add(new THREE.DirectionalLight(0xffffff, 1.2));
-            scene.add(new THREE.AmbientLight(0x666666));
+            scene.add(new THREE.AmbientLight(0x777777));
+            const l = new THREE.DirectionalLight(0xffffff, 1.0); l.position.set(5, 10, 5); scene.add(l);
 
-            const outfit = localUserDoc.activeOutfit || { shirt: '#3a7bd5', leggings: '#555555' };
-            const k6Rig = createCompleteK6RigMesh(outfit.shirt, outfit.leggings);
-            scene.add(k6Rig);
+            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
+            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings); scene.add(rig);
             camera.position.set(0, 0, 5.5); camera.lookAt(0, -0.2, 0);
 
-            function cycle() { requestAnimationFrame(cycle); k6Rig.rotation.y += 0.01; renderer.render(scene, camera); }
-            cycle();
+            function loop() { requestAnimationFrame(loop); rig.rotation.y += 0.012; renderer.render(scene, camera); }
+            loop();
 
-            if(isEditor) renderInventoryListUI();
+            if(bindControls) renderFabricInventoryGrid();
         }
 
-        // --- DASHBOARD LOOPS ENGINE ---
-        async function initHomeFeedDashboard() {
-            init3DAvatarViewer('home-avatar-canvas', false);
+        // --- DASHBOARD LOOPS HOOKS ENGINE ---
+        async function syncHomeFeedDashboardModule() {
+            init3DAvatarViewerCanvas('home-avatar-canvas', false);
+            const fC = document.getElementById('home-friends-scroller'); fC.innerHTML = '';
+            if(!localUserDoc.friends || localUserDoc.friends.length===0){ fC.innerHTML='<div class="scroller-item">No friends.</div>'; }
+            else { localUserDoc.friends.forEach(f=>{ fC.innerHTML+=`<div class="scroller-item">👤 <b>${f}</b><br><small style="color:green">● Active</small></div>`; }); }
 
-            const friendsCont = document.getElementById('home-friends-scroller'); friendsCont.innerHTML = '';
-            if(!localUserDoc.friends || localUserDoc.friends.length === 0) {
-                friendsCont.innerHTML = `<div class="scroller-item">No friends added yet.</div>`;
-            } else {
-                localUserDoc.friends.forEach(f => { friendsCont.innerHTML += `<div class="scroller-item">👤 <b>${f}</b><br><span style="color:green">● Online</span></div>`; });
-            }
+            const gC = document.getElementById('home-games-scroller'); gC.innerHTML = '';
+            const gSnap = await getDocs(query(collection(db,"games"), where("creator","==",localUserDoc.username)));
+            if(gSnap.empty){ gC.innerHTML='<div class="scroller-item">No spaces created.</div>'; }
+            else { gSnap.forEach(d=>{ gC.innerHTML+=`<div class="scroller-item" style="background:${d.data().iconColor || '#fff7c2'}">🎮 <b>${d.data().title}</b></div>`; }); }
 
-            const gamesCont = document.getElementById('home-games-scroller'); gamesCont.innerHTML = '';
-            const gSnap = await getDocs(query(collection(db, "games"), where("creator", "==", localUserDoc.username)));
-            if(gSnap.empty) {
-                gamesCont.innerHTML = `<div class="scroller-item">No games created.</div>`;
-            } else {
-                gSnap.forEach(d => { gamesCont.innerHTML += `<div class="scroller-item" style="background:#fff7c2;">🎮 <b>${d.data().title}</b></div>`; });
-            }
-
-            const groupsCont = document.getElementById('home-groups-scroller'); groupsCont.innerHTML = '';
-            const groupSnap = await getDocs(collection(db, "groups"));
-            let baseCount = 0;
-            groupSnap.forEach(d => {
+            const clC = document.getElementById('home-groups-scroller'); clC.innerHTML = '';
+            const clSnap = await getDocs(collection(db,"groups"));
+            let ct=0; clSnap.forEach(d=>{
                 if(d.data().members && d.data().members.includes(localUserDoc.username)) {
-                    groupsCont.innerHTML += `<div class="scroller-item" style="background:#e3f2fd;">🏳️ <b>${d.data().name}</b></div>`;
-                    baseCount++;
+                    clC.innerHTML+=`<div class="scroller-item" style="background:#e3f2fd;">🏳️ <b>${d.data().name}</b></div>`; ct++;
                 }
             });
-            if(baseCount === 0) groupsCont.innerHTML = `<div class="scroller-item">No groups joined.</div>`;
+            if(ct===0) clC.innerHTML='<div class="scroller-item">No groups.</div>';
         }
 
-        // --- CLOTHING CUSTOMIZER & CATALOG SYSTEM ENGINE ---
-        window.submitCatalogAsset = async function() {
-            const type = document.getElementById('upload-type').value;
-            const title = document.getElementById('upload-title').value.trim();
-            const val = document.getElementById('upload-value').value.trim();
-            const price = parseInt(document.getElementById('upload-price').value) || 0;
-
-            if(!title || !val) return alert("Please fill out all apparel specs.");
-            await addDoc(collection(db, "catalog"), { type, title, value: val, price, creator: localUserDoc.username });
-            alert("Apparel published to Catalog successfully!");
-            document.getElementById('upload-panel').style.display = 'none';
-            syncCatalogMarketplace();
-        };
-
-        async function syncCatalogMarketplace() {
-            const list = document.getElementById('catalog-item-list'); list.innerHTML = '';
-            const snap = await getDocs(collection(db, "catalog"));
-            snap.forEach(d => {
-                const item = d.data();
-                const card = document.createElement('div'); card.className = 'market-card';
-                card.innerHTML = `
-                    <div style="background:${item.value}; height:50px; border:1px solid #ccc; margin-bottom:5px; border-radius:3px;"></div>
-                    <strong>${item.title}</strong><br><small>${item.type}</small><br>
-                    <span style="color:green;">💵 ${item.price} TIX</span><br>
-                    <button class="btn-action" id="buy-${d.id}" style="padding:3px; font-size:12px; margin-top:5px;">Buy Item</button>
-                `;
-                list.appendChild(card);
-                document.getElementById(`buy-${d.id}`).onclick = () => purchaseApparelItem(d.id, item);
-            });
-        }
-
-        async function purchaseApparelItem(id, item) {
-            if(localUserDoc.tickets < item.price) return alert("You don't have enough tickets!");
-            let updatedTix = localUserDoc.tickets - item.price;
-            await updateDoc(doc(db, "users", localUserDoc.uid), {
-                tickets: updatedTix,
-                inventory: arrayUnion({ title: item.title, type: item.type, value: item.value })
-            });
-            localUserDoc.tickets = updatedTix;
-            document.getElementById('user-tickets').textContent = updatedTix;
-            alert("Purchased! Check your Avatar inventory.");
-        }
-
-        function renderInventoryListUI() {
-            const container = document.getElementById('avatar-inventory-list'); container.innerHTML = '';
-            if(!localUserDoc.inventory || localUserDoc.inventory.length === 0) {
-                container.innerHTML = "<p>Your clothing inventory is empty.</p>";
-                return;
-            }
-            localUserDoc.inventory.forEach((item, index) => {
-                const div = document.createElement('div'); div.className = 'market-card';
-                div.innerHTML = `<b>${item.title}</b><br><small>${item.type}</small><br><button class="btn-action" id="equip-${index}" style="padding:3px; font-size:11px;">Wear Clothes</button>`;
-                container.appendChild(div);
-                document.getElementById(`equip-${index}`).onclick = async () => {
-                    let outfit = localUserDoc.activeOutfit || { shirt: '#3a7bd5', leggings: '#555555' };
-                    if(item.type === 'T-Shirt') outfit.shirt = item.value;
-                    if(item.type === 'Leggings') outfit.leggings = item.value;
-                    await updateDoc(doc(db, "users", localUserDoc.uid), { activeOutfit: outfit });
-                    localUserDoc.activeOutfit = outfit;
-                    init3DAvatarViewer('avatar-3d-canvas', true);
-                };
-            });
-        }
-
-        window.unequipAllClothing = async function() {
-            const reset = { shirt: '#3a7bd5', leggings: '#555555' };
-            await updateDoc(doc(db, "users", localUserDoc.uid), { activeOutfit: reset });
-            localUserDoc.activeOutfit = reset;
-            init3DAvatarViewer('avatar-3d-canvas', true);
-        };
-
-        // --- COMMUNITY FULLY FUNCTIONAL FORUM CONNECTIONS ---
-        window.postForumThread = async function() {
-            const title = document.getElementById('forum-title').value.trim();
-            const body = document.getElementById('forum-body').value.trim();
-            if(!title || !body) return alert("Please enter a title and message body.");
-
-            await addDoc(collection(db, "forum"), { title, body, author: localUserDoc.username, time: Date.now() });
-            document.getElementById('forum-title').value = ''; document.getElementById('forum-body').value = '';
-            syncForumDisplay();
-        };
-
-        async function syncForumDisplay() {
-            const container = document.getElementById('forum-posts-container'); container.innerHTML = '';
-            const snap = await getDocs(collection(db, "forum"));
-            snap.forEach(d => {
-                const p = d.data();
-                container.innerHTML += `<div class="forum-post"><h3>${p.title}</h3><small>Posted by: ${p.author}</small><hr><p>${p.body}</p></div>`;
-            });
-        }
-
-        // --- CLAN FACTIONS CONNECTIONS ---
-        window.createNewClanNode = async function() {
-            const name = document.getElementById('group-name-input').value.trim();
-            if(!name) return alert("Please enter a group name.");
-            await addDoc(collection(db, "groups"), { name, owner: localUserDoc.username, members: [localUserDoc.username] });
-            document.getElementById('group-name-input').value = '';
-            syncGroupsDisplay();
-        };
-
-        async function syncGroupsDisplay() {
-            const container = document.getElementById('groups-container'); container.innerHTML = '';
-            const snap = await getDocs(collection(db, "groups"));
-            snap.forEach(d => {
-                const g = d.data();
-                container.innerHTML += `
-                    <div class="market-card">
-                        <h3>${g.name}</h3><p>Owner: ${g.owner}</p>
-                        <button class="btn-action" id="join-g-${d.id}" style="padding:4px;">Join Group</button>
-                    </div>`;
-                setTimeout(() => {
-                    document.getElementById(`join-g-${d.id}`).onclick = async () => {
-                        if(g.members.includes(localUserDoc.username)) return alert("You are already in this group!");
-                        await updateDoc(doc(db, "groups", d.id), { members: arrayUnion(localUserDoc.username) });
-                        alert("Joined group successfully!");
-                    };
-                }, 50);
-            });
-        }
-
-        // --- PROFILES SEARCH & FRIENDING SYSTEM ---
-        window.searchProfileDb = async function() {
-            const target = document.getElementById('search-user-input').value.trim();
-            const q = query(collection(db, "users"), where("username", "==", target));
-            const snap = await getDocs(q);
-            if(snap.empty) return alert("User not found.");
+        // --- PROFILE LOADING RE-GRID DISPATCH MATRIX ---
+        window.loadTargetProfileView = async function(username) {
+            switchPage('profile');
+            document.getElementById('prof-username').textContent = username;
             
-            snap.forEach(d => {
-                const u = d.data();
-                document.getElementById('profile-card').style.display = 'block';
-                document.getElementById('prof-username').textContent = u.username;
-                document.getElementById('friend-btn').onclick = async () => {
-                    if(localUserDoc.friends && localUserDoc.friends.includes(u.username)) return alert("Already friends!");
-                    await updateDoc(doc(db, "users", localUserDoc.uid), { friends: arrayUnion(u.username) });
-                    localUserDoc.friends.push(u.username);
+            // Render 3D representation profile avatar box frame target directly
+            const box = document.getElementById('profile-avatar-render'); box.innerHTML = '';
+            const s = new THREE.Scene(); s.background = new THREE.Color(0xb0e0e6);
+            const c = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
+            const r = new THREE.WebGLRenderer({ antialias: true }); r.setSize(box.clientWidth, box.clientHeight); box.appendChild(r.domElement);
+            s.add(new THREE.AmbientLight(0x888888)); const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(2,5,2); s.add(dl);
+            
+            // Get Target Outfit Profile context stack from snapshot
+            const uQ = query(collection(db,"users"), where("username","==",username));
+            const uSnap = await getDocs(uQ);
+            let activeOutfit = { shirt: '#e63946', leggings: '#1d3557' };
+            if(!uSnap.empty) { uSnap.forEach(d=> { if(d.data().activeOutfit) activeOutfit = d.data().activeOutfit; }); }
+            
+            const rig = generateRigK6ComplexMesh(activeOutfit.shirt, activeOutfit.leggings); s.add(rig);
+            c.position.set(0,0,5.5); c.lookAt(0,-0.2,0);
+            function pLoop() { requestAnimationFrame(pLoop); rig.rotation.y += 0.008; r.render(s, c); }
+            pLoop();
+
+            // Render Friends list grid stream track row arrays
+            const fBox = document.getElementById('profile-friends-box'); fBox.innerHTML = '';
+            const gBox = document.getElementById('profile-games-box'); gBox.innerHTML = '';
+            const grBox = document.getElementById('profile-groups-box'); grBox.innerHTML = '';
+
+            if(!uSnap.empty) {
+                uSnap.forEach(d => {
+                    const data = d.data();
+                    if(data.friends && data.friends.length > 0) {
+                        data.friends.forEach(f => { fBox.innerHTML += `<div class="scroller-item" onclick="loadTargetProfileView('${f}')">👤 <b>${f}</b></div>`; });
+                    } else { fBox.innerHTML = '<div class="scroller-item">No Friends</div>'; }
+                });
+            }
+
+            // Games array
+            const gamesSnap = await getDocs(query(collection(db,"games"), where("creator","==",username)));
+            if(gamesSnap.empty) { gBox.innerHTML = '<div class="scroller-item">No Games</div>'; }
+            else { gamesSnap.forEach(doc => { gBox.innerHTML += `<div class="scroller-item" style="background:${doc.data().iconColor || '#f0f4f8'}">🎮 <b>${doc.data().title}</b></div>`; }); }
+
+            // Groups array
+            const groupsSnap = await getDocs(collection(db,"groups"));
+            let gCount = 0;
+            groupsSnap.forEach(doc => {
+                if(doc.data().members && doc.data().members.includes(username)) {
+                    grBox.innerHTML += `<div class="scroller-item" style="background:#e3f2fd;">🏳️ <b>${doc.data().name}</b></div>`; gCount++;
+                }
+            });
+            if(gCount===0) grBox.innerHTML = '<div class="scroller-item">No Groups</div>';
+
+            // Setup button binding parameters explicitly
+            const fBtn = document.getElementById('friend-btn');
+            if(username === localUserDoc.username) { fBtn.style.display = 'none'; } 
+            else {
+                fBtn.style.display = 'block'; fBtn.textContent = `Add ${username}`;
+                fBtn.onclick = async () => {
+                    await updateDoc(doc(db,"users", localUserDoc.uid), { friends: arrayUnion(username) });
                     alert("Added friend successfully!");
                 };
-            });
+            }
         };
 
-        // --- STUDIO SUITE ENGINE WORKSPACE ---
-        function init3DStudioViewport() {
-            const container = document.getElementById('studio-3d-canvas');
-            if(container.children.length > 0) return;
+        window.searchProfileDb = async function() {
+            const term = document.getElementById('search-user-input').value.trim();
+            const q = query(collection(db,"users"), where("username","==",term));
+            const snap = await getDocs(q);
+            if(snap.empty) return alert("User handle completely absent from system matrix directory.");
+            loadTargetProfileView(term);
+        };
+
+        // --- INTERACTIVE ACTIVE PLAY LIVE CLIENT RUNTIME ENGINE OVERLAY MULTI-NODE ---
+        window.launchActiveGameSimulationInstance = async function(gameId, title, creator) {
+            const vp = document.getElementById('game-client-viewport'); vp.style.display = 'block';
+            const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
+            
+            activeGameScene = new THREE.Scene(); activeGameScene.background = new THREE.Color(0xb0e0e6);
+            activeGameCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            activeGameRenderer = new THREE.WebGLRenderer({ antialias: true });
+            activeGameRenderer.setSize(window.innerWidth, window.innerHeight); box.appendChild(activeGameRenderer.domElement);
+
+            activeGameScene.add(new THREE.AmbientLight(0x666666));
+            const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(20,40,20); activeGameScene.add(dl);
+            activeGameScene.add(new THREE.GridHelper(100, 100, 0xffffff, 0x888888));
+
+            // Ground base structure plate brick element logic mesh
+            const floor = new THREE.Mesh(new THREE.BoxGeometry(100, 0.5, 100), new THREE.MeshLambertMaterial({ color: 0x3a5fcd }));
+            floor.position.y = -0.25; activeGameScene.add(floor);
+
+            // Fetch live user cosmetics array payload
+            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
+            activePlayerMeshObj = generateRigK6ComplexMesh(fit.shirt, fit.leggings);
+            activeGameScene.add(activePlayerMeshObj);
+            activePlayerMeshObj.position.set(0, 1.6, 0);
+
+            activeGameCamera.position.set(0, 8, 14); activeGameCamera.lookAt(activePlayerMeshObj.position);
+
+            // Repopulate dynamic participant grid listings row arrays inside menu dashboard frame component layout
+            const rows = document.getElementById('game-player-list-rows');
+            rows.innerHTML = `<tr><td>${localUserDoc.username} [You]</td><td style="color:green">Active Instance Host Node</td></tr><tr><td>${creator}</td><td>Developer Account Node</td></tr>`;
+
+            // Reset dynamic message chat container boards completely clean
+            document.getElementById('game-chat-display').innerHTML = `<div style="color:#ffea00;">[System]: Welcome to ${title}! Created by ${creator}.</div>`;
+
+            // Wire character loop input event matrix listener frames properly
+            window.addEventListener('keydown', handleGameInputKeyDown);
+            window.addEventListener('keyup', handleGameInputKeyUp);
+
+            animateActiveGameSimulationLoop();
+        };
+
+        function handleGameInputKeyDown(e) { gameActiveState.keys[e.key.toLowerCase()] = true; if(e.key === 'Escape') toggleGameEscMenu(); }
+        function handleGameInputKeyUp(e) { gameActiveState.keys[e.key.toLowerCase()] = false; }
+
+        function handleGameChatKeyDown(e) {
+            if(e.key === 'Enter') {
+                const box = document.getElementById('game-chat-input'); const text = box.value.trim(); if(!text) return;
+                const log = document.getElementById('game-chat-display');
+                log.innerHTML += `<div><b>${localUserDoc.username}</b>: ${text}</div>`;
+                log.scrollTop = log.scrollHeight; box.value = '';
+            }
+            e.stopPropagation();
+        }
+
+        window.toggleGameEscMenu = function() {
+            const menu = document.getElementById('game-esc-menu'); menu.style.display = (menu.style.display==='block') ? 'none' : 'block';
+        };
+
+        window.closeActiveGameSimulationClient = function() {
+            window.removeEventListener('keydown', handleGameInputKeyDown); window.removeEventListener('keyup', handleGameInputKeyUp);
+            document.getElementById('game-client-viewport').style.display = 'none';
+        };
+
+        function animateActiveGameSimulationLoop() {
+            if(document.getElementById('game-client-viewport').style.display === 'none') return;
+            requestAnimationFrame(animateActiveGameSimulationLoop);
+
+            let s = 0.12;
+            if(gameActiveState.keys['w'] || gameActiveState.keys['arrowup']) activePlayerMeshObj.position.z -= s;
+            if(gameActiveState.keys['s'] || gameActiveState.keys['arrowdown']) activePlayerMeshObj.position.z += s;
+            if(gameActiveState.keys['a'] || gameActiveState.keys['arrowleft']) activePlayerMeshObj.position.x -= s;
+            if(gameActiveState.keys['d'] || gameActiveState.keys['arrowright']) activePlayerMeshObj.position.x += s;
+
+            activeGameCamera.position.set(activePlayerMeshObj.position.x, activePlayerMeshObj.position.y + 7, activePlayerMeshObj.position.z + 12);
+            activeGameCamera.lookAt(activePlayerMeshObj.position);
+            activeGameRenderer.render(activeGameScene, activeGameCamera);
+        }
+
+        // --- THREE.JS STUDIO ADVANCED SYSTEM CONTROLLERS PAN AXIS ARRAY HOOKS ---
+        function init3DStudioViewportContext() {
+            const box = document.getElementById('studio-3d-canvas'); if(box.children.length > 1) return;
 
             studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x222222);
-            studioCamera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            studioCamera = new THREE.PerspectiveCamera(60, box.clientWidth / box.clientHeight, 0.1, 1000);
             studioRenderer = new THREE.WebGLRenderer({ antialias: true });
-            studioRenderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(studioRenderer.domElement);
+            studioRenderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(studioRenderer.domElement);
 
-            studioScene.add(new THREE.GridHelper(40, 40, 0xffffff, 0x444444));
-            const light = new THREE.DirectionalLight(0xffffff, 1.2); light.position.set(10, 20, 15); studioScene.add(light);
-            studioCamera.position.set(0, 8, 15); studioCamera.lookAt(0, 0, 0);
+            studioScene.add(new THREE.GridHelper(50, 50, 0xffffff, 0x444444));
+            const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10,30,15); studioScene.add(dl);
+
+            updateStudioOrbitCameraPositionTransform();
+
+            // Hook direct functional canvas touch pointer movement triggers explicitly
+            box.addEventListener('mousedown', (e) => { activeStudioControls.isTargetDragging = true; activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY; });
+            window.addEventListener('mousemove', (e) => {
+                if(!activeStudioControls.isTargetDragging) return;
+                let deltaX = e.clientX - activeStudioControls.prevX; let deltaY = e.clientY - activeStudioControls.prevY;
+                activeStudioControls.theta -= deltaX * 0.007; activeStudioControls.phi += deltaY * 0.007;
+                activeStudioControls.phi = Math.max(0.1, Math.min(Math.PI - 0.1, activeStudioControls.phi));
+                activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY;
+                updateStudioOrbitCameraPositionTransform();
+            });
+            window.addEventListener('mouseup', () => activeStudioControls.isTargetDragging = false);
+            box.addEventListener('wheel', (e) => { activeStudioControls.radius += e.deltaY * 0.02; activeStudioControls.radius = Math.max(5, Math.min(60, activeStudioControls.radius)); updateStudioOrbitCameraPositionTransform(); }, { passive: true });
 
             function loop() { requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); }
             loop();
             renderExplorerStudioHierarchy();
         }
 
+        function updateStudioOrbitCameraPositionTransform() {
+            studioCamera.position.x = activeStudioControls.radius * Math.sin(activeStudioControls.phi) * Math.sin(activeStudioControls.theta);
+            studioCamera.position.y = activeStudioControls.radius * Math.cos(activeStudioControls.phi);
+            studioCamera.position.z = activeStudioControls.radius * Math.sin(activeStudioControls.phi) * Math.cos(activeStudioControls.theta);
+            studioCamera.lookAt(0, 0, 0);
+        }
+
         window.spawn3DObject = function(type) {
-            let mesh; const mat = new THREE.MeshLambertMaterial({ color: 0xaaaaaa });
-            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 16), mat);
-            else if(type === 'SpawnPoint') mesh = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 3), new THREE.MeshLambertMaterial({ color: 0x00ff00 }));
+            let mesh; const mat = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), mat);
+            else if(type === 'SpawnPoint') mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 0.2, 4), new THREE.MeshLambertMaterial({ color: 0x00ff00 }));
             else mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mat);
 
-            mesh.position.set((Math.random() - 0.5) * 8, 1, (Math.random() - 0.5) * 8);
+            mesh.position.set((Math.random()-0.5)*12, 1, (Math.random()-0.5)*12);
             studioScene.add(mesh);
 
-            objectsMatrix.push({ id: "node_" + Date.now(), name: `Workspace_${type}`, type, mesh, blocklyXml: '' });
+            objectsMatrix.push({ id: "node_"+Date.now(), name: `Workspace_${type}`, type, mesh, blocklyXml: '' });
             renderExplorerStudioHierarchy();
         };
 
@@ -621,7 +714,7 @@
             const el = document.getElementById('explorer-list'); el.innerHTML = '';
             objectsMatrix.forEach(obj => {
                 const div = document.createElement('div'); div.className = `explorer-item ${selectedObjectId === obj.id ? 'selected' : ''}`;
-                div.innerHTML = `🧱 ${obj.name} [${obj.type}]`;
+                div.innerHTML = `🧱 ${obj.name}`;
                 div.onclick = () => { selectedObjectId = obj.id; renderExplorerStudioHierarchy(); openPropertiesInspector(); };
                 div.ondblclick = () => { if(obj.type === 'Script') openBlocklyWorkspaceWindow(obj.id); };
                 el.appendChild(div);
@@ -632,13 +725,13 @@
             const win = document.getElementById('properties-window'); const obj = objectsMatrix.find(o => o.id === selectedObjectId);
             if(!obj) return;
             win.innerHTML = `
-                <div>Object Name: <input type='text' id='p-name' value='${obj.name}'></div>
-                <div>Position: <input type='text' readonly value='${obj.mesh ? obj.mesh.position.x.toFixed(1):0}, ${obj.mesh ? obj.mesh.position.y.toFixed(1):0}'></div>
+                <div>Label Element: <input type='text' id='p-name' value='${obj.name}'></div>
+                <div>Position Array: <input type='text' readonly value='X: ${obj.mesh?obj.mesh.position.x.toFixed(1):0}, Z: ${obj.mesh?obj.mesh.position.z.toFixed(1):0}'></div>
             `;
             document.getElementById('p-name').onchange = (e) => { obj.name = e.target.value; renderExplorerStudioHierarchy(); };
         }
 
-        // --- BLOCKLY WORKSPACE WINDOW CONTROLS ---
+        // --- BLOCKLY WINDOW MATRIX CONTROLLER ---
         let openScriptBlockId = null;
         function openBlocklyWorkspaceWindow(id) {
             openScriptBlockId = id; const obj = objectsMatrix.find(o => o.id === id);
@@ -651,47 +744,153 @@
         window.closeBlocklyWorkspace = function() {
             const obj = objectsMatrix.find(o => o.id === openScriptBlockId);
             if(obj) {
-                const xml = Blockly.Xml.workspaceToDom(blocklyWorkspace);
-                obj.blocklyXml = Blockly.Xml.domToText(xml);
+                const xml = Blockly.Xml.workspaceToDom(blocklyWorkspace); obj.blocklyXml = Blockly.Xml.domToText(xml);
             }
             document.getElementById('blockly-editor').style.display = 'none';
         };
 
+        // --- CLOUD INSTANCE PUBLISHING MANAGEMENT FRAME ---
+        window.openPublishStudioModal = function() { document.getElementById('publish-modal').style.display = 'block'; };
+        
         window.publishWorldStreamToServer = async function() {
             const title = document.getElementById('game-title').value.trim();
-            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username });
+            const iconColor = document.getElementById('game-icon-color').value.trim() || '#ffea00';
+            if(!title) return alert("Title must be specified.");
+
+            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, iconColor, time: Date.now() });
             document.getElementById('publish-modal').style.display = 'none';
-            alert("Game published online successfully!");
+            alert("Experience structural data saved to live architecture successfully!");
             switchPage('games-discover');
         };
 
-        async function syncGamesDiscoverDisplay() {
+        async function syncGamesDiscoverGrid() {
             const grid = document.getElementById('games-market-list'); grid.innerHTML = '';
             const snap = await getDocs(collection(db, "games"));
             snap.forEach(d => {
-                grid.innerHTML += `
-                    <div class="market-card">
-                        <div style="background:#555; height:60px; color:#fff; display:flex; justify-content:center; align-items:center;">🎮 World</div>
-                        <strong>${d.data().title}</strong><br><small>By: ${d.data().creator}</small><br>
-                        <button class="btn-action" style="padding:3px; font-size:12px; margin-top:5px;">Play Game</button>
-                    </div>`;
+                const game = d.data();
+                const card = document.createElement('div'); card.className = 'market-card';
+                card.innerHTML = `
+                    <div style="background:${game.iconColor || '#333'}; height:75px; color:#fff; display:flex; justify-content:center; align-items:center; border-radius:4px; font-size:13px; text-shadow:1px 1px 1px #000; border:1px solid rgba(0,0,0,0.1);">🎮 World Instance</div>
+                    <div style="margin-top:6px;"><strong>${game.title}</strong></div>
+                    <small style="color:#555;">By: ${game.creator}</small><br>
+                    <button class="btn-action" id="play-btn-${d.id}" style="padding:4px; font-size:13px; margin-top:6px; background:#ffea00; color:#000; border-color:#e6b800;">Play Space</button>
+                `;
+                grid.appendChild(card);
+                document.getElementById(`play-btn-${d.id}`).onclick = () => launchActiveGameSimulationInstance(d.id, game.title, game.creator);
             });
         }
 
-        window.toggle3DPlaytest = function() { alert("Compiling custom Scratch blocks language... Spawning K6 character into world test environment!"); };
-        window.triggerAdminPrompt = function() { if(prompt("Enter Admin Access Code:") === "080112") switchPage('admin'); };
+        // --- CATALOG APPAREL FABRICATION FRAME WORK ENGINE ---
+        window.submitCatalogAsset = async function() {
+            const type = document.getElementById('upload-type').value;
+            const title = document.getElementById('upload-title').value.trim();
+            const val = document.getElementById('upload-value').value.trim();
+            const price = parseInt(document.getElementById('upload-price').value) || 0;
 
-        // --- ADMIN LIVE MUTATION COMMANDS ENGINE ---
-        window.adminMutationOverpass = async function() {
-            const uTarget = document.getElementById('admin-user').value.trim();
-            const tixTarget = parseInt(document.getElementById('admin-tix').value) || 0;
-            const q = query(collection(db, "users"), where("username", "==", uTarget));
-            const snap = await getDocs(q);
-            if(snap.empty) return alert("User not found in system.");
-            snap.forEach(async (d) => {
-                await updateDoc(doc(db, "users", d.id), { tickets: tixTarget });
-                alert("Database modified successfully! User balance overridden.");
+            if(!title || !val) return alert("Fill fabric data forms completely.");
+            await addDoc(collection(db, "catalog"), { type, title, value: val, price, creator: localUserDoc.username });
+            alert("Apparel published successfully!");
+            document.getElementById('upload-panel').style.display = 'none';
+            syncCatalogMarketplaceUI();
+        };
+
+        async function syncCatalogMarketplaceUI() {
+            const grid = document.getElementById('catalog-item-list'); grid.innerHTML = '';
+            const snap = await getDocs(collection(db, "catalog"));
+            snap.forEach(d => {
+                const item = d.data(); const card = document.createElement('div'); card.className = 'market-card';
+                card.innerHTML = `
+                    <div style="background:${item.value}; height:50px; border:1px solid #aaa; border-radius:4px; margin-bottom:5px;"></div>
+                    <strong>${item.title}</strong><br><small style="color:#666;">${item.type}</small><br>
+                    <span style="color:#28a745;">💵 ${item.price} TIX</span><br>
+                    <button class="btn-action" id="buy-item-${d.id}" style="padding:3px; font-size:12px; margin-top:5px;">Purchase</button>
+                `;
+                grid.appendChild(card);
+                document.getElementById(`buy-item-${d.id}`).onclick = () => processProductTransaction(d.id, item);
             });
+        }
+
+        async function processProductTransaction(id, item) {
+            if(localUserDoc.tickets < item.price) return alert("Ticket tier balance insufficient.");
+            let updatedTix = localUserDoc.tickets - item.price;
+            await updateDoc(doc(db, "users", localUserDoc.uid), { tickets: updatedTix, inventory: arrayUnion({ title: item.title, type: item.type, value: item.value }) });
+            localUserDoc.tickets = updatedTix; document.getElementById('user-tickets').textContent = updatedTix;
+            alert("Item successfully stored inside locker inventory!");
+        }
+
+        function renderFabricInventoryGrid() {
+            const box = document.getElementById('avatar-inventory-list'); box.innerHTML = '';
+            if(!localUserDoc.inventory || localUserDoc.inventory.length === 0) { box.innerHTML = "<p>Locker empty.</p>"; return; }
+            localUserDoc.inventory.forEach((item, index) => {
+                const div = document.createElement('div'); div.className = 'market-card';
+                div.innerHTML = `<b>${item.title}</b><br><small>${item.type}</small><br><button class="btn-action" id="wear-${index}" style="padding:2px 6px; font-size:11px; margin-top:4px;">Equip</button>`;
+                box.appendChild(div);
+                document.getElementById(`wear-${index}`).onclick = async () => {
+                    let fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
+                    if(item.type === 'T-Shirt') fit.shirt = item.value;
+                    if(item.type === 'Leggings') fit.leggings = item.value;
+                    await updateDoc(doc(db,"users", localUserDoc.uid), { activeOutfit: fit });
+                    localUserDoc.activeOutfit = fit; init3DAvatarViewerCanvas('avatar-3d-canvas', true);
+                };
+            });
+        }
+
+        window.unequipAllClothing = async function() {
+            const reset = { shirt: '#e63946', leggings: '#1d3557' };
+            await updateDoc(doc(db,"users", localUserDoc.uid), { activeOutfit: reset });
+            localUserDoc.activeOutfit = reset; init3DAvatarViewerCanvas('avatar-3d-canvas', true);
+        };
+
+        // --- BULLETINS FORUM CONTROLLERS ---
+        window.postForumThread = async function() {
+            const title = document.getElementById('forum-title').value.trim();
+            const body = document.getElementById('forum-body').value.trim();
+            if(!title || !body) return alert("Write data fields fully.");
+            await addDoc(collection(db, "forum"), { title, body, author: localUserDoc.username, time: Date.now() });
+            document.getElementById('forum-title').value = ''; document.getElementById('forum-body').value = '';
+            syncForumDisplayPayload();
+        };
+
+        async function syncForumDisplayPayload() {
+            const box = document.getElementById('forum-posts-container'); box.innerHTML = '';
+            const snap = await getDocs(collection(db, "forum"));
+            snap.forEach(d => {
+                const p = d.data();
+                box.innerHTML += `<div style="background:#fff; border:2px solid #ccc; padding:15px; margin-bottom:10px; border-radius:6px;"><h3>${p.title}</h3><small style="color:#555;">Author node: ${p.author}</small><hr style="border-color:#eee;"><p>${p.body}</p></div>`;
+            });
+        }
+
+        // --- FACTION CLUSTER CONNECTIONS ---
+        window.createNewClanNode = async function() {
+            const name = document.getElementById('group-name-input').value.trim(); if(!name) return alert("Input descriptor.");
+            await addDoc(collection(db, "groups"), { name, owner: localUserDoc.username, members: [localUserDoc.username] });
+            document.getElementById('group-name-input').value = ''; syncGroupsDisplayPayload();
+        };
+
+        async function syncGroupsDisplayPayload() {
+            const box = document.getElementById('groups-container'); box.innerHTML = '';
+            const snap = await getDocs(collection(db,"groups"));
+            snap.forEach(d => {
+                const g = d.data();
+                const div = document.createElement('div'); div.className = 'market-card';
+                div.innerHTML = `<h3>${g.name}</h3><small>Leader: ${g.owner}</small><br><button class="btn-action" id="join-cl-${d.id}" style="padding:4px; margin-top:6px;">Join</button>`;
+                box.appendChild(div);
+                document.getElementById(`join-cl-${d.id}`).onclick = async () => {
+                    if(g.members.includes(localUserDoc.username)) return alert("Already aligned.");
+                    await updateDoc(doc(db,"groups", d.id), { members: arrayUnion(localUserDoc.username) }); alert("Alignment secure!");
+                };
+            });
+        }
+
+        // --- ROOT SYSTEM OVERPASS DIRECT TUNNEL ---
+        window.toggle3DPlaytest = function() { alert("Compiling custom Scratch blocks assembly layout into virtual stack logic runtime loops inside playground arrays!"); };
+        window.triggerAdminPrompt = function() { if(prompt("Enter Admin Access Code Pin:") === "080112") switchPage('admin'); };
+
+        window.adminMutationOverpass = async function() {
+            const user = document.getElementById('admin-user').value.trim(); const tix = parseInt(document.getElementById('admin-tix').value) || 0;
+            const snap = await getDocs(query(collection(db,"users"), where("username","==",user)));
+            if(snap.empty) return alert("User row target completely missing from cluster registry.");
+            snap.forEach(async (d) => { await updateDoc(doc(db,"users", d.id), { tickets: tix }); alert("Direct account override injection complete!"); });
         };
     </script>
 </body>
