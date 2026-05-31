@@ -97,18 +97,19 @@
             </div>
         </div>
         <nav id="main-nav" style="display:none;">
-            <button onclick="switchPage('home')" class="active">Home</button>
-            <button onclick="switchPage('games-discover')">Games</button>
-            <button onclick="switchPage('avatar-editor')">Avatar</button>
-            <button onclick="switchPage('marketplace')">Catalog</button>
-            <button onclick="switchPage('forums')">Forums</button>
-            <button onclick="switchPage('groups')">Groups</button>
-            <button onclick="switchPage('create-hub')">Create</button>
+            <button id="nav-home" onclick="switchPage('home')" class="active">Home</button>
+            <button id="nav-games-discover" onclick="switchPage('games-discover')">Games</button>
+            <button id="nav-avatar-editor" onclick="switchPage('avatar-editor')">Avatar</button>
+            <button id="nav-marketplace" onclick="switchPage('marketplace')">Catalog</button>
+            <button id="nav-forums" onclick="switchPage('forums')">Forums</button>
+            <button id="nav-groups" onclick="switchPage('groups')">Groups</button>
+            <button id="nav-create-hub" onclick="switchPage('create-hub')">Create</button>
         </nav>
     </header>
 
     <div id="main-viewport">
 
+        <!-- AUTH PAGE -->
         <div id="page-auth" class="page active">
             <div class="auth-container">
                 <h2>Welcome to 2KBlox</h2>
@@ -120,6 +121,7 @@
             </div>
         </div>
 
+        <!-- HOME PAGE -->
         <div id="page-home" class="page">
             <div style="display:grid; grid-template-columns: 3fr 1fr; gap:20px;">
                 <div>
@@ -142,6 +144,7 @@
             </div>
         </div>
 
+        <!-- PROFILE PAGE -->
         <div id="page-profile" class="page">
             <div style="background:white; padding:20px; border-radius:6px; border:2px solid #aaa;">
                 <h2 id="profile-title">User Profile</h2>
@@ -155,11 +158,13 @@
             </div>
         </div>
 
+        <!-- GAMES DISCOVER PAGE -->
         <div id="page-games-discover" class="page">
             <h2>Public Games</h2>
             <div class="item-grid" id="games-market-list"></div>
         </div>
 
+        <!-- AVATAR EDITOR -->
         <div id="page-avatar-editor" class="page">
             <h2>Avatar Customizer Closet</h2>
             <div style="display:flex; gap:20px; height:500px;">
@@ -171,11 +176,13 @@
             </div>
         </div>
 
+        <!-- CATALOG MARKETPLACE -->
         <div id="page-marketplace" class="page">
             <h2>Catalog Shop</h2>
             <div class="item-grid" id="catalog-item-list"></div>
         </div>
 
+        <!-- FORUMS SYSTEM -->
         <div id="page-forums" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <h2>Community Forums</h2>
@@ -184,6 +191,7 @@
             <div id="forum-threads-list"></div>
         </div>
 
+        <!-- FORUM VIEW THREAD PANEL -->
         <div id="page-forum-view" class="page">
             <button class="btn-action" style="width:120px; margin-bottom:15px; background:#6c757d;" onclick="switchPage('forums')">← Back</button>
             <h2 id="view-thread-title">Thread</h2>
@@ -194,6 +202,7 @@
             <button class="btn-action" style="width:150px; margin-top:5px;" onclick="submitForumReply()">Post Reply</button>
         </div>
 
+        <!-- GROUPS PANEL -->
         <div id="page-groups" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <h2>Community Groups</h2>
@@ -202,6 +211,7 @@
             <div class="item-grid" id="groups-matrix-grid"></div>
         </div>
 
+        <!-- CREATE HUB -->
         <div id="page-create-hub" class="page">
             <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
                 <h2>Developer Creations Studio</h2>
@@ -210,6 +220,7 @@
             <div class="item-grid" id="user-creations-grid"></div>
         </div>
 
+        <!-- BUILD STUDIO CORE -->
         <div id="page-studio" class="page" style="padding:0;">
             <div class="studio-container">
                 <div class="studio-main-build-zone">
@@ -223,6 +234,7 @@
                     </div>
                     <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b;"></div>
 
+                    <!-- BHTML EDITOR -->
                     <div class="code-editor-window" id="html-editor-panel">
                         <div class="studio-toolbar" style="background:#111;">
                             <span style="color:#fff; margin-left:10px;">Asset Scripting Terminal</span>
@@ -245,6 +257,7 @@
             </div>
         </div>
 
+        <!-- FULL ORIGINAL MASTER ADMINISTRATION HUB -->
         <div id="page-admin" class="page" style="background:#0f172a;">
             <h2 style="color:#38bdf8;">🚨 MASTER SECURITY INFRASTRUCTURE SYSTEM</h2>
             <div class="admin-dashboard-grid">
@@ -269,6 +282,7 @@
             </div>
         </div>
 
+        <!-- DIALOG MODALS -->
         <div id="new-game-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px;">
             <h3>Initialize New Experience Place</h3>
             <label>Experience Title Handle:</label>
@@ -294,6 +308,7 @@
 
     </div>
 
+    <!-- MAIN PLAYER CLIENT VIEWPORT LAYER -->
     <div id="game-client-viewport">
         <div id="game-3d-scene-box" style="width:100%; height:100%;"></div>
         <div class="game-ui-overlay">
@@ -311,6 +326,7 @@
         </div>
     </div>
 
+    <!-- BHTML DISPLAY OUTPUT LAYER -->
     <div id="html-playtest-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:white; z-index:9999; padding:20px; overflow:auto;">
         <div style="padding:10px; background:#eee; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <strong id="playtest-header-title">Rendering Sandbox Instance Output</strong>
@@ -382,6 +398,10 @@
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.querySelectorAll('#main-nav button').forEach(b => b.classList.remove('active'));
+            
+            const targetNav = document.getElementById(`nav-${p}`);
+            if(targetNav) targetNav.classList.add('active');
+
             const target = document.getElementById(`page-${p}`);
             if(target) target.classList.add('active');
 
@@ -395,7 +415,6 @@
             if(p === 'profile') showUserProfilePage(localUserDoc.username);
         };
 
-        /* FIXED: RIG COMPLEX SEPARATE LEG STRUCTURE PREVENTS BROKEN JOIN REFERENCES */
         function generateRigK6ComplexMesh(shirt, pants) {
             const group = new THREE.Group();
             const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
@@ -439,7 +458,7 @@
             if(bindControls) renderFabricInventoryGrid();
         }
 
-        /* PROFILE SPECIFICS */
+        /* PROFILE ROUTING & LOADING FIX */
         async function showUserProfilePage(username) {
             document.getElementById('profile-title').textContent = `${username}'s Profile`;
             const box = document.getElementById('profile-avatar-box'); box.innerHTML = '';
@@ -450,7 +469,8 @@
             renderer.setSize(250, 300); box.appendChild(renderer.domElement);
             scene.add(new THREE.AmbientLight(0x999999));
             
-            const rig = generateRigK6ComplexMesh(localUserDoc.activeOutfit.shirt, localUserDoc.activeOutfit.leggings);
+            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
+            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings);
             scene.add(rig); rig.position.y = -1.5; camera.position.set(0, 0, 5); camera.lookAt(0, 0, 0);
             
             function loop() { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); }
@@ -598,24 +618,8 @@
             });
         }
 
-        async function renderCreationsLandingDashboard() {
-            const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
-            const q = query(collection(db, "games"), where("creator", "==", localUserDoc.username));
-            const snap = await getDocs(q);
-            snap.forEach(d => {
-                const data = d.data(); if(data.isBanned) return;
-                const card = document.createElement('div'); card.className = 'market-card';
-                card.innerHTML = `
-                    <div style="background:#555; height:75px; color:white; display:flex; align-items:center; justify-content:center;">🎮 Studio Scene</div>
-                    <div><strong>${data.title}</strong></div>
-                    <button class="btn-action" style="padding:4px; margin-top:5px; background:#007acc;" onclick="launchStudioDevelopmentInstance('${d.id}','${data.title}')">Open Engine</button>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        /* STUDIO CORE INTERFACE */
-        function launchStudioDevelopmentInstance(gameId, title) {
+        /* CREATIONS HANDLER CONNECTIVITY FIX */
+        window.launchStudioDevelopmentInstance = function(gameId, title) {
             currentlyEditingGameId = gameId; switchPage('studio');
             getDoc(doc(db, "games", gameId)).then(snap => {
                 if(snap.exists()) {
@@ -634,18 +638,36 @@
             const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10,30,15); studioScene.add(dl);
             updateStudioOrbitCameraPositionTransform();
 
-            box.addEventListener('mousedown', (e) => { activeStudioControls.isTargetDragging = true; activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY; });
-            window.addEventListener('mousemove', (e) => {
+            /* LOOK AROUND CONTROLS PERSISTENCE FIX */
+            box.onmousedown = (e) => { activeStudioControls.isTargetDragging = true; activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY; };
+            window.onmousemove = (e) => {
                 if(!activeStudioControls.isTargetDragging) return;
                 let deltaX = e.clientX - activeStudioControls.prevX; let deltaY = e.clientY - activeStudioControls.prevY;
                 activeStudioControls.theta -= deltaX * 0.007; activeStudioControls.phi += deltaY * 0.007;
                 activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY;
                 updateStudioOrbitCameraPositionTransform();
-            });
-            window.addEventListener('mouseup', () => activeStudioControls.isTargetDragging = false);
+            };
+            window.onmouseup = () => activeStudioControls.isTargetDragging = false;
 
             function loop() { if(document.getElementById('page-studio').classList.contains('active')) requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); }
             loop(); objectsMatrix = []; renderExplorerStudioHierarchy();
+        };
+
+        async function renderCreationsLandingDashboard() {
+            const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
+            const q = query(collection(db, "games"), where("creator", "==", localUserDoc.username));
+            const snap = await getDocs(q);
+            snap.forEach(d => {
+                const data = d.data(); if(data.isBanned) return;
+                const card = document.createElement('div'); card.className = 'market-card';
+                card.innerHTML = `
+                    <div style="background:#555; height:75px; color:white; display:flex; align-items:center; justify-content:center;">🎮 Studio Scene</div>
+                    <div><strong>${data.title}</strong></div>
+                    <button class="btn-action" style="padding:4px; margin-top:5px; background:#007acc;" id="open-engine-${d.id}">Open Engine</button>
+                `;
+                grid.appendChild(card);
+                document.getElementById(`open-engine-${d.id}`).onclick = () => window.launchStudioDevelopmentInstance(d.id, data.title);
+            });
         }
 
         function updateStudioOrbitCameraPositionTransform() {
@@ -675,7 +697,6 @@
             });
         }
 
-        /* REALTIME TRANSFORM FIXES UNDER PROPERTIES INTERACTION MAP */
         function openPropertiesInspector() {
             const win = document.getElementById('properties-window'); const obj = objectsMatrix.find(o => o.id === selectedObjectId);
             if(!obj) return;
@@ -724,7 +745,6 @@
             alert("Saved blueprint!");
         };
 
-        /* FIXED: BHTML REGEX MATCHERS PARSED GLOBALLY */
         window.triggerHtmlLivePlaytest = function() {
             const codePayload = document.getElementById('html-textarea-field').value;
             const syntaxStandard = document.getElementById('script-syntax-select').value;
@@ -747,7 +767,6 @@
             document.getElementById('html-playtest-overlay').style.display = 'block';
         };
 
-        /* ACTIVE GAME PLAYER SIMULATION PIPELINE WITH CHAT FIXES & RESTORED WALKING ANIMATION */
         window.launchActiveGameSimulationInstance = function(gameId, title, creator) {
             document.getElementById('game-client-viewport').style.display = 'block';
             const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
@@ -768,7 +787,6 @@
             window.addEventListener('keydown', handleGameInputKeyDown);
             window.addEventListener('keyup', handleGameInputKeyUp);
 
-            // Clean Chat Send Focus Separation Setup
             const chatInput = document.getElementById('game-chat-input');
             chatInput.onkeydown = (e) => {
                 if(e.key === 'Enter') {
@@ -808,7 +826,6 @@
             if(gameActiveState.keys['a']) { activePlayerMeshObj.position.x -= 0.12; isMoving = true; }
             if(gameActiveState.keys['d']) { activePlayerMeshObj.position.x += 0.12; isMoving = true; }
 
-            // Restored Walking Limb Swinging Math Animation Core
             if(isMoving) {
                 gameActiveState.animationFrame += 0.15;
                 const wave = Math.sin(gameActiveState.animationFrame) * 0.5;
@@ -857,7 +874,7 @@
             const box = document.getElementById('avatar-inventory-list'); box.innerHTML = '<p>Closet inventory active.</p>';
         }
 
-        /* EXTENDED UN-SIMPLIFIED ADMIN PANEL LOGIC OPERATIONS */
+        /* MASTER ADMINISTRATION SYSTEM CONFIGURATION OPERATIONS */
         window.triggerAdminPrompt = function() { if(prompt("Enter Access Pin:") === "080112") switchPage('admin'); };
         
         window.moderateExperience = async function(type) {
