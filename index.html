@@ -20,7 +20,12 @@
         * { box-sizing: border-box; font-family: 'Comic Neue', Arial, sans-serif; font-weight: 700; }
         body, html { margin: 0; padding: 0; background: var(--retro-bg); height: 100%; overflow: hidden; }
 
-        /* THE 2006-2017 BRAND HEADER LOOK */
+        /* THE ORIGINAL 2006-2017 BRAND HEADER LOOK WITH UPPER DECK TRIM */
+        .brand-top-trim {
+            height: 5px;
+            background: #1a4380;
+            width: 100%;
+        }
         header {
             background: linear-gradient(to bottom, #7cb3f5, #3570c5);
             border-bottom: 4px solid #1a4380;
@@ -33,7 +38,12 @@
         .header-top-row { display: flex; justify-content: space-between; align-items: center; }
         .logo-2kblox {
             font-size: 32px; font-style: italic; color: white; letter-spacing: -1px;
-            text-shadow: -3px -3px 0 #d12424, 3px -3px 0 #d12424, -3px 3px 0 #d12424, 3px 3px 0 #d12424;
+            position: relative;
+            text-shadow: 
+                -2px -2px 0 #d12424,  
+                 2px -2px 0 #d12424,
+                -2px  2px 0 #d12424,
+                 2px  2px 0 #d12424;
         }
         nav { display: flex; gap: 4px; background: rgba(0,0,0,0.15); padding: 4px; border-radius: 4px; }
         nav button {
@@ -42,7 +52,7 @@
         }
         nav button.active { background: #ffea00; border-color: #cc9900; }
 
-        #main-viewport { height: calc(100vh - 105px); width: 100%; position: relative; }
+        #main-viewport { height: calc(100vh - 110px); width: 100%; position: relative; }
         .page { width: 100%; height: 100%; display: none; padding: 20px; overflow-y: auto; }
         .page.active { display: block; }
 
@@ -55,15 +65,15 @@
         .home-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         .feed-section { background: var(--panel-bg); border: 2px solid #a2bce0; padding: 15px; margin-bottom: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .horizontal-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; min-height: 90px; }
-        .scroller-item { min-width: 120px; max-width: 120px; background: #f0f4f8; border: 2px solid #bcd2ee; padding: 8px; text-align: center; font-size: 13px; border-radius: 4px; }
+        .scroller-item { min-width: 120px; max-width: 120px; background: #f0f4f8; border: 2px solid #bcd2ee; padding: 8px; text-align: center; font-size: 13px; border-radius: 4px; cursor: pointer; }
 
         .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
-        /* PROFILE SPECIFIC PAGE ROW GRID SCHEMA */
+        /* PROFILE SCHEMA */
         .profile-container-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #9bbce8; }
 
-        /* ACTIVE 3D GAME SPACE RENDERING overlay AND MENU LAYOUT */
+        /* ACTIVE 3D GAME SPACE OVERLAY */
         #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
         .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
         .game-ui-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; pointer-events: auto; font-size: 14px; }
@@ -75,7 +85,8 @@
         .player-list-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
         .player-list-table th, .player-list-table td { border: 1px solid #ccc; padding: 6px; font-size: 13px; }
 
-        /* STUDIO LAYOUT FRAME NODES */
+        /* STUDIO & CREATION HUB NODES */
+        .creation-hub-banner { background: #fff; border: 2px solid #3570c5; padding: 20px; border-radius: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .studio-container { display: flex; width: 100%; height: 100%; background: #222; overflow: hidden; }
         .studio-sidebar { width: 280px; background: #2d2d2d; color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
         .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #555; text-align:center; letter-spacing:1px; }
@@ -87,16 +98,17 @@
         .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 8px; padding: 5px; border-bottom: 2px solid #222; }
         .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 5px 10px; cursor: pointer; font-size: 12px; border-radius: 2px; }
 
-        .blockly-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; flex-direction: column; }
-        #blockly-div { width: 100%; flex: 1; }
+        .code-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; flex-direction: column; }
+        #html-textarea-field { width: 100%; flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 15px; background: #1e1e1e; color: #7ec699; border: none; resize: none; }
         .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <div class="brand-top-trim"></div>
     <header>
         <div class="header-top-row">
-            <div class="logo-2kblox">2K<span>BLOX</span></div>
+            <div class="logo-2kblox">2KBLOX</div>
             <div style="display:flex; gap:15px; align-items:center;">
                 <div style="background: white; color: #333; padding: 5px 12px; font-size: 14px; border-radius: 4px; border: 2px solid #1a4380;">💵 <span id="user-tickets">0</span> Tickets</div>
                 <span id="header-username" style="color: white; font-size: 16px; text-shadow: 1px 1px 2px #000;">Guest Node</span>
@@ -110,7 +122,7 @@
             <button onclick="switchPage('marketplace')">Catalog</button>
             <button onclick="switchPage('forum')">Forum</button>
             <button onclick="switchPage('groups')">Groups</button>
-            <button onclick="switchPage('studio')">Create</button>
+            <button onclick="switchPage('create-hub')">Create</button>
             <button onclick="switchPage('profile')">Profiles</button>
         </nav>
     </header>
@@ -160,8 +172,8 @@
 
         <div id="page-avatar-editor" class="page">
             <h2>Avatar Customizer Studio</h2>
-            <div class="split-view">
-                <div id="avatar-3d-canvas" class="canvas-3d-viewport"></div>
+            <div style="display:flex; gap:20px; height:500px;">
+                <div id="avatar-3d-canvas" style="width:340px; height:100%; background:#b0e0e6; border:2px solid #555;"></div>
                 <div style="flex:1; background:white; padding:15px; overflow-y:auto; border:2px solid #aaa; border-radius:6px;">
                     <h3>Inventory Fabrics Storage</h3>
                     <button class="btn-action" style="width:auto; padding:5px 12px; background:#555; border-color:#444; margin-bottom:10px;" onclick="unequipAllClothing()">Strip All Outfits</button>
@@ -175,7 +187,7 @@
                 <h2>Platform Asset Catalog</h2>
                 <button class="btn-action" style="width:160px;" onclick="document.getElementById('upload-panel').style.display='block'">Upload Clothing</button>
             </div>
-            <div id="upload-panel" style="display:none; background:#fff; padding:15px; border:3px dashed #3570c5; margin-bottom:15px; border-radius:6px;">
+            <div id="upload-panel" style="none; background:#fff; padding:15px; border:3px dashed #3570c5; margin-bottom:15px; border-radius:6px; display:none;">
                 <h3>Design Assets Form</h3>
                 <select id="upload-type"><option value="T-Shirt">T-Shirt</option><option value="Leggings">Leggings</option></select>
                 <input type="text" id="upload-title" placeholder="Fabric Asset Name">
@@ -231,50 +243,59 @@
             </div>
         </div>
 
-        <div id="page-studio" class="page">
+        <div id="page-create-hub" class="page">
+            <div class="creation-hub-banner">
+                <div>
+                    <h2 style="margin:0; color:#1a4380;">My Creations Dashboard</h2>
+                    <p style="margin:5px 0 0 0; color:#555;">Manage, save, and construct your interactive virtual server places.</p>
+                </div>
+                <button class="btn-action" style="width:220px; background:#28a745; font-size:16px;" onclick="openCreateNewGameModal()">➕ Create New Place</button>
+            </div>
+            <h3>Active Project Places</h3>
+            <div class="item-grid" id="user-creations-grid"></div>
+        </div>
+
+        <div id="page-studio" class="page" style="padding:0;">
             <div class="studio-container">
                 <div class="studio-main-build-zone">
                     <div class="studio-toolbar">
                         <button onclick="spawn3DObject('Part')">🧱 Insert Block</button>
                         <button onclick="spawn3DObject('Sphere')">🔮 Insert Sphere</button>
                         <button onclick="spawn3DObject('SpawnPoint')">🏁 Insert Spawn</button>
-                        <button onclick="spawn3DObject('Script')">📜 Add Script Part</button>
-                        <button style="background:var(--roblox-red);" onclick="toggle3DPlaytest()">▶️ Run Engine Playtest</button>
-                        <button style="background:#007acc;" onclick="openPublishStudioModal()">💾 Publish World Stack</button>
+                        <button style="background:#8a2be2;" onclick="openHtmlEditorWindow()">🌐 Add HTML Script</button>
+                        <button style="background:var(--roblox-red);" onclick="triggerHtmlLivePlaytest()">▶️ Run HTML Playtest</button>
+                        <button style="background:#007acc;" onclick="saveActiveStudioProject()">💾 Save Game Blueprint</button>
+                        <button style="background:#555;" onclick="switchPage('create-hub')">❌ Exit Studio</button>
                     </div>
                     
-                    <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b; position:relative;">
-                        <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:#fff; padding:6px; font-size:11px; font-family:monospace; pointer-events:none; border-radius:4px;">
-                            Studio View Controls:<br>Hold Mouse Click + Drag = Orbit Space Cam<br>Scroll Wheel = Zoom Focus Depth
-                        </div>
-                    </div>
+                    <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b; position:relative;"></div>
 
-                    <div class="blockly-editor-window" id="blockly-editor">
+                    <div class="code-editor-window" id="html-editor-panel">
                         <div class="studio-toolbar" style="background:#111;">
-                            <span style="color:#fff; margin-left:10px;">BHTML Script Graph Engine Compilation Array</span>
-                            <button style="margin-left:auto; background:#28a745;" onclick="closeBlocklyWorkspace()">Compile & Inject Assembly</button>
+                            <span style="color:#fff; margin-left:10px;">Advanced HTML Code Structure Asset Scripting</span>
+                            <button style="margin-left:auto; background:#28a745;" onclick="closeHtmlEditorWindow()">Save & Inject Module</button>
                         </div>
-                        <div id="blockly-div"></div>
+                        <textarea id="html-textarea-field" placeholder="&#10;<div style='background:red; color:white; padding:20px;'>&#10;  <h1>Hello Custom World</h1>&#10;</div>"></textarea>
                     </div>
                 </div>
 
                 <div class="studio-sidebar">
                     <div class="studio-panel-title">Asset Explorer Window Tree</div>
                     <div class="explorer-tree" id="explorer-list"></div>
-                    <div class="studio-panel-title">Properties Matrix inspector</div>
+                    <div class="studio-panel-title">Properties Matrix Inspector</div>
                     <div class="properties-list" id="properties-window"></div>
                 </div>
             </div>
         </div>
 
-        <div id="publish-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.3)">
-            <h3>Publish & Update Experience</h3>
-            <label>World File Handle Title:</label>
-            <input type="text" id="game-title" value="My Awesome 3D World Build">
-            <label>Custom Thumbnail Cover Design Icon Hex:</label>
-            <input type="text" id="game-icon-color" value="#ffea00" placeholder="#ffea00 or #ff00ff">
-            <button class="btn-action" onclick="publishWorldStreamToServer()">Synchronize Cloud Package</button>
-            <button class="btn-action" style="background:#666; border-color:#555; margin-top:6px;" onclick="document.getElementById('publish-modal').style.display='none'">Cancel</button>
+        <div id="new-game-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.3)">
+            <h3>Initialize New Experience Place</h3>
+            <label>Experience Title Handle:</label>
+            <input type="text" id="new-game-title-input" value="Untitled Map Instance">
+            <label>Thumbnail Panel Accent Theme Color:</label>
+            <input type="text" id="new-game-theme-color" value="#ffea00">
+            <button class="btn-action" onclick="commitNewGameToCloudRegistry()">Launch Workshop Canvas</button>
+            <button class="btn-action" style="background:#666; border-color:#555; margin-top:6px;" onclick="document.getElementById('new-game-modal').style.display='none'">Cancel</button>
         </div>
 
         <div id="page-admin" class="page" style="background:#0f172a; color:#38bdf8; font-family:monospace;">
@@ -316,48 +337,13 @@
         </div>
     </div>
 
-    <xml id="toolbox" style="display: none">
-        <category name="🌐 HTML Web Layout Blocks" colour="355">
-            <block type="bhtml_html_tag"></block>
-            <block type="bhtml_div_tag"></block>
-            <block type="bhtml_heading"></block>
-            <block type="bhtml_paragraph"></block>
-            <block type="bhtml_button"></block>
-            <block type="bhtml_input_field"></block>
-        </category>
-        <category name="🏁 Trigger Events" colour="20">
-            <block type="bhtml_on_click"></block>
-            <block type="bhtml_on_hover"></block>
-            <block type="bhtml_on_load"></block>
-        </category>
-        <category name="🧱 3D World Motion" colour="230">
-            <block type="bhtml_move_steps"></block>
-            <block type="bhtml_turn_deg"></block>
-            <block type="bhtml_set_pos"></block>
-            <block type="bhtml_point_dir"></block>
-        </category>
-        <category name="🎵 Sound Engine Array" colour="290">
-            <block type="bhtml_play_sound"></block>
-            <block type="bhtml_stop_sounds"></block>
-            <block type="bhtml_set_volume"></block>
-        </category>
-        <category name="🔄 Process Execution Loops" colour="120">
-            <block type="controls_repeat_ext"></block>
-            <block type="controls_whileUntil"></block>
-            <block type="bhtml_loop_forever"></block>
-            <block type="bhtml_wait_time"></block>
-        </category>
-        <category name="🌿 Decisions Logic" colour="210">
-            <block type="controls_if"></block>
-            <block type="logic_compare"></block>
-            <block type="logic_operation"></block>
-            <block type="logic_boolean"></block>
-        </category>
-        <category name="🔢 Math Coordinates" colour="160">
-            <block type="math_number"></block>
-            <block type="math_arithmetic"></block>
-        </category>
-    </xml>
+    <div id="html-playtest-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:white; z-index:9999; padding:20px; overflow:auto;">
+        <div style="padding:10px; background:#eee; border-bottom:1px solid #ccc; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+            <strong>Live HTML Rendering Engine Sandbox Playtest</strong>
+            <button class="btn-action" style="width:120px; background:var(--roblox-red);" onclick="document.getElementById('html-playtest-overlay').style.display='none'">Stop Engine</button>
+        </div>
+        <div id="html-playtest-render-zone"></div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -382,41 +368,21 @@
         let studioScene, studioCamera, studioRenderer, selectedObjectId = null;
         let activeStudioControls = { theta: 0.5, phi: 1.0, radius: 15, isTargetDragging: false, prevX: 0, prevY: 0 };
         let activeGameScene, activeGameCamera, activeGameRenderer, activePlayerMeshObj;
-        let gameActiveState = { keys: {}, targetAngle: 0 };
-        let blocklyWorkspace;
+        let gameActiveState = { keys: {}, velY: 0, isJumping: false };
         let objectsMatrix = [];
+        let currentlyEditingGameId = null;
 
-        // --- ALL CUSTOM INTERACTIVE BHTML BLOCK LEXICAL SCHEMAS EXTENSION ASSEMBLY ---
-        Blockly.Blocks['bhtml_html_tag'] = { init: function() { this.appendDummyInput().appendField("🌐 HTML Document Frame wrapper"); this.appendStatementInput("CONTENT").setCheck(null); this.setColour(355); } };
-        Blockly.Blocks['bhtml_div_tag'] = { init: function() { this.appendDummyInput().appendField("📦 Content Box Container Layer <div>"); this.appendStatementInput("INNER").setCheck(null); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
-        Blockly.Blocks['bhtml_heading'] = { init: function() { this.appendDummyInput().appendField("Header Text Typography <h1>").appendField(new Blockly.FieldTextInput("My Big Title"), "TEXT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
-        Blockly.Blocks['bhtml_paragraph'] = { init: function() { this.appendDummyInput().appendField("Paragraph Text block <p>").appendField(new Blockly.FieldTextInput("Regular text description data"), "TEXT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
-        Blockly.Blocks['bhtml_button'] = { init: function() { this.appendDummyInput().appendField("Clickable Interface Button <button>").appendField(new Blockly.FieldTextInput("Submit Action"), "TEXT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
-        Blockly.Blocks['bhtml_input_field'] = { init: function() { this.appendDummyInput().appendField("Keyboard Text Input Box <input>").appendField(new Blockly.FieldTextInput("Type data here..."), "HINT"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(355); } };
-        Blockly.Blocks['bhtml_on_click'] = { init: function() { this.appendDummyInput().appendField("⚡ When Mouse Left Clicks Item Element"); this.appendStatementInput("DO"); this.setColour(20); } };
-        Blockly.Blocks['bhtml_on_hover'] = { init: function() { this.appendDummyInput().appendField("⚡ When Mouse Pointer Swipes Over Element"); this.appendStatementInput("DO"); this.setColour(20); } };
-        Blockly.Blocks['bhtml_on_load'] = { init: function() { this.appendDummyInput().appendField("🚀 Upon Application Window Scene Initialization"); this.appendStatementInput("DO"); this.setColour(20); } };
-        Blockly.Blocks['bhtml_move_steps'] = { init: function() { this.appendDummyInput().appendField("🏃 Move Object forward").appendField(new Blockly.FieldNumber(10), "STEPS").appendField("units"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
-        Blockly.Blocks['bhtml_turn_deg'] = { init: function() { this.appendDummyInput().appendField("🔄 Turn Direction Heading").appendField(new Blockly.FieldNumber(15), "DEG").appendField("degrees clockwise"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
-        Blockly.Blocks['bhtml_set_pos'] = { init: function() { this.appendDummyInput().appendField("📍 Vector Snap Position Transform X:").appendField(new Blockly.FieldNumber(0), "X").appendField("Y:").appendField(new Blockly.FieldNumber(0), "Y"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
-        Blockly.Blocks['bhtml_point_dir'] = { init: function() { this.appendDummyInput().appendField("🧭 Force Face Compass Direction").appendField(new Blockly.FieldNumber(90), "DIR").appendField("degrees"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); } };
-        Blockly.Blocks['bhtml_play_sound'] = { init: function() { this.appendDummyInput().appendField("🔊 Play Synthesizer Sound").appendField(new Blockly.FieldDropdown([["Retro Meow Tone","meow"],["Explosion Blast","boom"],["Coin Jump Sound","ping"]]), "SND"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(290); } };
-        Blockly.Blocks['bhtml_stop_sounds'] = { init: function() { this.appendDummyInput().appendField("🔇 Terminate All Waveform Synthesizers"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(290); } };
-        Blockly.Blocks['bhtml_set_volume'] = { init: function() { this.appendDummyInput().appendField("🎚️ Overwrite Master Audio Gain to").appendField(new Blockly.FieldNumber(100), "VOL").appendField("%"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(290); } };
-        Blockly.Blocks['bhtml_loop_forever'] = { init: function() { this.appendDummyInput().appendField("🔄 Loop Sequence Continuously [Forever]"); this.appendStatementInput("DO"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(120); } };
-        Blockly.Blocks['bhtml_wait_time'] = { init: function() { this.appendDummyInput().appendField("⏱️ Halt Thread Execution for").appendField(new Blockly.FieldNumber(1), "SEC").appendField("seconds"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(120); } };
-
-        // --- SECURITY USER CONTEXT SYSTEM HOOKS ---
+        // --- SECURITY ACCOUNT HOOKS ---
         window.handleAuth = async function(type) {
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
             const username = document.getElementById('auth-user').value.trim();
-            if(!email || !pass) return alert("Fill operational verification grids cleanly.");
+            if(!email || !pass) return alert("Please fill operational credentials cleanly.");
             try {
                 if(type === 'signup') {
-                    if(!username) return alert("Username descriptor required.");
+                    if(!username) return alert("Username required.");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 25, inventory: [], friends: [], groups: [], activeOutfit: { shirt: '#e63946', leggings: '#1d3557' } });
+                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 50, inventory: [], friends: [], groups: [], activeOutfit: { shirt: '#e63946', leggings: '#1d3557' } });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
                 }
@@ -443,15 +409,15 @@
 
             if(p === 'home') syncHomeFeedDashboardModule();
             if(p === 'avatar-editor') init3DAvatarViewerCanvas('avatar-3d-canvas', true);
-            if(p === 'studio') init3DStudioViewportContext();
             if(p === 'marketplace') syncCatalogMarketplaceUI();
             if(p === 'forum') syncForumDisplayPayload();
             if(p === 'groups') syncGroupsDisplayPayload();
             if(p === 'games-discover') syncGamesDiscoverGrid();
+            if(p === 'create-hub') renderCreationsLandingDashboard();
             if(p === 'profile') loadTargetProfileView(localUserDoc.username);
         };
 
-        // --- RIG DESIGN STRUCTS MATRIX BUILDER ENGINE ---
+        // --- K6 AVATAR RIG DESIGN CONSTRUCTOR ENGINE ---
         function generateRigK6ComplexMesh(shirt, pants) {
             const group = new THREE.Group();
             const sMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
@@ -460,10 +426,14 @@
 
             const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), sMat); head.position.y = 1.6; group.add(head);
             const torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.7), shirtMat); torso.position.y = 0.2; group.add(torso);
+            
             const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), sMat); la.position.set(-1.0, 0.2, 0); group.add(la);
             const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), sMat); ra.position.set(1.0, 0.2, 0); group.add(ra);
+            
             const ll = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); ll.position.set(-0.35, -1.6, 0); group.add(ll);
             const rl = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); rl.position.set(0.35, -1.6, 0); group.add(rl);
+            
+            group.laNode = la; group.raNode = ra; group.llNode = ll; group.rlNode = rl;
             return group;
         }
 
@@ -487,71 +457,45 @@
             if(bindControls) renderFabricInventoryGrid();
         }
 
-        // --- DASHBOARD LOOPS HOOKS ENGINE ---
-        async function syncHomeFeedDashboardModule() {
-            init3DAvatarViewerCanvas('home-avatar-canvas', false);
-            const fC = document.getElementById('home-friends-scroller'); fC.innerHTML = '';
-            if(!localUserDoc.friends || localUserDoc.friends.length===0){ fC.innerHTML='<div class="scroller-item">No friends.</div>'; }
-            else { localUserDoc.friends.forEach(f=>{ fC.innerHTML+=`<div class="scroller-item">👤 <b>${f}</b><br><small style="color:green">● Active</small></div>`; }); }
-
-            const gC = document.getElementById('home-games-scroller'); gC.innerHTML = '';
-            const gSnap = await getDocs(query(collection(db,"games"), where("creator","==",localUserDoc.username)));
-            if(gSnap.empty){ gC.innerHTML='<div class="scroller-item">No spaces created.</div>'; }
-            else { gSnap.forEach(d=>{ gC.innerHTML+=`<div class="scroller-item" style="background:${d.data().iconColor || '#fff7c2'}">🎮 <b>${d.data().title}</b></div>`; }); }
-
-            const clC = document.getElementById('home-groups-scroller'); clC.innerHTML = '';
-            const clSnap = await getDocs(collection(db,"groups"));
-            let ct=0; clSnap.forEach(d=>{
-                if(d.data().members && d.data().members.includes(localUserDoc.username)) {
-                    clC.innerHTML+=`<div class="scroller-item" style="background:#e3f2fd;">🏳️ <b>${d.data().name}</b></div>`; ct++;
-                }
-            });
-            if(ct===0) clC.innerHTML='<div class="scroller-item">No groups.</div>';
-        }
-
-        // --- PROFILE LOADING RE-GRID DISPATCH MATRIX ---
+        // --- STABLE TARGET PROFILE ASYNC RESOLVER ENGINE ---
         window.loadTargetProfileView = async function(username) {
-            switchPage('profile');
             document.getElementById('prof-username').textContent = username;
             
-            // Render 3D representation profile avatar box frame target directly
             const box = document.getElementById('profile-avatar-render'); box.innerHTML = '';
             const s = new THREE.Scene(); s.background = new THREE.Color(0xb0e0e6);
             const c = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
             const r = new THREE.WebGLRenderer({ antialias: true }); r.setSize(box.clientWidth, box.clientHeight); box.appendChild(r.domElement);
             s.add(new THREE.AmbientLight(0x888888)); const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(2,5,2); s.add(dl);
             
-            // Get Target Outfit Profile context stack from snapshot
             const uQ = query(collection(db,"users"), where("username","==",username));
             const uSnap = await getDocs(uQ);
             let activeOutfit = { shirt: '#e63946', leggings: '#1d3557' };
-            if(!uSnap.empty) { uSnap.forEach(d=> { if(d.data().activeOutfit) activeOutfit = d.data().activeOutfit; }); }
+            let targetFriendList = [];
+
+            if(!uSnap.empty) { 
+                uSnap.forEach(d=> { 
+                    if(d.data().activeOutfit) activeOutfit = d.data().activeOutfit; 
+                    if(d.data().friends) targetFriendList = d.data().friends;
+                }); 
+            }
             
             const rig = generateRigK6ComplexMesh(activeOutfit.shirt, activeOutfit.leggings); s.add(rig);
             c.position.set(0,0,5.5); c.lookAt(0,-0.2,0);
             function pLoop() { requestAnimationFrame(pLoop); rig.rotation.y += 0.008; r.render(s, c); }
             pLoop();
 
-            // Render Friends list grid stream track row arrays
             const fBox = document.getElementById('profile-friends-box'); fBox.innerHTML = '';
             const gBox = document.getElementById('profile-games-box'); gBox.innerHTML = '';
             const grBox = document.getElementById('profile-groups-box'); grBox.innerHTML = '';
 
-            if(!uSnap.empty) {
-                uSnap.forEach(d => {
-                    const data = d.data();
-                    if(data.friends && data.friends.length > 0) {
-                        data.friends.forEach(f => { fBox.innerHTML += `<div class="scroller-item" onclick="loadTargetProfileView('${f}')">👤 <b>${f}</b></div>`; });
-                    } else { fBox.innerHTML = '<div class="scroller-item">No Friends</div>'; }
-                });
-            }
+            if(targetFriendList.length > 0) {
+                targetFriendList.forEach(f => { fBox.innerHTML += `<div class="scroller-item" onclick="loadTargetProfileView('${f}')">👤 <b>${f}</b></div>`; });
+            } else { fBox.innerHTML = '<div class="scroller-item">No Friends</div>'; }
 
-            // Games array
             const gamesSnap = await getDocs(query(collection(db,"games"), where("creator","==",username)));
             if(gamesSnap.empty) { gBox.innerHTML = '<div class="scroller-item">No Games</div>'; }
             else { gamesSnap.forEach(doc => { gBox.innerHTML += `<div class="scroller-item" style="background:${doc.data().iconColor || '#f0f4f8'}">🎮 <b>${doc.data().title}</b></div>`; }); }
 
-            // Groups array
             const groupsSnap = await getDocs(collection(db,"groups"));
             let gCount = 0;
             groupsSnap.forEach(doc => {
@@ -561,7 +505,6 @@
             });
             if(gCount===0) grBox.innerHTML = '<div class="scroller-item">No Groups</div>';
 
-            // Setup button binding parameters explicitly
             const fBtn = document.getElementById('friend-btn');
             if(username === localUserDoc.username) { fBtn.style.display = 'none'; } 
             else {
@@ -577,11 +520,164 @@
             const term = document.getElementById('search-user-input').value.trim();
             const q = query(collection(db,"users"), where("username","==",term));
             const snap = await getDocs(q);
-            if(snap.empty) return alert("User handle completely absent from system matrix directory.");
+            if(snap.empty) return alert("User handle absent from server directory.");
             loadTargetProfileView(term);
         };
 
-        // --- INTERACTIVE ACTIVE PLAY LIVE CLIENT RUNTIME ENGINE OVERLAY MULTI-NODE ---
+        // --- DASHBOARD AND FEED SYNCHRONIZATION RUNTIME ---
+        async function syncHomeFeedDashboardModule() {
+            init3DAvatarViewerCanvas('home-avatar-canvas', false);
+            const fC = document.getElementById('home-friends-scroller'); fC.innerHTML = '';
+            if(!localUserDoc.friends || localUserDoc.friends.length===0){ fC.innerHTML='<div class="scroller-item">No friends.</div>'; }
+            else { localUserDoc.friends.forEach(f=>{ fC.innerHTML+=`<div class="scroller-item" onclick="loadTargetProfileView('${f}')">👤 <b>${f}</b><br><small style="color:green">● Active</small></div>`; }); }
+
+            const gC = document.getElementById('home-games-scroller'); gC.innerHTML = '';
+            const gSnap = await getDocs(query(collection(db,"games"), where("creator","==",localUserDoc.username)));
+            if(gSnap.empty){ gC.innerHTML='<div class="scroller-item">No places found.</div>'; }
+            else { gSnap.forEach(d=>{ gC.innerHTML+=`<div class="scroller-item" style="background:${d.data().iconColor || '#fff7c2'}">🎮 <b>${d.data().title}</b></div>`; }); }
+
+            const clC = document.getElementById('home-groups-scroller'); clC.innerHTML = '';
+            const clSnap = await getDocs(collection(db,"groups"));
+            let ct=0; clSnap.forEach(d=>{
+                if(d.data().members && d.data().members.includes(localUserDoc.username)) {
+                    clC.innerHTML+=`<div class="scroller-item" style="background:#e3f2fd;">🏳️ <b>${d.data().name}</b></div>`; ct++;
+                }
+            });
+            if(ct===0) clC.innerHTML='<div class="scroller-item">No groups joined.</div>';
+        }
+
+        // --- CREATION DASHBOARD PLATFORM STACK ---
+        window.openCreateNewGameModal = function() { document.getElementById('new-game-modal').style.display='block'; };
+        
+        window.commitNewGameToCloudRegistry = async function() {
+            const title = document.getElementById('new-game-title-input').value.trim();
+            const color = document.getElementById('new-game-theme-color').value.trim() || '#ffea00';
+            if(!title) return alert("Title required.");
+
+            const docRef = await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, iconColor: color, time: Date.now(), htmlScript: "" });
+            document.getElementById('new-game-modal').style.display='none';
+            launchStudioDevelopmentInstance(docRef.id, title);
+        };
+
+        async function renderCreationsLandingDashboard() {
+            const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
+            const q = query(collection(db, "games"), where("creator", "==", localUserDoc.username));
+            const snap = await getDocs(q);
+            
+            if(snap.empty) { grid.innerHTML = "<p style='grid-column: 1/-1;'>You haven't built any custom places yet. Click 'Create New Place' to start!</p>"; return; }
+            
+            snap.forEach(d => {
+                const data = d.data();
+                const card = document.createElement('div'); card.className = 'market-card';
+                card.innerHTML = `
+                    <div style="background:${data.iconColor || '#555'}; height:75px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:white;">🎮 Slot</div>
+                    <div style="margin-top:6px;"><strong>${data.title}</strong></div>
+                    <button class="btn-action" id="edit-studio-${d.id}" style="padding:4px; margin-top:5px; font-size:13px; background:#007acc; border-color:#005999;">Open in Studio</button>
+                `;
+                grid.appendChild(card);
+                document.getElementById(`edit-studio-${d.id}`).onclick = () => launchStudioDevelopmentInstance(d.id, data.title);
+            });
+        }
+
+        // --- STUDIO WORKSPACE INTERFACE DESIGN CONTROLLER ---
+        async function launchStudioDevelopmentInstance(gameId, title) {
+            currentlyEditingGameId = gameId;
+            switchPage('studio');
+            
+            const gameSnap = await getDoc(doc(db, "games", gameId));
+            if(gameSnap.exists() && gameSnap.data().htmlScript) {
+                document.getElementById('html-textarea-field').value = gameSnap.data().htmlScript;
+            } else {
+                document.getElementById('html-textarea-field').value = "";
+            }
+
+            const box = document.getElementById('studio-3d-canvas'); box.innerHTML = '';
+            studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x222222);
+            studioCamera = new THREE.PerspectiveCamera(60, box.clientWidth / box.clientHeight, 0.1, 1000);
+            studioRenderer = new THREE.WebGLRenderer({ antialias: true });
+            studioRenderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(studioRenderer.domElement);
+
+            studioScene.add(new THREE.GridHelper(50, 50, 0xffffff, 0x444444));
+            const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10,30,15); studioScene.add(dl);
+
+            updateStudioOrbitCameraPositionTransform();
+
+            box.addEventListener('mousedown', (e) => { activeStudioControls.isTargetDragging = true; activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY; });
+            window.addEventListener('mousemove', (e) => {
+                if(!activeStudioControls.isTargetDragging) return;
+                let deltaX = e.clientX - activeStudioControls.prevX; let deltaY = e.clientY - activeStudioControls.prevY;
+                activeStudioControls.theta -= deltaX * 0.007; activeStudioControls.phi += deltaY * 0.007;
+                activeStudioControls.phi = Math.max(0.1, Math.min(Math.PI - 0.1, activeStudioControls.phi));
+                activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY;
+                updateStudioOrbitCameraPositionTransform();
+            });
+            window.addEventListener('mouseup', () => activeStudioControls.isTargetDragging = false);
+            box.addEventListener('wheel', (e) => { activeStudioControls.radius += e.deltaY * 0.02; activeStudioControls.radius = Math.max(5, Math.min(60, activeStudioControls.radius)); updateStudioOrbitCameraPositionTransform(); }, { passive: true });
+
+            function loop() { if(document.getElementById('page-studio').classList.contains('active')) requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); }
+            loop();
+            objectsMatrix = [];
+            renderExplorerStudioHierarchy();
+        }
+
+        function updateStudioOrbitCameraPositionTransform() {
+            studioCamera.position.x = activeStudioControls.radius * Math.sin(activeStudioControls.phi) * Math.sin(activeStudioControls.theta);
+            studioCamera.position.y = activeStudioControls.radius * Math.cos(activeStudioControls.phi);
+            studioCamera.position.z = activeStudioControls.radius * Math.sin(activeStudioControls.phi) * Math.cos(activeStudioControls.theta);
+            studioCamera.lookAt(0, 0, 0);
+        }
+
+        window.spawn3DObject = function(type) {
+            let mesh; const mat = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), mat);
+            else if(type === 'SpawnPoint') mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 0.2, 4), new THREE.MeshLambertMaterial({ color: 0x00ff00 }));
+            else mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mat);
+
+            mesh.position.set((Math.random()-0.5)*12, 1, (Math.random()-0.5)*12);
+            studioScene.add(mesh);
+
+            objectsMatrix.push({ id: "node_"+Date.now(), name: `Workspace_${type}`, type, mesh });
+            renderExplorerStudioHierarchy();
+        };
+
+        function renderExplorerStudioHierarchy() {
+            const el = document.getElementById('explorer-list'); el.innerHTML = '';
+            objectsMatrix.forEach(obj => {
+                const div = document.createElement('div'); div.className = `explorer-item ${selectedObjectId === obj.id ? 'selected' : ''}`;
+                div.innerHTML = `🧱 ${obj.name}`;
+                div.onclick = () => { selectedObjectId = obj.id; renderExplorerStudioHierarchy(); openPropertiesInspector(); };
+                el.appendChild(div);
+            });
+        }
+
+        function openPropertiesInspector() {
+            const win = document.getElementById('properties-window'); const obj = objectsMatrix.find(o => o.id === selectedObjectId);
+            if(!obj) return;
+            win.innerHTML = `
+                <div>Label Element: <input type='text' id='p-name' value='${obj.name}'></div>
+                <div>Position Vector Array:<br><small>X: ${obj.mesh.position.x.toFixed(2)}<br>Z: ${obj.mesh.position.z.toFixed(2)}</small></div>
+            `;
+            document.getElementById('p-name').onchange = (e) => { obj.name = e.target.value; renderExplorerStudioHierarchy(); };
+        }
+
+        // --- ADVANCED HTML SCRIPT EDITOR ACTIONS ---
+        window.openHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='flex'; };
+        window.closeHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='none'; };
+        
+        window.saveActiveStudioProject = async function() {
+            if(!currentlyEditingGameId) return;
+            const codePayload = document.getElementById('html-textarea-field').value;
+            await updateDoc(doc(db, "games", currentlyEditingGameId), { htmlScript: codePayload });
+            alert("Game workspace and HTML code modules successfully saved!");
+        };
+
+        window.triggerHtmlLivePlaytest = function() {
+            const codePayload = document.getElementById('html-textarea-field').value;
+            document.getElementById('html-playtest-render-zone').innerHTML = codePayload || "<p style='color:#666;'>No HTML script content written yet.</p>";
+            document.getElementById('html-playtest-overlay').style.display = 'block';
+        };
+
+        // --- LIVE PLAY ARCHITECTURE CLIENT RIG RUNTIME ENGINE ---
         window.launchActiveGameSimulationInstance = async function(gameId, title, creator) {
             const vp = document.getElementById('game-client-viewport'); vp.style.display = 'block';
             const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
@@ -595,11 +691,9 @@
             const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(20,40,20); activeGameScene.add(dl);
             activeGameScene.add(new THREE.GridHelper(100, 100, 0xffffff, 0x888888));
 
-            // Ground base structure plate brick element logic mesh
             const floor = new THREE.Mesh(new THREE.BoxGeometry(100, 0.5, 100), new THREE.MeshLambertMaterial({ color: 0x3a5fcd }));
             floor.position.y = -0.25; activeGameScene.add(floor);
 
-            // Fetch live user cosmetics array payload
             const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
             activePlayerMeshObj = generateRigK6ComplexMesh(fit.shirt, fit.leggings);
             activeGameScene.add(activePlayerMeshObj);
@@ -607,21 +701,24 @@
 
             activeGameCamera.position.set(0, 8, 14); activeGameCamera.lookAt(activePlayerMeshObj.position);
 
-            // Repopulate dynamic participant grid listings row arrays inside menu dashboard frame component layout
             const rows = document.getElementById('game-player-list-rows');
-            rows.innerHTML = `<tr><td>${localUserDoc.username} [You]</td><td style="color:green">Active Instance Host Node</td></tr><tr><td>${creator}</td><td>Developer Account Node</td></tr>`;
+            rows.innerHTML = `<tr><td>${localUserDoc.username} [You]</td><td style="color:green">Server Host</td></tr><tr><td>${creator}</td><td>Developer</td></tr>`;
+            document.getElementById('game-chat-display').innerHTML = `<div style="color:#ffea00;">[System]: Teleported to ${title}.</div>`;
 
-            // Reset dynamic message chat container boards completely clean
-            document.getElementById('game-chat-display').innerHTML = `<div style="color:#ffea00;">[System]: Welcome to ${title}! Created by ${creator}.</div>`;
-
-            // Wire character loop input event matrix listener frames properly
             window.addEventListener('keydown', handleGameInputKeyDown);
             window.addEventListener('keyup', handleGameInputKeyUp);
 
             animateActiveGameSimulationLoop();
         };
 
-        function handleGameInputKeyDown(e) { gameActiveState.keys[e.key.toLowerCase()] = true; if(e.key === 'Escape') toggleGameEscMenu(); }
+        function handleGameInputKeyDown(e) { 
+            gameActiveState.keys[e.key.toLowerCase()] = true; 
+            if(e.key === 'Escape') toggleGameEscMenu(); 
+            if(e.key === ' ' && !gameActiveState.isJumping) {
+                gameActiveState.velY = 0.22;
+                gameActiveState.isJumping = true;
+            }
+        }
         function handleGameInputKeyUp(e) { gameActiveState.keys[e.key.toLowerCase()] = false; }
 
         function handleGameChatKeyDown(e) {
@@ -643,134 +740,61 @@
             document.getElementById('game-client-viewport').style.display = 'none';
         };
 
+        let runningTimeClock = 0;
         function animateActiveGameSimulationLoop() {
             if(document.getElementById('game-client-viewport').style.display === 'none') return;
             requestAnimationFrame(animateActiveGameSimulationLoop);
 
-            let s = 0.12;
-            if(gameActiveState.keys['w'] || gameActiveState.keys['arrowup']) activePlayerMeshObj.position.z -= s;
-            if(gameActiveState.keys['s'] || gameActiveState.keys['arrowdown']) activePlayerMeshObj.position.z += s;
-            if(gameActiveState.keys['a'] || gameActiveState.keys['arrowleft']) activePlayerMeshObj.position.x -= s;
-            if(gameActiveState.keys['d'] || gameActiveState.keys['arrowright']) activePlayerMeshObj.position.x += s;
+            let speed = 0.12;
+            let isMoving = false;
+
+            if(gameActiveState.keys['w'] || gameActiveState.keys['arrowup']) { activePlayerMeshObj.position.z -= speed; isMoving = true; }
+            if(gameActiveState.keys['s'] || gameActiveState.keys['arrowdown']) { activePlayerMeshObj.position.z += speed; isMoving = true; }
+            if(gameActiveState.keys['a'] || gameActiveState.keys['arrowleft']) { activePlayerMeshObj.position.x -= speed; isMoving = true; }
+            if(gameActiveState.keys['d'] || gameActiveState.keys['arrowright']) { activePlayerMeshObj.position.x += speed; isMoving = true; }
+
+            // --- JUMP LOGIC AND GRAVITY SIMULATION LAYER ---
+            if(gameActiveState.isJumping) {
+                activePlayerMeshObj.position.y += gameActiveState.velY;
+                gameActiveState.velY -= 0.015; // Gravity acceleration drop coefficient
+                if(activePlayerMeshObj.position.y <= 1.6) {
+                    activePlayerMeshObj.position.y = 1.6;
+                    gameActiveState.isJumping = false;
+                    gameActiveState.velY = 0;
+                }
+            }
+
+            // --- PROCEDURAL LIMB SWING LOCOMOTION ANIMATION ---
+            if(isMoving && !gameActiveState.isJumping) {
+                runningTimeClock += 0.25;
+                activePlayerMeshObj.llNode.rotation.x = Math.sin(runningTimeClock) * 0.5;
+                activePlayerMeshObj.rlNode.rotation.x = -Math.sin(runningTimeClock) * 0.5;
+                activePlayerMeshObj.laNode.rotation.x = -Math.sin(runningTimeClock) * 0.5;
+                activePlayerMeshObj.raNode.rotation.x = Math.sin(runningTimeClock) * 0.5;
+            } else if(!gameActiveState.isJumping) {
+                activePlayerMeshObj.llNode.rotation.x = 0;
+                activePlayerMeshObj.rlNode.rotation.x = 0;
+                activePlayerMeshObj.laNode.rotation.x = 0;
+                activePlayerMeshObj.raNode.rotation.x = 0;
+            } else {
+                // Extended jump pose frame
+                activePlayerMeshObj.llNode.rotation.x = -0.2;
+                activePlayerMeshObj.rlNode.rotation.x = 0.2;
+            }
 
             activeGameCamera.position.set(activePlayerMeshObj.position.x, activePlayerMeshObj.position.y + 7, activePlayerMeshObj.position.z + 12);
             activeGameCamera.lookAt(activePlayerMeshObj.position);
             activeGameRenderer.render(activeGameScene, activeGameCamera);
         }
 
-        // --- THREE.JS STUDIO ADVANCED SYSTEM CONTROLLERS PAN AXIS ARRAY HOOKS ---
-        function init3DStudioViewportContext() {
-            const box = document.getElementById('studio-3d-canvas'); if(box.children.length > 1) return;
-
-            studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x222222);
-            studioCamera = new THREE.PerspectiveCamera(60, box.clientWidth / box.clientHeight, 0.1, 1000);
-            studioRenderer = new THREE.WebGLRenderer({ antialias: true });
-            studioRenderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(studioRenderer.domElement);
-
-            studioScene.add(new THREE.GridHelper(50, 50, 0xffffff, 0x444444));
-            const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10,30,15); studioScene.add(dl);
-
-            updateStudioOrbitCameraPositionTransform();
-
-            // Hook direct functional canvas touch pointer movement triggers explicitly
-            box.addEventListener('mousedown', (e) => { activeStudioControls.isTargetDragging = true; activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY; });
-            window.addEventListener('mousemove', (e) => {
-                if(!activeStudioControls.isTargetDragging) return;
-                let deltaX = e.clientX - activeStudioControls.prevX; let deltaY = e.clientY - activeStudioControls.prevY;
-                activeStudioControls.theta -= deltaX * 0.007; activeStudioControls.phi += deltaY * 0.007;
-                activeStudioControls.phi = Math.max(0.1, Math.min(Math.PI - 0.1, activeStudioControls.phi));
-                activeStudioControls.prevX = e.clientX; activeStudioControls.prevY = e.clientY;
-                updateStudioOrbitCameraPositionTransform();
-            });
-            window.addEventListener('mouseup', () => activeStudioControls.isTargetDragging = false);
-            box.addEventListener('wheel', (e) => { activeStudioControls.radius += e.deltaY * 0.02; activeStudioControls.radius = Math.max(5, Math.min(60, activeStudioControls.radius)); updateStudioOrbitCameraPositionTransform(); }, { passive: true });
-
-            function loop() { requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); }
-            loop();
-            renderExplorerStudioHierarchy();
-        }
-
-        function updateStudioOrbitCameraPositionTransform() {
-            studioCamera.position.x = activeStudioControls.radius * Math.sin(activeStudioControls.phi) * Math.sin(activeStudioControls.theta);
-            studioCamera.position.y = activeStudioControls.radius * Math.cos(activeStudioControls.phi);
-            studioCamera.position.z = activeStudioControls.radius * Math.sin(activeStudioControls.phi) * Math.cos(activeStudioControls.theta);
-            studioCamera.lookAt(0, 0, 0);
-        }
-
-        window.spawn3DObject = function(type) {
-            let mesh; const mat = new THREE.MeshLambertMaterial({ color: 0xcccccc });
-            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), mat);
-            else if(type === 'SpawnPoint') mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 0.2, 4), new THREE.MeshLambertMaterial({ color: 0x00ff00 }));
-            else mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mat);
-
-            mesh.position.set((Math.random()-0.5)*12, 1, (Math.random()-0.5)*12);
-            studioScene.add(mesh);
-
-            objectsMatrix.push({ id: "node_"+Date.now(), name: `Workspace_${type}`, type, mesh, blocklyXml: '' });
-            renderExplorerStudioHierarchy();
-        };
-
-        function renderExplorerStudioHierarchy() {
-            const el = document.getElementById('explorer-list'); el.innerHTML = '';
-            objectsMatrix.forEach(obj => {
-                const div = document.createElement('div'); div.className = `explorer-item ${selectedObjectId === obj.id ? 'selected' : ''}`;
-                div.innerHTML = `🧱 ${obj.name}`;
-                div.onclick = () => { selectedObjectId = obj.id; renderExplorerStudioHierarchy(); openPropertiesInspector(); };
-                div.ondblclick = () => { if(obj.type === 'Script') openBlocklyWorkspaceWindow(obj.id); };
-                el.appendChild(div);
-            });
-        }
-
-        function openPropertiesInspector() {
-            const win = document.getElementById('properties-window'); const obj = objectsMatrix.find(o => o.id === selectedObjectId);
-            if(!obj) return;
-            win.innerHTML = `
-                <div>Label Element: <input type='text' id='p-name' value='${obj.name}'></div>
-                <div>Position Array: <input type='text' readonly value='X: ${obj.mesh?obj.mesh.position.x.toFixed(1):0}, Z: ${obj.mesh?obj.mesh.position.z.toFixed(1):0}'></div>
-            `;
-            document.getElementById('p-name').onchange = (e) => { obj.name = e.target.value; renderExplorerStudioHierarchy(); };
-        }
-
-        // --- BLOCKLY WINDOW MATRIX CONTROLLER ---
-        let openScriptBlockId = null;
-        function openBlocklyWorkspaceWindow(id) {
-            openScriptBlockId = id; const obj = objectsMatrix.find(o => o.id === id);
-            document.getElementById('blockly-editor').style.display = 'flex';
-            if(!blocklyWorkspace) blocklyWorkspace = Blockly.inject('blockly-div', { toolbox: document.getElementById('toolbox') });
-            blocklyWorkspace.clear();
-            if(obj.blocklyXml) Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(obj.blocklyXml), blocklyWorkspace);
-        }
-
-        window.closeBlocklyWorkspace = function() {
-            const obj = objectsMatrix.find(o => o.id === openScriptBlockId);
-            if(obj) {
-                const xml = Blockly.Xml.workspaceToDom(blocklyWorkspace); obj.blocklyXml = Blockly.Xml.domToText(xml);
-            }
-            document.getElementById('blockly-editor').style.display = 'none';
-        };
-
-        // --- CLOUD INSTANCE PUBLISHING MANAGEMENT FRAME ---
-        window.openPublishStudioModal = function() { document.getElementById('publish-modal').style.display = 'block'; };
-        
-        window.publishWorldStreamToServer = async function() {
-            const title = document.getElementById('game-title').value.trim();
-            const iconColor = document.getElementById('game-icon-color').value.trim() || '#ffea00';
-            if(!title) return alert("Title must be specified.");
-
-            await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, iconColor, time: Date.now() });
-            document.getElementById('publish-modal').style.display = 'none';
-            alert("Experience structural data saved to live architecture successfully!");
-            switchPage('games-discover');
-        };
-
+        // --- DISCOVER GAME SERVER ENGINE ROWS ---
         async function syncGamesDiscoverGrid() {
             const grid = document.getElementById('games-market-list'); grid.innerHTML = '';
             const snap = await getDocs(collection(db, "games"));
             snap.forEach(d => {
-                const game = d.data();
-                const card = document.createElement('div'); card.className = 'market-card';
+                const game = d.data(); const card = document.createElement('div'); card.className = 'market-card';
                 card.innerHTML = `
-                    <div style="background:${game.iconColor || '#333'}; height:75px; color:#fff; display:flex; justify-content:center; align-items:center; border-radius:4px; font-size:13px; text-shadow:1px 1px 1px #000; border:1px solid rgba(0,0,0,0.1);">🎮 World Instance</div>
+                    <div style="background:${game.iconColor || '#333'}; height:75px; color:#fff; display:flex; justify-content:center; align-items:center; border-radius:4px; font-size:13px; text-shadow:1px 1px 1px #000;">🎮 Instance</div>
                     <div style="margin-top:6px;"><strong>${game.title}</strong></div>
                     <small style="color:#555;">By: ${game.creator}</small><br>
                     <button class="btn-action" id="play-btn-${d.id}" style="padding:4px; font-size:13px; margin-top:6px; background:#ffea00; color:#000; border-color:#e6b800;">Play Space</button>
@@ -780,16 +804,16 @@
             });
         }
 
-        // --- CATALOG APPAREL FABRICATION FRAME WORK ENGINE ---
+        // --- APPAREL FABRICATION SERVICE MATRIX ---
         window.submitCatalogAsset = async function() {
             const type = document.getElementById('upload-type').value;
             const title = document.getElementById('upload-title').value.trim();
             const val = document.getElementById('upload-value').value.trim();
             const price = parseInt(document.getElementById('upload-price').value) || 0;
 
-            if(!title || !val) return alert("Fill fabric data forms completely.");
+            if(!title || !val) return alert("Fill asset details fully.");
             await addDoc(collection(db, "catalog"), { type, title, value: val, price, creator: localUserDoc.username });
-            alert("Apparel published successfully!");
+            alert("Apparel asset published successfully!");
             document.getElementById('upload-panel').style.display = 'none';
             syncCatalogMarketplaceUI();
         };
@@ -811,11 +835,11 @@
         }
 
         async function processProductTransaction(id, item) {
-            if(localUserDoc.tickets < item.price) return alert("Ticket tier balance insufficient.");
+            if(localUserDoc.tickets < item.price) return alert("Insufficient tickets.");
             let updatedTix = localUserDoc.tickets - item.price;
             await updateDoc(doc(db, "users", localUserDoc.uid), { tickets: updatedTix, inventory: arrayUnion({ title: item.title, type: item.type, value: item.value }) });
             localUserDoc.tickets = updatedTix; document.getElementById('user-tickets').textContent = updatedTix;
-            alert("Item successfully stored inside locker inventory!");
+            alert("Item stored inside your locker inventory!");
         }
 
         function renderFabricInventoryGrid() {
@@ -860,7 +884,7 @@
             });
         }
 
-        // --- FACTION CLUSTER CONNECTIONS ---
+        // --- CLAN GROUPS CONFIGURATION ---
         window.createNewClanNode = async function() {
             const name = document.getElementById('group-name-input').value.trim(); if(!name) return alert("Input descriptor.");
             await addDoc(collection(db, "groups"), { name, owner: localUserDoc.username, members: [localUserDoc.username] });
@@ -871,25 +895,22 @@
             const box = document.getElementById('groups-container'); box.innerHTML = '';
             const snap = await getDocs(collection(db,"groups"));
             snap.forEach(d => {
-                const g = d.data();
-                const div = document.createElement('div'); div.className = 'market-card';
+                const g = d.data(); const div = document.createElement('div'); div.className = 'market-card';
                 div.innerHTML = `<h3>${g.name}</h3><small>Leader: ${g.owner}</small><br><button class="btn-action" id="join-cl-${d.id}" style="padding:4px; margin-top:6px;">Join</button>`;
                 box.appendChild(div);
                 document.getElementById(`join-cl-${d.id}`).onclick = async () => {
                     if(g.members.includes(localUserDoc.username)) return alert("Already aligned.");
-                    await updateDoc(doc(db,"groups", d.id), { members: arrayUnion(localUserDoc.username) }); alert("Alignment secure!");
+                    await updateDoc(doc(db,"groups", d.id), { members: arrayUnion(localUserDoc.username) }); alert("Alignment secured!");
                 };
             });
         }
 
-        // --- ROOT SYSTEM OVERPASS DIRECT TUNNEL ---
-        window.toggle3DPlaytest = function() { alert("Compiling custom Scratch blocks assembly layout into virtual stack logic runtime loops inside playground arrays!"); };
-        window.triggerAdminPrompt = function() { if(prompt("Enter Admin Access Code Pin:") === "080112") switchPage('admin'); };
-
+        // --- ROOT ADMINISTRATION PANEL ACCESS SYNC ---
+        window.triggerAdminPrompt = function() { if(prompt("Enter Admin Access Pin:") === "080112") switchPage('admin'); };
         window.adminMutationOverpass = async function() {
             const user = document.getElementById('admin-user').value.trim(); const tix = parseInt(document.getElementById('admin-tix').value) || 0;
             const snap = await getDocs(query(collection(db,"users"), where("username","==",user)));
-            if(snap.empty) return alert("User row target completely missing from cluster registry.");
+            if(snap.empty) return alert("User target missing from registry.");
             snap.forEach(async (d) => { await updateDoc(doc(db,"users", d.id), { tickets: tix }); alert("Direct account override injection complete!"); });
         };
     </script>
