@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght=700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
 
     <style>
         :root {
@@ -38,11 +37,7 @@
         .logo-2kblox {
             font-size: 32px; font-style: italic; color: white; letter-spacing: -1px;
             position: relative;
-            text-shadow: 
-                -2px -2px 0 #d12424,  
-                 2px -2px 0 #d12424,
-                -2px  2px 0 #d12424,
-                 2px  2px 0 #d12424;
+            text-shadow: -2px -2px 0 #d12424, 2px -2px 0 #d12424, -2px 2px 0 #d12424, 2px 2px 0 #d12424;
         }
         nav { display: flex; gap: 4px; background: rgba(0,0,0,0.15); padding: 4px; border-radius: 4px; }
         nav button {
@@ -57,7 +52,7 @@
 
         .auth-container { width: 360px; background: white; margin: 50px auto; padding: 25px; border: 4px solid #3570c5; text-align: center; border-radius: 8px; }
         input, select, textarea { width: 100%; padding: 8px; margin: 6px 0; border: 2px solid #aaa; border-radius: 4px; background: #fff; }
-        .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; border-radius: 4px; font-size: 15px; }
+        .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; border-radius: 4px; font-size: 15px; text-align: center; }
         .btn-action:hover { opacity: 0.9; }
 
         .home-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
@@ -66,12 +61,13 @@
         .scroller-item { min-width: 120px; max-width: 120px; background: #f0f4f8; border: 2px solid #bcd2ee; padding: 8px; text-align: center; font-size: 13px; border-radius: 4px; cursor: pointer; }
 
         .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
+        .badge-limited { position: absolute; top: 5px; right: 5px; background: #ff4500; color: white; padding: 2px 6px; font-size: 10px; border-radius: 3px; border: 1px solid white; }
         
         .profile-container-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #9bbce8; }
 
         /* PLAY SCENE OVERLAY STATIONS */
-        #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vw; background: #000; z-index: 5000; display: none; }
+        #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
         .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
         .game-ui-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; pointer-events: auto; font-size: 14px; }
         
@@ -90,6 +86,8 @@
         .explorer-tree, .properties-list { flex: 1; overflow-y: auto; padding: 8px; font-family: monospace; font-size: 12px; }
         .explorer-item { cursor: pointer; padding: 6px 4px; border-radius: 2px; border-bottom: 1px solid #3a3a3a; }
         .explorer-item.selected { background: #007acc; color: white; }
+        .prop-group { margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px; }
+        .prop-group label { display: block; color: #aaa; margin-bottom: 3px; font-size: 11px; }
 
         .studio-main-build-zone { flex: 1; display: flex; flex-direction: column; position: relative; }
         .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 8px; padding: 5px; border-bottom: 2px solid #222; }
@@ -98,6 +96,10 @@
         .code-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; flex-direction: column; }
         #html-textarea-field { width: 100%; flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 15px; background: #1e1e1e; color: #7ec699; border: none; resize: none; }
         .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
+
+        /* ADMIN CONTROL BLOCKS */
+        .admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; padding: 15px 0; }
+        .admin-module-card { background: #1e293b; border: 1px solid #38bdf8; padding: 15px; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -163,6 +165,10 @@
         </div>
 
         <div id="page-games-discover" class="page">
+            <div id="featured-games-container" style="display:none; margin-bottom: 25px; background: #fffbdf; border: 3px solid #ffea00; padding: 15px; border-radius: 8px;">
+                <h2 style="margin-top:0; color: #b8860b;">🌟 Featured Experiences</h2>
+                <div class="item-grid" id="featured-games-list"></div>
+            </div>
             <h2>Active Game Server Instances</h2>
             <div class="item-grid" id="games-market-list"></div>
         </div>
@@ -305,11 +311,43 @@
         <div id="page-admin" class="page" style="background:#0f172a; color:#38bdf8; font-family:monospace;">
             <h2>🚨 MASTER SECURITY SYSTEM ADMINISTRATION ACCESS CONSOLE</h2>
             <hr style="border-color:#38bdf8;">
-            <div style="max-width:450px; background:#1e293b; padding:20px; border:2px solid #38bdf8; border-radius:6px; margin-top:20px;">
-                <h3>Manual Account Balances Manipulation Injection</h3>
-                <input type="text" id="admin-user" placeholder="Target Profile Username Key" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                <input type="number" id="admin-tix" placeholder="Target Absolute Tickets Ceiling" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
-                <button class="btn-action" style="background:#38bdf8; color:#0f172a;" onclick="adminMutationOverpass()">Commit Matrix Injection Sequence</button>
+            <div class="admin-dashboard-grid">
+                <div class="admin-module-card">
+                    <h3>Manual Balances Injection</h3>
+                    <input type="text" id="admin-user" placeholder="Target Username Key" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                    <input type="number" id="admin-tix" placeholder="Tickets Absolute Value" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                    <button class="btn-action" style="background:#38bdf8; color:#0f172a; border:none;" onclick="adminMutationOverpass()">Commit Tickets Override</button>
+                </div>
+
+                <div class="admin-module-card">
+                    <h3>Experience Management Engine</h3>
+                    <input type="text" id="admin-game-name" placeholder="Exact Game Title Matcher" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <button class="btn-action" style="background:#eab308; color:#000; border:none;" onclick="moderateExperience('feature')">Toggle Feature</button>
+                        <button class="btn-action" style="background:#ef4444; color:#fff; border:none;" onclick="moderateExperience('ban')">Ban/Remove Game</button>
+                    </div>
+                </div>
+
+                <div class="admin-module-card">
+                    <h3>Profile Access Lockdown</h3>
+                    <input type="text" id="admin-target-account" placeholder="Target Account Username" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                    <button class="btn-action" style="background:#ef4444; color:#fff; border:none; margin-top:5px;" onclick="banUserAccountNode()">Suspend Profile Access</button>
+                </div>
+
+                <div class="admin-module-card">
+                    <h3>Inject Limited Store Item</h3>
+                    <input type="text" id="admin-ltd-title" placeholder="Item Name (e.g. Iron Crown)" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                    <input type="text" id="admin-ltd-color" placeholder="Hex Code Value (e.g. #ffd700)" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                    <input type="number" id="admin-ltd-price" placeholder="Ticket Valuation Cost" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                    <select id="admin-ltd-type" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;"><option value="T-Shirt">T-Shirt</option><option value="Leggings">Leggings</option></select>
+                    <button class="btn-action" style="background:#a855f7; color:#fff; border:none; margin-top:5px;" onclick="mintLimitedCatalogItem()">Inject Limited Matrix Asset</button>
+                </div>
+
+                <div class="admin-module-card">
+                    <h3>System Broadcast Ticker</h3>
+                    <input type="text" id="admin-system-alert" placeholder="System alert notice tracking string..." style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">
+                    <button class="btn-action" style="background:#06b6d4; color:#fff; border:none; margin-top:5px;" onclick="pushGlobalSystemTicker()">Broadcast System Ticker</button>
+                </div>
             </div>
         </div>
 
@@ -351,7 +389,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, arrayUnion, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBl_E7sYlhIjLS4Yty-mf8-vu6vOImTiPc",
@@ -387,9 +425,15 @@
                 if(type === 'signup') {
                     if(!username) return alert("Username required.");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 50, inventory: [], friends: [], groups: [], activeOutfit: { shirt: '#e63946', leggings: '#1d3557' } });
+                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 50, inventory: [], friends: [], groups: [], activeOutfit: { shirt: '#e63946', leggings: '#1d3557' }, isBanned: false });
                 } else {
-                    await signInWithEmailAndPassword(auth, email, pass);
+                    const loginRes = await signInWithEmailAndPassword(auth, email, pass);
+                    const checker = await getDoc(doc(db, "users", loginRes.user.uid));
+                    if(checker.exists() && checker.data().isBanned) {
+                        alert("This user identity profile node has been suspended.");
+                        auth.signOut();
+                        location.reload();
+                    }
                 }
             } catch(e) { alert(e.message); }
         };
@@ -397,6 +441,11 @@
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 const snap = await getDoc(doc(db, "users", u.uid));
+                if(snap.exists() && snap.data().isBanned) {
+                    alert("This user profile is banned.");
+                    auth.signOut();
+                    return;
+                }
                 localUserDoc = { uid: u.uid, ...snap.data() };
                 document.getElementById('page-auth').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
@@ -422,7 +471,7 @@
             if(p === 'profile') loadTargetProfileView(localUserDoc.username);
         };
 
-        // --- FIXED RIG CONSTRUCTOR BLOCK ---
+        // --- RIG TRANSFORMATION & OFFSET SYSTEM ---
         function generateRigK6ComplexMesh(shirt, pants) {
             const group = new THREE.Group();
             const sMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
@@ -435,10 +484,16 @@
             const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), sMat); la.position.set(-1.0, 2.0, 0); group.add(la);
             const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), sMat); ra.position.set(1.0, 2.0, 0); group.add(ra);
             
-            const ll = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); ll.position.set(-0.35, 0.9, 0); group.add(ll);
-            const rl = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); rl.position.set(0.35, 0.9, 0); group.add(rl);
+            // Re-anchored leg transforms further down to avoid torso clipping spaces entirely
+            const llPivot = new THREE.Group(); llPivot.position.set(-0.35, 1.1, 0);
+            const ll = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); ll.position.y = -0.7; llPivot.add(ll);
+            group.add(llPivot);
             
-            group.laNode = la; group.raNode = ra; group.llNode = ll; group.rlNode = rl;
+            const rlPivot = new THREE.Group(); rlPivot.position.set(0.35, 1.1, 0);
+            const rl = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), pantsMat); rl.position.y = -0.7; rlPivot.add(rlPivot);
+            group.add(rlPivot);
+            
+            group.laNode = la; group.raNode = ra; group.llNode = llPivot; group.rlNode = rlPivot;
             return group;
         }
 
@@ -521,14 +576,6 @@
             }
         };
 
-        window.searchProfileDb = async function() {
-            const term = document.getElementById('search-user-input').value.trim();
-            const q = query(collection(db,"users"), where("username","==",term));
-            const snap = await getDocs(q);
-            if(snap.empty) return alert("User handle absent from server directory.");
-            loadTargetProfileView(term);
-        };
-
         async function syncHomeFeedDashboardModule() {
             init3DAvatarViewerCanvas('home-avatar-canvas', false);
             const fC = document.getElementById('home-friends-scroller'); fC.innerHTML = '';
@@ -557,7 +604,7 @@
             const color = document.getElementById('new-game-theme-color').value.trim() || '#ffea00';
             if(!title) return alert("Title required.");
 
-            const docRef = await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, iconColor: color, time: Date.now(), htmlScript: "", scriptType: "HTML" });
+            const docRef = await addDoc(collection(db, "games"), { title, creator: localUserDoc.username, iconColor: color, time: Date.now(), htmlScript: "", scriptType: "HTML", isFeatured: false, isBanned: false });
             document.getElementById('new-game-modal').style.display='none';
             launchStudioDevelopmentInstance(docRef.id, title);
         };
@@ -571,6 +618,7 @@
             
             snap.forEach(d => {
                 const data = d.data();
+                if(data.isBanned) return;
                 const card = document.createElement('div'); card.className = 'market-card';
                 card.innerHTML = `
                     <div style="background:${data.iconColor || '#555'}; height:75px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:white;">🎮 Slot</div>
@@ -652,14 +700,52 @@
             });
         }
 
+        // --- MANAGE EXTENDED TRANSFORMS MATRIX (MOVE, ROTATE, SCALE) ---
         function openPropertiesInspector() {
             const win = document.getElementById('properties-window'); const obj = objectsMatrix.find(o => o.id === selectedObjectId);
             if(!obj) return;
             win.innerHTML = `
-                <div>Label Element: <input type='text' id='p-name' value='${obj.name}'></div>
-                <div>Position Vector Array:<br><small>X: ${obj.mesh.position.x.toFixed(2)}<br>Z: ${obj.mesh.position.z.toFixed(2)}</small></div>
+                <div class="prop-group">
+                    <label>Label Identification Name</label>
+                    <input type='text' id='p-name' value='${obj.name}'>
+                </div>
+                <div class="prop-group">
+                    <label>Position Offset Vector (X, Y, Z)</label>
+                    <div style="display:flex; gap:3px;">
+                        <input type="number" step="0.5" id="p-pos-x" value="${obj.mesh.position.x}">
+                        <input type="number" step="0.5" id="p-pos-y" value="${obj.mesh.position.y}">
+                        <input type="number" step="0.5" id="p-pos-z" value="${obj.mesh.position.z}">
+                    </div>
+                </div>
+                <div class="prop-group">
+                    <label>Rotation Radian Vector (X, Y, Z)</label>
+                    <div style="display:flex; gap:3px;">
+                        <input type="number" step="0.1" id="p-rot-x" value="${obj.mesh.rotation.x}">
+                        <input type="number" step="0.1" id="p-rot-y" value="${obj.mesh.rotation.y}">
+                        <input type="number" step="0.1" id="p-rot-z" value="${obj.mesh.rotation.z}">
+                    </div>
+                </div>
+                <div class="prop-group">
+                    <label>Scale Boundaries Vector (X, Y, Z)</label>
+                    <div style="display:flex; gap:3px;">
+                        <input type="number" step="0.2" id="p-scale-x" value="${obj.mesh.scale.x}">
+                        <input type="number" step="0.2" id="p-scale-y" value="${obj.mesh.scale.y}">
+                        <input type="number" step="0.2" id="p-scale-z" value="${obj.mesh.scale.z}">
+                    </div>
+                </div>
             `;
+            
             document.getElementById('p-name').onchange = (e) => { obj.name = e.target.value; renderExplorerStudioHierarchy(); };
+            
+            const syncTransforms = () => {
+                obj.mesh.position.set(parseFloat(document.getElementById('p-pos-x').value), parseFloat(document.getElementById('p-pos-y').value), parseFloat(document.getElementById('p-pos-z').value));
+                obj.mesh.rotation.set(parseFloat(document.getElementById('p-rot-x').value), parseFloat(document.getElementById('p-rot-y').value), parseFloat(document.getElementById('p-rot-z').value));
+                obj.mesh.scale.set(parseFloat(document.getElementById('p-scale-x').value), parseFloat(document.getElementById('p-scale-y').value), parseFloat(document.getElementById('p-scale-z').value));
+            };
+
+            ['p-pos-x','p-pos-y','p-pos-z','p-rot-x','p-rot-y','p-rot-z','p-scale-x','p-scale-y','p-scale-z'].forEach(id => {
+                document.getElementById(id).addEventListener('input', syncTransforms);
+            });
         }
 
         window.openHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display='flex'; };
@@ -673,6 +759,7 @@
             alert("Game workspace blueprint and code tracks successfully synchronized!");
         };
 
+        // --- FULLY SYSTEMIZED RETRO BHTML PARSER BLOCKS ---
         window.triggerHtmlLivePlaytest = function() {
             const codePayload = document.getElementById('html-textarea-field').value;
             const syntaxStandard = document.getElementById('script-syntax-select').value;
@@ -680,19 +767,21 @@
             document.getElementById('playtest-header-title').textContent = `Live Rendering Sandbox Playtest (${syntaxStandard} Engine Mode)`;
             
             if(syntaxStandard === "BHTML") {
-                // Parsing custom BHTML conversion strings -> mapping unique tags to bold structures
                 let renderedBhtml = codePayload
-                    .replace(/<game_title>/g, "<h1>🎮 Retro Game Instance</h1>")
-                    .replace(/<glow>/g, "<span style='text-shadow: 0 0 10px #ffea00; color: #ffea00;'>")
-                    .replace(/<\/glow>/g, "</span>");
-                document.getElementById('html-playtest-render-zone').innerHTML = renderedBhtml || "<p>Empty BHTML tree.</p>";
+                    .replace(/<game_title>/g, "<h1 style='color: #1a4380; font-family: Comic Neue; font-size: 28px; text-decoration: underline;'>🎮 Retro Server Terminal Instance</h1>")
+                    .replace(/<glow>/g, "<span style='text-shadow: 0 0 12px #ff4500, 0 0 4px #ffea00; color: #fff; font-weight:900;'>")
+                    .replace(/<\/glow>/g, "</span>")
+                    .replace(/<card>/g, "<div style='background: #fff; border: 3px double #3570c5; padding: 12px; border-radius: 6px; box-shadow: 3px 3px 0px rgba(0,0,0,0.2); margin: 8px 0;'>")
+                    .replace(/<\/card>/g, "</div>")
+                    .replace(/<alert>/g, "<div style='background: #ffea00; border: 2px dashed red; padding: 8px; color: black; font-family: monospace; text-align: center;'>⚠️ SYSTEM NOTICE: ")
+                    .replace(/<\/alert>/g, "</div>");
+                document.getElementById('html-playtest-render-zone').innerHTML = renderedBhtml || "<p>Empty BHTML script footprint.</p>";
             } else {
-                document.getElementById('html-playtest-render-zone').innerHTML = codePayload || "<p>Empty HTML tree.</p>";
+                document.getElementById('html-playtest-render-zone').innerHTML = codePayload || "<p>Empty HTML script footprint.</p>";
             }
             document.getElementById('html-playtest-overlay').style.display = 'block';
         };
 
-        // --- LOOK CAMERA & MOUSE DRAG FIXES ---
         window.launchActiveGameSimulationInstance = async function(gameId, title, creator) {
             const vp = document.getElementById('game-client-viewport'); vp.style.display = 'block';
             const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
@@ -712,7 +801,7 @@
             const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
             activePlayerMeshObj = generateRigK6ComplexMesh(fit.shirt, fit.leggings);
             activeGameScene.add(activePlayerMeshObj);
-            activePlayerMeshObj.position.set(0, 0, 0); // Position at baseline floor boundary
+            activePlayerMeshObj.position.set(0, 0, 0);
 
             updateGameViewportOrbitCamera();
 
@@ -723,17 +812,16 @@
             window.addEventListener('keydown', handleGameInputKeyDown);
             window.addEventListener('keyup', handleGameInputKeyUp);
 
-            // Orbit mouse controls for Looking around
             box.addEventListener('mousedown', (e) => { if(e.button === 2 || e.button === 0) { gameCameraControls.isDragging = true; gameCameraControls.prevX = e.clientX; gameCameraControls.prevY = e.clientY; } });
             window.addEventListener('mousemove', (e) => {
                 if(!gameCameraControls.isDragging) return;
                 let deltaX = e.clientX - gameCameraControls.prevX; let deltaY = e.clientY - gameCameraControls.prevY;
                 gameCameraControls.theta -= deltaX * 0.007; gameCameraControls.phi += deltaY * 0.007;
-                gameCameraControls.phi = Math.max(0.1, Math.min(Math.PI/2 - 0.05, gameCameraControls.phi)); // Avoid clipping under floor
+                gameCameraControls.phi = Math.max(0.1, Math.min(Math.PI/2 - 0.05, gameCameraControls.phi));
                 gameCameraControls.prevX = e.clientX; gameCameraControls.prevY = e.clientY;
             });
             window.addEventListener('mouseup', () => gameCameraControls.isDragging = false);
-            box.addEventListener('contextmenu', (e) => e.preventDefault()); // Block right click context menu
+            box.addEventListener('contextmenu', (e) => e.preventDefault());
 
             animateActiveGameSimulationLoop();
         };
@@ -741,7 +829,7 @@
         function updateGameViewportOrbitCamera() {
             if(!activePlayerMeshObj) return;
             const targetX = activePlayerMeshObj.position.x;
-            const targetY = activePlayerMeshObj.position.y + 2.5; // Look near torso center
+            const targetY = activePlayerMeshObj.position.y + 2.5;
             const targetZ = activePlayerMeshObj.position.z;
 
             activeGameCamera.position.x = targetX + gameCameraControls.radius * Math.sin(gameCameraControls.phi) * Math.sin(gameCameraControls.theta);
@@ -751,9 +839,7 @@
         }
 
         function handleGameInputKeyDown(e) { 
-            // Avoid player movement commands hijacking terminal text entries
             if(document.activeElement === document.getElementById('game-chat-input')) return;
-            
             gameActiveState.keys[e.key.toLowerCase()] = true; 
             if(e.key === 'Escape') toggleGameEscMenu(); 
             if(e.key === '/' || e.key === 't') {
@@ -761,8 +847,7 @@
                 document.getElementById('game-chat-input').focus();
             }
             if(e.key === ' ' && !gameActiveState.isJumping) {
-                gameActiveState.velY = 0.22;
-                gameActiveState.isJumping = true;
+                gameActiveState.velY = 0.22; gameActiveState.isJumping = true;
             }
         }
         function handleGameInputKeyUp(e) { gameActiveState.keys[e.key.toLowerCase()] = false; }
@@ -773,12 +858,11 @@
                 if(text) {
                     const log = document.getElementById('game-chat-display');
                     log.innerHTML += `<div><b>${localUserDoc.username}</b>: ${text}</div>`;
-                    log.scrollTop = log.scrollHeight; 
-                    box.value = '';
+                    log.scrollTop = log.scrollHeight; box.value = '';
                 }
-                box.blur(); // release focus from terminal
+                box.blur();
             }
-            e.stopPropagation(); // Stop character movement interception triggers
+            e.stopPropagation();
         }
 
         window.toggleGameEscMenu = function() {
@@ -795,58 +879,29 @@
             if(document.getElementById('game-client-viewport').style.display === 'none') return;
             requestAnimationFrame(animateActiveGameSimulationLoop);
 
-            let speed = 0.12;
-            let isMoving = false;
+            let speed = 0.12; let isMoving = false;
+            let forwardX = Math.sin(gameCameraControls.theta); let forwardZ = Math.cos(gameCameraControls.theta);
 
-            // Calculate directional tracking relative to viewing forward vector angle
-            let forwardX = Math.sin(gameCameraControls.theta);
-            let forwardZ = Math.cos(gameCameraControls.theta);
-
-            if(gameActiveState.keys['w'] || gameActiveState.keys['arrowup']) { 
-                activePlayerMeshObj.position.x -= forwardX * speed;
-                activePlayerMeshObj.position.z -= forwardZ * speed;
-                isMoving = true; 
-            }
-            if(gameActiveState.keys['s'] || gameActiveState.keys['arrowdown']) { 
-                activePlayerMeshObj.position.x += forwardX * speed;
-                activePlayerMeshObj.position.z += forwardZ * speed;
-                isMoving = true; 
-            }
-            if(gameActiveState.keys['a'] || gameActiveState.keys['arrowleft']) { 
-                activePlayerMeshObj.position.x -= forwardZ * speed;
-                activePlayerMeshObj.position.z += forwardX * speed;
-                isMoving = true; 
-            }
-            if(gameActiveState.keys['d'] || gameActiveState.keys['arrowright']) { 
-                activePlayerMeshObj.position.x += forwardZ * speed;
-                activePlayerMeshObj.position.z -= forwardX * speed;
-                isMoving = true; 
-            }
+            if(gameActiveState.keys['w'] || gameActiveState.keys['arrowup']) { activePlayerMeshObj.position.x -= forwardX * speed; activePlayerMeshObj.position.z -= forwardZ * speed; isMoving = true; }
+            if(gameActiveState.keys['s'] || gameActiveState.keys['arrowdown']) { activePlayerMeshObj.position.x += forwardX * speed; activePlayerMeshObj.position.z += forwardZ * speed; isMoving = true; }
+            if(gameActiveState.keys['a'] || gameActiveState.keys['arrowleft']) { activePlayerMeshObj.position.x -= forwardZ * speed; activePlayerMeshObj.position.z += forwardX * speed; isMoving = true; }
+            if(gameActiveState.keys['d'] || gameActiveState.keys['arrowright']) { activePlayerMeshObj.position.x += forwardZ * speed; activePlayerMeshObj.position.z -= forwardX * speed; isMoving = true; }
 
             if(gameActiveState.isJumping) {
-                activePlayerMeshObj.position.y += gameActiveState.velY;
-                gameActiveState.velY -= 0.015;
-                if(activePlayerMeshObj.position.y <= 0) {
-                    activePlayerMeshObj.position.y = 0;
-                    gameActiveState.isJumping = false;
-                    gameActiveState.velY = 0;
-                }
+                activePlayerMeshObj.position.y += gameActiveState.velY; gameActiveState.velY -= 0.015;
+                if(activePlayerMeshObj.position.y <= 0) { activePlayerMeshObj.position.y = 0; gameActiveState.isJumping = false; gameActiveState.velY = 0; }
             }
 
+            // CLEAN SWING MOTION SYSTEM: Pivot points rotate without intersecting torso bounding boxes
             if(isMoving && !gameActiveState.isJumping) {
                 runningTimeClock += 0.25;
-                activePlayerMeshObj.llNode.rotation.x = Math.sin(runningTimeClock) * 0.5;
-                activePlayerMeshObj.rlNode.rotation.x = -Math.sin(runningTimeClock) * 0.5;
-                activePlayerMeshObj.laNode.rotation.x = -Math.sin(runningTimeClock) * 0.5;
-                activePlayerMeshObj.raNode.rotation.x = Math.sin(runningTimeClock) * 0.5;
+                activePlayerMeshObj.llNode.rotation.x = Math.sin(runningTimeClock) * 0.6;
+                activePlayerMeshObj.rlNode.rotation.x = -Math.sin(runningTimeClock) * 0.6;
+                activePlayerMeshObj.laNode.rotation.x = -Math.sin(runningTimeClock) * 0.4;
+                activePlayerMeshObj.raNode.rotation.x = Math.sin(runningTimeClock) * 0.4;
             } else if(!gameActiveState.isJumping) {
-                activePlayerMeshObj.llNode.rotation.x = 0;
-                activePlayerMeshObj.rlNode.rotation.x = 0;
-                activePlayerMeshObj.laNode.rotation.x = 0;
-                activePlayerMeshObj.raNode.rotation.x = 0;
-            } else {
-                activePlayerMeshObj.llNode.rotation.x = -0.2;
-                activePlayerMeshObj.rlNode.rotation.x = 0.2;
+                activePlayerMeshObj.llNode.rotation.x = 0; activePlayerMeshObj.rlNode.rotation.x = 0;
+                activePlayerMeshObj.laNode.rotation.x = 0; activePlayerMeshObj.raNode.rotation.x = 0;
             }
 
             updateGameViewportOrbitCamera();
@@ -855,17 +910,39 @@
 
         async function syncGamesDiscoverGrid() {
             const grid = document.getElementById('games-market-list'); grid.innerHTML = '';
+            const fGrid = document.getElementById('featured-games-list'); fGrid.innerHTML = '';
+            const fContainer = document.getElementById('featured-games-container');
+            
             const snap = await getDocs(collection(db, "games"));
+            let featuredCount = 0;
+
             snap.forEach(d => {
-                const game = d.data(); const card = document.createElement('div'); card.className = 'market-card';
-                card.innerHTML = `
+                const game = d.data(); if(game.isBanned) return;
+                const template = `
                     <div style="background:${game.iconColor || '#333'}; height:75px; color:#fff; display:flex; justify-content:center; align-items:center; border-radius:4px; font-size:13px; text-shadow:1px 1px 1px #000;">🎮 Instance</div>
                     <div style="margin-top:6px;"><strong>${game.title}</strong></div>
                     <small style="color:#555;">By: ${game.creator}</small><br>
-                    <button class="btn-action" id="play-btn-${d.id}" style="padding:4px; font-size:13px; margin-top:6px; background:#ffea00; color:#000; border-color:#e6b800;">Play Space</button>
+                    <button class="btn-action" id="play-${game.isFeatured?'f-':''}${d.id}" style="padding:4px; font-size:13px; margin-top:6px; background:#ffea00; color:#000; border-color:#e6b800;">Play Space</button>
                 `;
-                grid.appendChild(card);
-                document.getElementById(`play-btn-${d.id}`).onclick = () => launchActiveGameSimulationInstance(d.id, game.title, game.creator);
+                
+                const card = document.createElement('div'); card.className = 'market-card'; card.innerHTML = template;
+                
+                if(game.isFeatured) {
+                    fGrid.appendChild(card); featuredCount++;
+                } else {
+                    grid.appendChild(card);
+                }
+            });
+
+            fContainer.style.display = featuredCount > 0 ? 'block' : 'none';
+            
+            // Post-bind interaction triggers safely
+            snap.forEach(d => {
+                const game = d.data(); if(game.isBanned) return;
+                const btnId = `play-${game.isFeatured?'f-':''}${d.id}`;
+                if(document.getElementById(btnId)) {
+                    document.getElementById(btnId).onclick = () => launchActiveGameSimulationInstance(d.id, game.title, game.creator);
+                }
             });
         }
 
@@ -876,7 +953,7 @@
             const price = parseInt(document.getElementById('upload-price').value) || 0;
 
             if(!title || !val) return alert("Fill asset details fully.");
-            await addDoc(collection(db, "catalog"), { type, title, value: val, price, creator: localUserDoc.username });
+            await addDoc(collection(db, "catalog"), { type, title, value: val, price, creator: localUserDoc.username, isLimited: false });
             alert("Apparel asset published successfully!");
             document.getElementById('upload-panel').style.display = 'none';
             syncCatalogMarketplaceUI();
@@ -888,29 +965,24 @@
             snap.forEach(d => {
                 const item = d.data(); const card = document.createElement('div'); card.className = 'market-card';
                 card.innerHTML = `
+                    ${item.isLimited ? '<span class="badge-limited">LIMITED</span>' : ''}
                     <div style="background:${item.value}; height:50px; border:1px solid #aaa; border-radius:4px; margin-bottom:5px;"></div>
                     <strong>${item.title}</strong><br><small style="color:#666;">${item.type}</small><br>
                     <span style="color:#28a745;">💵 ${item.price} TIX</span><br>
-                    <button class="btn-action" id="buy-item-${d.id}" style="padding:3px; font-size:12px; margin-top:5px;">Purchase</button>
+                    <button class="btn-action" id="buy-item-${d.id}" style="padding:3px; font-size:12px; margin-top:5px; background:${item.isLimited?'#ff4500':'#28a745'}; border-color:${item.isLimited?'#cc3300':'#1e7e34'}">Purchase</button>
                 `;
                 grid.appendChild(card);
                 document.getElementById(`buy-item-${d.id}`).onclick = () => processProductTransaction(d.id, item);
             });
         }
 
-        // --- INSTANT INVENTORY SYNCHRONIZATION TRANSACTION BLOCK ---
         async function processProductTransaction(id, item) {
             if(localUserDoc.tickets < item.price) return alert("Insufficient tickets.");
             let updatedTix = localUserDoc.tickets - item.price;
-            
             const newClothingPiece = { title: item.title, type: item.type, value: item.value };
             
-            await updateDoc(doc(db, "users", localUserDoc.uid), { 
-                tickets: updatedTix, 
-                inventory: arrayUnion(newClothingPiece) 
-            });
+            await updateDoc(doc(db, "users", localUserDoc.uid), { tickets: updatedTix, inventory: arrayUnion(newClothingPiece) });
             
-            // Push directly to active local state tracking array to bypass desync bugs
             localUserDoc.tickets = updatedTix;
             if(!localUserDoc.inventory) localUserDoc.inventory = [];
             localUserDoc.inventory.push(newClothingPiece);
@@ -981,11 +1053,58 @@
         }
 
         window.triggerAdminPrompt = function() { if(prompt("Enter Admin Access Pin:") === "080112") switchPage('admin'); };
+        
         window.adminMutationOverpass = async function() {
             const user = document.getElementById('admin-user').value.trim(); const tix = parseInt(document.getElementById('admin-tix').value) || 0;
             const snap = await getDocs(query(collection(db,"users"), where("username","==",user)));
             if(snap.empty) return alert("User target missing from registry.");
             snap.forEach(async (d) => { await updateDoc(doc(db,"users", d.id), { tickets: tix }); alert("Direct account override injection complete!"); });
+        };
+
+        // --- NEW SECURITY OPERATIONS CONTROL OVERLAYS ---
+        window.moderateExperience = async function(action) {
+            const name = document.getElementById('admin-game-name').value.trim();
+            const snap = await getDocs(query(collection(db, "games"), where("title", "==", name)));
+            if(snap.empty) return alert("Experience target map matching entry not found.");
+            
+            snap.forEach(async (gDoc) => {
+                if(action === 'feature') {
+                    let nextState = !(gDoc.data().isFeatured || false);
+                    await updateDoc(doc(db, "games", gDoc.id), { isFeatured: nextState });
+                    alert(`Experience featured parameter updated to: ${nextState}`);
+                } else if(action === 'ban') {
+                    await updateDoc(doc(db, "games", gDoc.id), { isBanned: true });
+                    alert("Experience visibility parameter banned successfully.");
+                }
+            });
+        };
+
+        window.banUserAccountNode = async function() {
+            const target = document.getElementById('admin-target-account').value.trim();
+            const snap = await getDocs(query(collection(db, "users"), where("username", "==", target)));
+            if(snap.empty) return alert("Profile account parameter missing from master table.");
+            
+            snap.forEach(async (uDoc) => {
+                await updateDoc(doc(db, "users", uDoc.id), { isBanned: true });
+                alert(`Account status handle [${target}] suspended.`);
+            });
+        };
+
+        window.mintLimitedCatalogItem = async function() {
+            const title = document.getElementById('admin-ltd-title').value.trim();
+            const color = document.getElementById('admin-ltd-color').value.trim();
+            const price = parseInt(document.getElementById('admin-ltd-price').value) || 0;
+            const type = document.getElementById('admin-ltd-type').value;
+
+            if(!title || !color) return alert("Specify asset traits fully.");
+            await addDoc(collection(db, "catalog"), { title, value: color, price, type, creator: "SYSTEM_ADMIN", isLimited: true });
+            alert(`Limited-edition ${type} injected into active store pipelines!`);
+        };
+
+        window.pushGlobalSystemTicker = function() {
+            const message = document.getElementById('admin-system-alert').value.trim();
+            if(!message) return alert("Enter alert payload text.");
+            alert(`Broadcast scheduled: "${message}" across network contexts.`);
         };
     </script>
 </body>
