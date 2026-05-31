@@ -14,6 +14,7 @@
             --bux-blue: #3a7bd5;
             --retro-bg: #e1e1e1;
             --roblox-red: #d12424;
+            --panel-bg: #fff;
         }
         * { box-sizing: border-box; font-family: 'Comic Neue', Arial, sans-serif; font-weight: 700; }
         body, html { margin: 0; padding: 0; background: var(--retro-bg); height: 100%; overflow: hidden; }
@@ -26,6 +27,7 @@
             justify-content: space-between;
             align-items: center;
             color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .logo-2kblox {
             font-size: 28px; font-style: italic; color: white;
@@ -46,21 +48,26 @@
         .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; }
 
         .split-view { display: flex; gap: 20px; height: 100%; }
-        .canvas-3d-viewport { width: 45%; background: #000; border: 4px solid #333; position: relative; height: 400px; }
+        .canvas-3d-viewport { width: 100%; background: #000; border: 4px solid #333; position: relative; height: 350px; }
 
-        /* --- STUDIO SUITE STYLING --- */
+        /* --- HOME PAGE MULTI-STREAM FEED GRID --- */
+        .home-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .feed-section { background: var(--panel-bg); border: 2px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .horizontal-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; }
+        .scroller-item { min-width: 110px; max-width: 110px; background: #eee; border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 12px; border-radius: 4px; }
+
+        /* --- STUDIO SYSTEM COMPONENT STRUCTS --- */
         .studio-container { display: flex; width: 100%; height: 100%; background: #222; padding: 0; margin: 0; overflow: hidden; }
-        .studio-sidebar { width: 260px; background: #333; color: white; display: flex; flex-direction: column; }
-        .studio-panel-title { background: #444; padding: 6px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #555; }
+        .studio-sidebar { width: 280px; background: #333; color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
+        .studio-panel-title { background: #444; padding: 6px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #555; letter-spacing: 0.5px; }
         .explorer-tree, .properties-list { flex: 1; overflow-y: auto; padding: 8px; font-family: monospace; font-size: 12px; }
-        .explorer-item { cursor: pointer; padding: 4px; border-radius: 2px; }
+        .explorer-item { cursor: pointer; padding: 5px; border-radius: 2px; display: flex; gap: 5px; }
         .explorer-item.selected { background: #007acc; }
 
         .studio-main-build-zone { flex: 1; display: flex; flex-direction: column; position: relative; }
         .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 8px; padding: 5px; border-bottom: 2px solid #222; }
         .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 5px 10px; cursor: pointer; font-size: 12px; }
 
-        /* Blockly Sandbox Layout overlay */
         .blockly-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; flex-direction: column; }
         #blockly-div { width: 100%; flex: 1; }
 
@@ -74,7 +81,7 @@
     <header>
         <div class="logo-container">
             <div class="logo-2kblox">2K<span>BLOX</span></div>
-            <div style="background: white; color: #333; padding: 5px 10px; font-size: 14px; border-radius: 4px;">💵 <span id="user-tickets">0</span> 2ICKETS</div>
+            <div style="background: white; color: #333; padding: 5px 10px; font-size: 14px; border-radius: 4px; font-family: monospace;">💵 <span id="user-tickets">0</span> 2ICKETS</div>
         </div>
         <nav id="main-nav" style="display:none;">
             <button onclick="switchPage('home')" class="active">Home</button>
@@ -98,16 +105,46 @@
             <div class="auth-container">
                 <h2 style="color:var(--roblox-red)">2KBlox Online</h2>
                 <input type="email" id="auth-email" placeholder="Email Address">
-                <input type="text" id="auth-user" placeholder="K6 Character Username">
-                <input type="password" id="auth-pass" placeholder="Password Matrix">
+                <input type="text" id="auth-user" placeholder="K6 Structural Username Handle">
+                <input type="password" id="auth-pass" placeholder="Password Sequence">
                 <button class="btn-action" onclick="handleAuth('login')">Login Client</button>
                 <button class="btn-action" style="background:#007bff; margin-top:5px;" onclick="handleAuth('signup')">Sign Up K6 Engine Account</button>
             </div>
         </div>
 
         <div id="page-home" class="page">
-            <h2>Welcome, K6 Architect <span class="user-render-name">Player</span>!</h2>
-            <p>Your workspace is synced to the persistent Firebase layer.</p>
+            <div class="home-layout">
+                <div>
+                    <div class="feed-section">
+                        <h3>Your Network Alliances & Friends</h3>
+                        <div class="horizontal-scroller" id="home-friends-scroller">
+                            <div class="scroller-item">👤 No synchronized friends detected.</div>
+                        </div>
+                    </div>
+
+                    <div class="feed-section">
+                        <h3>Your Workspace Experiences</h3>
+                        <div class="horizontal-scroller" id="home-games-scroller">
+                            <div class="scroller-item">🎮 Launch Studio to deploy worlds.</div>
+                        </div>
+                    </div>
+
+                    <div class="feed-section">
+                        <h3>Affiliated Group Factions</h3>
+                        <div class="horizontal-scroller" id="home-groups-scroller">
+                            <div class="scroller-item">🏳️ Independent contractor node.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="feed-section" style="text-align: center;">
+                        <h3>K6 Rig Hardware Layout</h3>
+                        <div id="home-avatar-canvas" style="height: 300px; background:#aaa; border:2px solid #555;"></div>
+                        <p style="font-size:12px; margin-top:5px; color:#555;">Active session node verification</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="page-games-discover" class="page">
@@ -116,11 +153,11 @@
         </div>
 
         <div id="page-avatar-editor" class="page">
-            <h2>K6 Blocky Customizer Engine</h2>
+            <h2>K6 Complete Body Modification Editor</h2>
             <div class="split-view">
                 <div id="avatar-3d-canvas" class="canvas-3d-viewport"></div>
                 <div style="flex:1; background:white; padding:15px; overflow-y:auto;">
-                    <h3>Inventory Hardware Packs</h3>
+                    <h3>Your Asset Ledger Inventory</h3>
                     <div class="item-grid" id="avatar-inventory-list"></div>
                 </div>
             </div>
@@ -128,37 +165,37 @@
 
         <div id="page-marketplace" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Decal & Asset Design Catalog</h2>
+                <h2>Global Asset Swap Distribution Catalog</h2>
                 <button class="btn-action" style="width:150px;" onclick="document.getElementById('upload-panel').style.display='block'">Create Apparel</button>
             </div>
             <div id="upload-panel" style="display:none; background:#fff; padding:15px; border:2px dashed blue; margin:10px 0;">
                 <select id="upload-type"><option value="T-Shirt">T-Shirt</option><option value="Leggings">Leggings</option></select>
-                <input type="text" id="upload-title" placeholder="Asset Identifier Title">
-                <input type="text" id="upload-value" placeholder="Color Hex (e.g., #ff0000)">
-                <input type="number" id="upload-price" placeholder="Cost">
-                <button class="btn-action" onclick="submitCatalogAsset()">Publish Live Vector</button>
+                <input type="text" id="upload-title" placeholder="Item Frame Name">
+                <input type="text" id="upload-value" placeholder="Color Hex Code (e.g. #ff0000)">
+                <input type="number" id="upload-price" placeholder="2ICKETS Price Point">
+                <button class="btn-action" onclick="submitCatalogAsset()">Publish Vector</button>
             </div>
             <div class="item-grid" id="catalog-item-list"></div>
         </div>
 
         <div id="page-forum" class="page">
-            <h2>Public Message Matrix Forum</h2>
-            <input type="text" id="forum-title" placeholder="Thread Title"><textarea id="forum-body" placeholder="Message Core Packet"></textarea>
-            <button class="btn-action" style="width:120px;" onclick="postForumThread()">Post Packet</button>
+            <h2>Public Thread Data Matrix Boards</h2>
+            <input type="text" id="forum-title" placeholder="Thread Subject Line"><textarea id="forum-body" placeholder="Message Packet Vector Payload"></textarea>
+            <button class="btn-action" style="width:120px;" onclick="postForumThread()">Publish Post</button>
             <div id="forum-posts-container" style="margin-top:20px;"></div>
         </div>
 
         <div id="page-groups" class="page">
-            <h2>K6 Faction Grid Alliances</h2>
-            <input type="text" id="group-name-input" placeholder="Clan Cluster Tag"><button class="btn-action" style="width:150px;" onclick="createNewClanNode()">Found Clan</button>
+            <h2>Faction Sector Alignments</h2>
+            <input type="text" id="group-name-input" placeholder="Clan Name Label"><button class="btn-action" style="width:150px;" onclick="createNewClanNode()">Initialize Node</button>
             <div class="item-grid" id="groups-container" style="margin-top:20px;"></div>
         </div>
 
         <div id="page-profile" class="page">
-            <h2>Dossier Registry Verification</h2>
-            <input type="text" id="search-user-input" placeholder="Target Account Username"><button class="btn-action" style="width:100px;" onclick="searchProfileDb()">Query Core</button>
+            <h2>Dossier Database Matrix Verification</h2>
+            <input type="text" id="search-user-input" placeholder="Target Account Display Handshake"><button class="btn-action" style="width:100px;" onclick="searchProfileDb()">Query Db</button>
             <div id="profile-card" style="background:#fff; padding:20px; margin-top:15px; display:none;">
-                <h3 id="prof-username"></h3><button class="btn-action" style="width:150px;">Link Telemetry</button>
+                <h3 id="prof-username"></h3><button class="btn-action" style="width:150px;">Send Handshake Signal</button>
             </div>
         </div>
 
@@ -169,50 +206,64 @@
                         <button onclick="spawn3DObject('Part')">🧱 Block Part</button>
                         <button onclick="spawn3DObject('Sphere')">🔮 Sphere Part</button>
                         <button onclick="spawn3DObject('SpawnPoint')">🏁 SpawnPoint</button>
-                        <button onclick="spawn3DObject('Script')">📜 Visual BHTML Script</button>
+                        <button onclick="spawn3DObject('Script')">📜 Visual BHTML Block Logic</button>
                         <button style="background:var(--roblox-red);" onclick="toggle3DPlaytest()">▶️ Live Playtest</button>
-                        <button style="background:#007acc;" onclick="document.getElementById('publish-modal').style.display='block'">💾 Publish Deployment</button>
+                        <button style="background:#007acc;" onclick="document.getElementById('publish-modal').style.display='block'">💾 Publish Space</button>
                     </div>
                     
-                    <div id="studio-3d-canvas" style="flex:1; background:#1e1e1e;"></div>
+                    <div id="studio-3d-canvas" style="flex:1; background:#111;"></div>
 
                     <div class="blockly-editor-window" id="blockly-editor">
                         <div class="studio-toolbar" style="background:#222;">
-                            <span style="color:#fff; margin-left:10px;">Visual BHTML Drag Engine</span>
-                            <button style="margin-left:auto; background:#28a745;" onclick="closeBlocklyWorkspace()">Save Layout & Close</button>
+                            <span style="color:#fff; margin-left:10px;">Visual BHTML Drag-and-Drop Editor Console</span>
+                            <button style="margin-left:auto; background:#28a745;" onclick="closeBlocklyWorkspace()">Compile Blocks & Close</button>
                         </div>
                         <div id="blockly-div"></div>
                     </div>
                 </div>
 
                 <div class="studio-sidebar">
-                    <div class="studio-panel-title">Hierarchy Tree Explorer</div>
+                    <div class="studio-panel-title">Hierarchy View Workspace</div>
                     <div class="explorer-tree" id="explorer-list"></div>
-                    <div class="studio-panel-title">Properties Window Inspector</div>
+                    <div class="studio-panel-title">Properties Window Engine</div>
                     <div class="properties-list" id="properties-window"></div>
                 </div>
             </div>
         </div>
 
         <div id="publish-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:3px solid #333; z-index:1000; padding:20px;">
-            <h3>Deployment Publishing Stream</h3>
-            <input type="text" id="game-title" value="My 3D K6 Matrix Map">
-            <select id="game-group-bind"><option value="">Independent Space Profile</option></select>
+            <h3>Synchronize Architecture Stack</h3>
+            <input type="text" id="game-title" value="My Complete 3D K6 Multi-Core Space">
+            <select id="game-group-bind"><option value="">Independent Space Directory Profile</option></select>
             <button class="btn-action" onclick="publishWorldStreamToServer()">Synchronize Asset Package</button>
         </div>
 
         <div id="page-admin" class="page" style="background:#111; color:#00ff00; font-family:monospace;">
-            <h2>🚨 ROOT MUTATION DATABASE PIPELINE ACTIVE</h2>
-            <input type="text" id="admin-user" placeholder="User Target Matcher"><input type="number" id="admin-tix" placeholder="Override Currency Pack">
-            <button class="btn-action" onclick="adminMutationOverpass()">Rewrite Data Node</button>
+            <h2>🚨 ROOT ACCESS DATABASE INTEGRATION CONSOLE DETECTED</h2>
+            <input type="text" id="admin-user" placeholder="Target Display Name Matcher"><input type="number" id="admin-tix" placeholder="Override Target Currency System Limit Values">
+            <button class="btn-action" onclick="adminMutationOverpass()">Inject Override Packet</button>
         </div>
 
     </div>
 
     <xml id="toolbox" style="display: none">
-        <block type="bhtml_loop"></block>
-        <block type="bhtml_spawn"></block>
-        <block type="bhtml_color"></block>
+        <category name="Control Logic Loops" colour="120">
+            <block type="bhtml_loop"></block>
+            <block type="controls_if"></block>
+            <block type="logic_compare"></block>
+        </category>
+        <category name="Physics Spawners" colour="230">
+            <block type="bhtml_spawn"></block>
+            <block type="bhtml_destroy"></block>
+        </category>
+        <category name="Property Modifiers" colour="20">
+            <block type="bhtml_color"></block>
+            <block type="bhtml_set_pos"></block>
+        </category>
+        <category name="Math & Vectors" colour="210">
+            <block type="math_number"></block>
+            <block type="math_arithmetic"></block>
+        </category>
     </xml>
 
     <script type="module">
@@ -237,39 +288,55 @@
         let localUserDoc = null;
         let studioScene, studioCamera, studioRenderer, selectedObjectId = null;
         let avatarScene, avatarCamera, avatarRenderer, k6ModelGroup;
+        let homeScene, homeCamera, homeRenderer, homeK6Group;
         let blocklyWorkspace;
         let objectsMatrix = [];
 
-        // --- DEFINE SCRATCH-STYLE BHTML VISUAL BLOCKS ---
+        // --- BHTML LANGUAGE EXTENSION DEFINITIONS ---
         Blockly.Blocks['bhtml_loop'] = {
             init: function() {
-                this.appendDummyInput().appendField("🔄 BHTML System Loop [Every 1 Sec]");
-                this.appendStatementInput("DO").appendField("execute action");
+                this.appendDummyInput().appendField("🔄 Continuous Processing Core [1s Delay]");
+                this.appendStatementInput("DO").appendField("execute operations");
                 this.setPreviousStatement(true, null); this.setNextStatement(true, null);
                 this.setColour(120);
             }
         };
         Blockly.Blocks['bhtml_spawn'] = {
             init: function() {
-                this.appendDummyInput().appendField("🧱 Spawn 3D Block Element");
+                this.appendDummyInput().appendField("🧱 Instantiate New Structural Part Mesh Element");
+                this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+                this.setColour(230);
+            }
+        };
+        Blockly.Blocks['bhtml_destroy'] = {
+            init: function() {
+                this.appendDummyInput().appendField("💥 Deconstruct Target Instance Element");
                 this.setPreviousStatement(true, null); this.setNextStatement(true, null);
                 this.setColour(230);
             }
         };
         Blockly.Blocks['bhtml_color'] = {
             init: function() {
-                this.appendDummyInput().appendField("🎨 Set Target to Neon Bright Color");
+                this.appendDummyInput().appendField("🎨 Mutate Object Material State To Neon Color");
+                this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+                this.setColour(20);
+            }
+        };
+        Blockly.Blocks['bhtml_set_pos'] = {
+            init: function() {
+                this.appendDummyInput().appendField("📍 Project Part to X Coordinate System Offset");
+                this.appendValueInput("X_VAL").setCheck("Number");
                 this.setPreviousStatement(true, null); this.setNextStatement(true, null);
                 this.setColour(20);
             }
         };
 
-        // --- AUTH TRACKING ---
+        // --- AUTH TRACE ---
         window.handleAuth = async function(type) {
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
             const username = document.getElementById('auth-user').value.trim();
-            if(!email || !pass) return alert("Fill out credential blocks fully.");
+            if(!email || !pass) return alert("All credentials must map fully.");
             try {
                 if(type === 'signup') {
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
@@ -284,7 +351,7 @@
             if(u) {
                 const snap = await getDoc(doc(db, "users", u.uid));
                 localUserDoc = { uid: u.uid, ...snap.data() };
-                localUserDoc.tickets += 2; // Inject daily allowance allocation package tracking node
+                localUserDoc.tickets += 2;
                 await updateDoc(doc(db, "users", u.uid), { tickets: localUserDoc.tickets });
                 
                 document.getElementById('page-auth').classList.remove('active');
@@ -298,66 +365,123 @@
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(`page-${p}`).classList.add('active');
-            if(p === 'avatar-editor') init3DAvatarViewer();
+            
+            if(p === 'home') { initHomeFeedDashboard(); }
+            if(p === 'avatar-editor') init3DAvatarViewer('avatar-3d-canvas', 'main');
             if(p === 'studio') init3DStudioViewport();
             if(p === 'marketplace') syncCatalogMarketplace();
         };
 
-        // --- THREE.JS: INITIALIZE 3D K6 CHARACTER MODEL ---
-        function init3DAvatarViewer() {
-            const container = document.getElementById('avatar-3d-canvas');
+        // --- 3D ENGINE: GENERIC COMPLETE BLOCKY K6 RIG GENERATOR ---
+        function createCompleteK6RigMesh() {
+            const group = new THREE.Group();
+            
+            // Materials
+            const skinMat = new THREE.MeshLambertMaterial({ color: 0xffcd94 });
+            const torsoMat = new THREE.MeshLambertMaterial({ color: 0x3a7bd5 });
+            const limbMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+
+            // 1. Head (1x1x1)
+            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), skinMat);
+            head.position.y = 1.7; group.add(head);
+
+            // 2. Torso (2x2x1)
+            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2, 0.8), torsoMat);
+            torso.position.y = 0.2; group.add(torso);
+
+            // 3. Arms (0.5x2x0.5)
+            const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), skinMat);
+            leftArm.position.set(-1.05, 0.2, 0); group.add(leftArm);
+
+            const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), skinMat);
+            rightArm.position.set(1.05, 0.2, 0); group.add(rightArm);
+
+            // 4. Legs (0.5x2x0.5)
+            const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), limbMat);
+            leftLeg.position.set(-0.4, -1.8, 0); group.add(leftLeg);
+
+            const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), limbMat);
+            rightLeg.position.set(0.4, -1.8, 0); group.add(rightLeg);
+
+            return group;
+        }
+
+        // --- MULTI-VIEW INTEGRATION FOR AVATAR RENDER TARGETS ---
+        function init3DAvatarViewer(containerId, mode) {
+            const container = document.getElementById(containerId);
             if(container.children.length > 0) return;
 
-            avatarScene = new THREE.Scene();
-            avatarScene.background = new THREE.Color(0xcccccc);
-            avatarCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            avatarRenderer = new THREE.WebGLRenderer({ antialias: true });
-            avatarRenderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(avatarRenderer.domElement);
+            const scene = new THREE.Scene(); scene.background = new THREE.Color(0xdddddd);
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
 
-            const light = new THREE.DirectionalLight(0xffffff, 1); light.position.set(5, 10, 7); avatarScene.add(light);
-            avatarScene.add(new THREE.AmbientLight(0x404040));
+            scene.add(new THREE.DirectionalLight(0xffffff, 1));
+            scene.add(new THREE.AmbientLight(0x555555));
 
-            // Assemble K6 Frame Geometry (2012 Blocky Aesthetics)
-            k6ModelGroup = new THREE.Group();
-            
-            const headGeom = new THREE.BoxGeometry(1, 1, 1); const headMat = new THREE.MeshLambertMaterial({ color: 0xffcd94 });
-            const headMesh = new THREE.Mesh(headGeom, headMat); headMesh.position.y = 1.8; k6ModelGroup.add(headMesh);
+            const k6Rig = createCompleteK6RigMesh();
+            scene.add(k6Rig);
+            camera.position.set(0, 0, 6); camera.lookAt(0, -0.5, 0);
 
-            const torsoGeom = new THREE.BoxGeometry(1.6, 2, 1); const torsoMat = new THREE.MeshLambertMaterial({ color: 0x3a7bd5 });
-            const torsoMesh = new THREE.Mesh(torsoGeom, torsoMat); torsoMesh.position.y = 0.3; k6ModelGroup.add(torsoMesh);
+            function cycle() { requestAnimationFrame(cycle); k6Rig.rotation.y += 0.015; renderer.render(scene, camera); }
+            cycle();
 
-            avatarScene.add(k6ModelGroup);
-            avatarCamera.position.set(0, 1.5, 5); avatarCamera.lookAt(0, 1, 0);
-
-            function anim() { requestAnimationFrame(anim); k6ModelGroup.rotation.y += 0.01; avatarRenderer.render(avatarScene, avatarCamera); }
-            anim();
-            syncAvatarInventoryLayout();
+            if(mode === 'main') syncAvatarInventoryLayout();
         }
 
-        function syncAvatarInventoryLayout() {
-            const list = document.getElementById('avatar-inventory-list'); list.innerHTML = '';
-            localUserDoc.inventory.forEach(item => {
-                list.innerHTML += `<div class='market-card'><b>${item.title}</b><br><button id='w-${btoa(item.title)}'>Equip K6</button></div>`;
+        // --- REAL-TIME PORTAL HOME DASHBOARD FEED SYNC ---
+        async function initHomeFeedDashboard() {
+            init3DAvatarViewer('home-avatar-canvas', 'preview');
+
+            // Populate Friends Stream Loop
+            const friendsCont = document.getElementById('home-friends-scroller');
+            friendsCont.innerHTML = '';
+            if(!localUserDoc.friends || localUserDoc.friends.length === 0) {
+                friendsCont.innerHTML = `<div class="scroller-item">👤 No Friends</div>`;
+            } else {
+                localUserDoc.friends.forEach(f => { friendsCont.innerHTML += `<div class="scroller-item"><b>${f}</b><br><small>Online</small></div>`; });
+            }
+
+            // Populate Recent Published Worlds System Matrix Trace from Firestore
+            const gamesCont = document.getElementById('home-games-scroller');
+            gamesCont.innerHTML = '';
+            const gSnap = await getDocs(query(collection(db, "games"), where("creator", "==", localUserDoc.username)));
+            if(gSnap.empty) {
+                gamesCont.innerHTML = `<div class="scroller-item">🎮 Empty Grid</div>`;
+            } else {
+                gSnap.forEach(doc => { gamesCont.innerHTML += `<div class="scroller-item" style="background:#fff7c2;"><b>${doc.data().title}</b></div>`; });
+            }
+
+            // Populate Faction Clusters Lookups
+            const groupsCont = document.getElementById('home-groups-scroller');
+            groupsCont.innerHTML = '';
+            const groupSnap = await getDocs(collection(db, "groups"));
+            let assignedGroupCount = 0;
+            groupSnap.forEach(d => {
+                const g = d.data();
+                if(g.members && g.members.includes(localUserDoc.username)) {
+                    groupsCont.innerHTML += `<div class="scroller-item" style="background:#e3f2fd;">🏳️ <b>${g.name}</b></div>`;
+                    assignedGroupCount++;
+                }
             });
+            if(assignedGroupCount === 0) groupsCont.innerHTML = `<div class="scroller-item">None Joined</div>`;
         }
 
-        // --- THREE.JS: ADVANCED CREATE STUDIO SYSTEM ---
+        // --- THREE.JS: ADVANCED CREATE STUDIO SYSTEM ENVIRONMENT ---
         function init3DStudioViewport() {
             const container = document.getElementById('studio-3d-canvas');
             if(container.children.length > 0) return;
 
-            studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x1e1e1e);
+            studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x222222);
             studioCamera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
             studioRenderer = new THREE.WebGLRenderer({ antialias: true });
             studioRenderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(studioRenderer.domElement);
 
-            studioScene.add(new THREE.GridHelper(50, 50, 0x888888, 0x444444));
+            studioScene.add(new THREE.GridHelper(40, 40, 0xffffff, 0x444444));
             const light = new THREE.DirectionalLight(0xffffff, 1.2); light.position.set(10, 20, 15); studioScene.add(light);
-            studioScene.add(new THREE.AmbientLight(0x555555));
-
-            studioCamera.position.set(0, 10, 20); studioCamera.lookAt(0, 0, 0);
+            studioCamera.position.set(0, 8, 15); studioCamera.lookAt(0, 0, 0);
 
             function loop() { requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); }
             loop();
@@ -366,12 +490,12 @@
 
         window.spawn3DObject = function(type) {
             let mesh;
-            const mat = new THREE.MeshLambertMaterial({ color: 0x999999 });
-            
-            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), mat);
+            const mat = new THREE.MeshLambertMaterial({ color: 0xaaaaaa });
+            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 16), mat);
+            else if(type === 'SpawnPoint') mesh = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 3), new THREE.MeshLambertMaterial({ color: 0x00ff00 }));
             else mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mat);
 
-            mesh.position.set((Math.random() - 0.5) * 10, 1, (Math.random() - 0.5) * 10);
+            mesh.position.set((Math.random() - 0.5) * 8, 1, (Math.random() - 0.5) * 8);
             studioScene.add(mesh);
 
             objectsMatrix.push({ id: "node_" + Date.now(), name: `Workspace_${type}`, type, mesh, blocklyXml: '' });
@@ -383,7 +507,7 @@
             objectsMatrix.forEach(obj => {
                 const div = document.createElement('div');
                 div.className = `explorer-item ${selectedObjectId === obj.id ? 'selected' : ''}`;
-                div.innerHTML = `🧊 ${obj.name} [${obj.type}]`;
+                div.innerHTML = `⚙️ ${obj.name} <small style='opacity:0.5;'>[${obj.type}]</small>`;
                 div.onclick = () => { selectedObjectId = obj.id; renderExplorerStudioHierarchy(); openPropertiesInspector(); };
                 div.ondblclick = () => { if(obj.type === 'Script') openBlocklyWorkspaceWindow(obj.id); };
                 el.appendChild(div);
@@ -395,13 +519,13 @@
             const obj = objectsMatrix.find(o => o.id === selectedObjectId);
             if(!obj) return;
             win.innerHTML = `
-                <div>Label: <input type='text' id='p-name' value='${obj.name}'></div>
-                <div>X Position: <input type='number' id='p-posx' value='${obj.mesh ? obj.mesh.position.x : 0}'></div>
+                <div>Label Element: <input type='text' id='p-name' value='${obj.name}'></div>
+                <div>Position Trans: <input type='text' id='p-pos' value='${obj.mesh ? obj.mesh.position.x.toFixed(1):0}, ${obj.mesh ? obj.mesh.position.y.toFixed(1):0}'></div>
             `;
             document.getElementById('p-name').onchange = (e) => { obj.name = e.target.value; renderExplorerStudioHierarchy(); };
         }
 
-        // --- SCRATCH / BLOCKLY DEVELOPMENT LAYER ACCELERATORS ---
+        // --- BLOCKLY IDE WORKSPACE DRAG CONTROLLERS ---
         let openScriptBlockId = null;
         function openBlocklyWorkspaceWindow(id) {
             openScriptBlockId = id;
@@ -426,7 +550,7 @@
         };
 
         window.toggle3DPlaytest = function() {
-            alert("Compiling block layout structure elements. Injecting K6 Character Controller Engine modules...");
+            alert("Compiling expanded visual block logic array configuration elements. Injecting fully rigged K6 Character Controller Engine modules into simulation space...");
         };
     </script>
 </body>
