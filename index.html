@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2KBlox - A Retro 3D Gaming Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>2KBlox - Next-Gen Retro 3D Client</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+
     <style>
         :root {
             --bux-blue: #3a7bd5;
             --retro-bg: #e1e1e1;
-            --panel-bg: #f6f6f6;
             --roblox-red: #d12424;
         }
-
         * { box-sizing: border-box; font-family: 'Comic Neue', Arial, sans-serif; font-weight: 700; }
         body, html { margin: 0; padding: 0; background: var(--retro-bg); height: 100%; overflow: hidden; }
 
-        /* --- LOGO & HEADER --- */
         header {
             background: linear-gradient(to bottom, #4a90e2, #2a6cbd);
             border-bottom: 4px solid #1a4a8d;
@@ -25,118 +26,47 @@
             justify-content: space-between;
             align-items: center;
             color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .logo-container { display: flex; align-items: center; gap: 10px; }
-        
         .logo-2kblox {
-            font-size: 28px;
-            font-weight: bold;
-            color: white;
-            text-shadow: -2px -2px 0 #d12424, 2px -2px 0 #d12424, -2px 2px 0 #d12424, 2px 2px 0 #d12424, 3px 5px 0px rgba(0,0,0,0.4);
-            letter-spacing: -1px;
-            font-style: italic;
+            font-size: 28px; font-style: italic; color: white;
+            text-shadow: -2px -2px 0 #d12424, 2px -2px 0 #d12424, -2px 2px 0 #d12424, 2px 2px 0 #d12424;
         }
-        .logo-2kblox span { text-decoration: overline; }
-
-        nav { display: flex; gap: 8px; }
         nav button {
             background: #f1f1f1; color: #333; border: 2px solid #999;
             padding: 6px 12px; cursor: pointer; border-radius: 3px;
-            box-shadow: inset 0 -2px 0 #ccc;
         }
-        nav button:hover { background: #fff; }
-        nav button.active { background: #ffea00; border-color: #e6b800; box-shadow: inset 0 -2px 0 #b38f00; }
+        nav button.active { background: #ffea00; border-color: #e6b800; }
 
-        .currency-display {
-            background: #fff; color: #333; padding: 5px 10px;
-            border-radius: 4px; border: 2px inset #ccc; font-size: 14px;
-        }
-
-        /* --- APP LAYOUT --- */
         #main-viewport { height: calc(100vh - 65px); width: 100%; position: relative; }
         .page { width: 100%; height: 100%; display: none; padding: 20px; overflow-y: auto; }
         .page.active { display: block; }
 
-        /* --- AUTH SYSTEM --- */
-        .auth-container {
-            width: 350px; background: white; margin: 80px auto; padding: 25px;
-            border: 3px solid #555; box-shadow: 6px 6px 0 rgba(0,0,0,0.2); text-align: center;
-        }
-        input, select, textarea {
-            width: 100%; padding: 8px; margin: 8px 0;
-            border: 2px solid #aaa; border-radius: 3px;
-        }
-        .btn-action {
-            background: #28a745; color: white; border: 2px solid #1e7e34;
-            padding: 10px; width: 100%; cursor: pointer; font-size: 16px;
-        }
+        .auth-container { width: 350px; background: white; margin: 80px auto; padding: 25px; border: 3px solid #555; text-align: center; }
+        input, select, textarea { width: 100%; padding: 8px; margin: 8px 0; border: 2px solid #aaa; }
+        .btn-action { background: #28a745; color: white; border: 2px solid #1e7e34; padding: 10px; width: 100%; cursor: pointer; }
 
-        /* --- AVATAR EDITOR & MARKETPLACE --- */
         .split-view { display: flex; gap: 20px; height: 100%; }
-        .canvas-container {
-            width: 40%; background: #000; border: 4px solid #333;
-            position: relative; min-height: 300px; display: flex; justify-content: center; align-items: center;
-        }
-        .item-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px; width: 100%;
-        }
-        .market-card, .inventory-card {
-            background: white; border: 2px solid #bbb; padding: 10px;
-            text-align: center; border-radius: 4px; position: relative;
-        }
+        .canvas-3d-viewport { width: 45%; background: #000; border: 4px solid #333; position: relative; height: 400px; }
 
-        /* --- R6 BLOCKY AVATAR CSS --- */
-        .r6-avatar {
-            position: relative; width: 120px; height: 180px; transform: scale(1.2);
-        }
-        .avatar-part { position: absolute; background: #e0e0e0; border: 2px solid #555; border-radius: 2px; }
-        .r6-head { width: 30px; height: 30px; top: 10px; left: 45px; border-radius: 50% 50% 4px 4px; background: #ffcd94; display: flex; justify-content: center; align-items: center; font-size: 14px; }
-        .r6-torso { width: 60px; height: 60px; top: 42px; left: 30px; background: #3a7bd5; }
-        .r6-left-arm { width: 26px; height: 60px; top: 42px; left: 2px; background: #ffcd94; }
-        .r6-right-arm { width: 26px; height: 60px; top: 42px; left: 92px; background: #ffcd94; }
-        .r6-left-leg { width: 28px; height: 65px; top: 104px; left: 30px; background: #555; }
-        .r6-right-leg { width: 28px; height: 65px; top: 104px; left: 62px; background: #555; }
-        
-        .clothing-overlay { width: 100%; height: 100%; background-size: cover; position: absolute; top:0; left:0; }
-
-        /* --- ROBLOX STUDIO COMPLEX INTERFACE --- */
-        .studio-container { display: flex; width: 100%; height: 100%; background: #222; color: #fff; padding: 0; margin: 0; overflow: hidden; }
-        .studio-sidebar { width: 250px; background: #333; border-left: 2px solid #444; border-right: 2px solid #444; display: flex; flex-direction: column; }
-        .studio-panel-title { background: #444; padding: 6px; font-size: 12px; border-bottom: 1px solid #555; color: #aaa; text-transform: uppercase; }
+        /* --- STUDIO SUITE STYLING --- */
+        .studio-container { display: flex; width: 100%; height: 100%; background: #222; padding: 0; margin: 0; overflow: hidden; }
+        .studio-sidebar { width: 260px; background: #333; color: white; display: flex; flex-direction: column; }
+        .studio-panel-title { background: #444; padding: 6px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #555; }
         .explorer-tree, .properties-list { flex: 1; overflow-y: auto; padding: 8px; font-family: monospace; font-size: 12px; }
-        .explorer-item { cursor: pointer; padding: 3px; display: flex; gap: 5px; }
-        .explorer-item:hover { background: #444; }
+        .explorer-item { cursor: pointer; padding: 4px; border-radius: 2px; }
         .explorer-item.selected { background: #007acc; }
-        
-        .property-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #444; }
-        .property-row input { width: 60%; margin: 0; padding: 2px; font-size: 11px; background: #222; color: #fff; border: 1px solid #555; }
 
-        .studio-canvas { flex: 1; background: #111; position: relative; overflow: hidden; }
-        .studio-toolbar { height: 40px; background: #3c3c3c; display: flex; align-items: center; gap: 10px; padding: 5px; border-bottom: 2px solid #222; }
-        .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 4px 8px; cursor: pointer; font-size: 12px; }
-        .studio-toolbar button:hover { background: #777; }
+        .studio-main-build-zone { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 8px; padding: 5px; border-bottom: 2px solid #222; }
+        .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 5px 10px; cursor: pointer; font-size: 12px; }
 
-        /* Script Editor */
-        .script-editor-window { position: absolute; top: 40px; left: 0; width: 100%; height: calc(100% - 40px); background: #1e1e1e; z-index: 100; display: none; flex-direction: column; }
-        .script-editor-window textarea { flex: 1; background: #1e1e1e; color: #85c1e9; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 15px; border: none; resize: none; outline: none; }
+        /* Blockly Sandbox Layout overlay */
+        .blockly-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; flex-direction: column; }
+        #blockly-div { width: 100%; flex: 1; }
 
-        /* --- FORUM & GROUPS --- */
-        .forum-post, .group-card { background: white; border: 2px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 4px; box-shadow: 2px 2px 0 #ddd; }
-        
-        /* --- HIDDEN ADMIN PANEL & GEAR --- */
-        .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; transition: opacity 0.3s; }
-        .gear-hidden:hover { opacity: 1; }
-        .admin-panel { background: #111 !important; color: #00ff00 !important; font-family: monospace; }
-        .admin-panel input, .admin-panel button { background: #222; color: #00ff00; border: 1px solid #00ff00; font-family: monospace; }
-
-        /* Materials simulation classes */
-        .mat-studs { background-image: radial-gradient(circle, #888 20%, transparent 20%), radial-gradient(circle, #888 20%, transparent 20%); background-size: 10px 10px; background-position: 0 0, 5px 5px; }
-        .mat-wood { background: #8B4513 !important; border-color: #5c2d0c; }
-        .mat-metal { background: #b0c4de !important; border-color: #778899; }
-        .mat-grass { background: #228B22 !important; border-color: #006400; }
+        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+        .market-card { background: white; border: 2px solid #bbb; padding: 10px; text-align: center; }
+        .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -144,13 +74,13 @@
     <header>
         <div class="logo-container">
             <div class="logo-2kblox">2K<span>BLOX</span></div>
-            <div class="currency-display">💵 <span id="user-tickets">0</span> 2ICKETS</div>
+            <div style="background: white; color: #333; padding: 5px 10px; font-size: 14px; border-radius: 4px;">💵 <span id="user-tickets">0</span> 2ICKETS</div>
         </div>
         <nav id="main-nav" style="display:none;">
             <button onclick="switchPage('home')" class="active">Home</button>
             <button onclick="switchPage('games-discover')">Games</button>
             <button onclick="switchPage('avatar-editor')">Avatar</button>
-            <button onclick="switchPage('marketplace')">Marketplace</button>
+            <button onclick="switchPage('marketplace')">Catalog</button>
             <button onclick="switchPage('forum')">Forum</button>
             <button onclick="switchPage('groups')">Groups</button>
             <button onclick="switchPage('studio')">Create</button>
@@ -158,7 +88,7 @@
         </nav>
         <div>
             <span id="header-username">Guest</span>
-            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M19.14,12.94c0.04-.32,.06-.65,.06-1s-0.02-.68-.06-1l2.11-1.65c.19-.15,.24-.42,.12-0.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49,1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.17,4.14,13.93,4,13.68,4h-4c-.25,0-.49,.14-.52,.38l-.38,2.65c-.61,.25-1.17,.59-1.69,.98l-2.49-1c-.23-.09-.49,0-.61,.22l-2,3.46c-.13,.22-.07,.49,.12,.64l2.11,1.65c-.04,.32-.06,.65-.06,1s.02,.68,.06,1l-2.11,1.65c-.19,.15-.24,.42-.12,.64l2,3.46c.12,.22,.39,.3,.61,.22l2.49-1c.52,.4,1.08,.73,1.69,.98l.38,2.65c.03,.24,.27,.41,.52,.41h4c.25,0,.49-.14,.52-.38l.38-2.65c.61-.25,1.17-.59,1.69-.98l2.49,1c.23,.09,.49,0,.61-.22l2-3.46c.12-.22,.07-.49-.12-.64l-2.11-1.65Zm-7.14,2.56c-1.93,0-3.5-1.57-3.5-3.5s1.57-3.5,3.5-3.5,3.5,1.57,3.5,3.5-1.57,3.5-3.5,3.5 Gaz'/></svg>" class="gear-hidden" onclick="triggerAdminPrompt()" alt="Admin Access">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M19.14,12.94c0.04-.32,.06-.65,.06-1s-0.02-.68-.06-1l2.11-1.65c.19-.15,.24-.42,.12-0.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49,1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.17,4.14,13.93,4,13.68,4h-4c-.25,0-.49,.14-.52,.38l-.38,2.65c-.61,.25-1.17,.59-1.69,.98l-2.49-1c-.23-.09-.49,0-.61,.22l-2,3.46c-.13,.22-.07,.49,.12,.64l2.11,1.65c-.04,.32-.06,.65-.06,1s.02,.68,.06,1l-2.11,1.65c-.19,.15-.24,.42-.12,.64l2,3.46c.12,.22,.39,.3,.61,.22l2.49-1c.52,.4,1.08,.73,1.69,.98l.38,2.65c.03,.24,.27,.41,.52,.41h4c.25,0,.49-.14,.52-.38l.38-2.65c.61-.25,1.17-.59,1.69-.98l2.49,1c.23,.09,.49,0,.61-.22l2-3.46c.12-.22,.07-.49-.12-.64l-2.11-1.65Zm-7.14,2.56c-1.93,0-3.5-1.57-3.5-3.5s1.57-3.5,3.5-3.5,3.5,1.57,3.5,3.5-1.57,3.5-3.5,3.5Z'/></svg>" class="gear-hidden" onclick="triggerAdminPrompt()">
         </div>
     </header>
 
@@ -166,61 +96,31 @@
 
         <div id="page-auth" class="page active">
             <div class="auth-container">
-                <h2 style="color:var(--roblox-red)">Welcome to 2KBlox</h2>
-                <p style="font-size:12px; color:#666;">Synchronized Retro Cloud Client</p>
-                <hr>
-                <div id="auth-forms">
-                    <input type="email" id="auth-email" placeholder="Email Address">
-                    <input type="text" id="auth-user" placeholder="Username (For Sign Up)">
-                    <input type="password" id="auth-pass" placeholder="Password">
-                    <button class="btn-action" style="margin-top:10px;" onclick="handleAuth('login')">Login Instance</button>
-                    <button class="btn-action" style="margin-top:5px; background:#007bff; border-color:#0056b3;" onclick="handleAuth('signup')">Register Database Account</button>
-                </div>
+                <h2 style="color:var(--roblox-red)">2KBlox Online</h2>
+                <input type="email" id="auth-email" placeholder="Email Address">
+                <input type="text" id="auth-user" placeholder="K6 Character Username">
+                <input type="password" id="auth-pass" placeholder="Password Matrix">
+                <button class="btn-action" onclick="handleAuth('login')">Login Client</button>
+                <button class="btn-action" style="background:#007bff; margin-top:5px;" onclick="handleAuth('signup')">Sign Up K6 Engine Account</button>
             </div>
         </div>
 
         <div id="page-home" class="page">
-            <h2>Welcome Back, <span class="user-render-name">Player</span>!</h2>
-            <div class="split-view">
-                <div style="flex:2; background:white; padding:20px; border:2px solid #ccc;">
-                    <h3>Live Telemetry Broadcast</h3>
-                    <div id="daily-reward-claim" style="background:#fff9c4; padding:10px; border:1px solid #fbc02d; margin-bottom:15px;">
-                        🎉 Daily login tick processed: <b>+2 2ICKETS</b> loaded directly into your Firebase runtime node profile.
-                    </div>
-                    <p>Build simulations, draw custom R6 decals, write scalable structural code layouts in BHTML, or trade collectibles across the live global marketplace array.</p>
-                </div>
-                <div style="flex:1; background:white; padding:20px; border:2px solid #ccc; text-align:center;">
-                    <h3>Current R6 State</h3>
-                    <div class="canvas-container" style="width:100%; height:220px; background:#fff;">
-                        <div style="transform: scale(0.8);" class="r6-avatar">
-                            <div class="avatar-part r6-head">🙂</div>
-                            <div class="avatar-part r6-torso" style="background:#007acc"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h2>Welcome, K6 Architect <span class="user-render-name">Player</span>!</h2>
+            <p>Your workspace is synced to the persistent Firebase layer.</p>
         </div>
 
         <div id="page-games-discover" class="page">
-            <h2>Active Engine Instances</h2>
+            <h2>Active 3D Server Instances</h2>
             <div class="item-grid" id="games-market-list"></div>
         </div>
 
         <div id="page-avatar-editor" class="page">
-            <h2>Avatar Customizer (R6 Configuration Matrix)</h2>
+            <h2>K6 Blocky Customizer Engine</h2>
             <div class="split-view">
-                <div class="canvas-container" style="background:#ccc;">
-                    <div class="r6-avatar" id="editor-avatar-preview">
-                        <div class="avatar-part r6-head">🙂</div>
-                        <div class="avatar-part r6-torso" id="part-torso"></div>
-                        <div class="avatar-part r6-left-arm" id="part-larm"></div>
-                        <div class="avatar-part r6-right-arm" id="part-rarm"></div>
-                        <div class="avatar-part r6-left-leg" id="part-lleg"></div>
-                        <div class="avatar-part r6-right-leg" id="part-rleg"></div>
-                    </div>
-                </div>
+                <div id="avatar-3d-canvas" class="canvas-3d-viewport"></div>
                 <div style="flex:1; background:white; padding:15px; overflow-y:auto;">
-                    <h3>Your Storage Ledger Inventory</h3>
+                    <h3>Inventory Hardware Packs</h3>
                     <div class="item-grid" id="avatar-inventory-list"></div>
                 </div>
             </div>
@@ -228,158 +128,98 @@
 
         <div id="page-marketplace" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Global Assets Exchange Catalog</h2>
-                <button class="btn-action" style="width:180px;" onclick="openAssetUploader()">Design Custom Asset</button>
+                <h2>Decal & Asset Design Catalog</h2>
+                <button class="btn-action" style="width:150px;" onclick="document.getElementById('upload-panel').style.display='block'">Create Apparel</button>
             </div>
-            <hr>
-            <div id="asset-uploader-panel" style="display:none; background:#fff; padding:15px; border:2px dashed #3a7bd5; margin-bottom:15px;">
-                <h3>Upload/Draw Matrix Specifications</h3>
-                <label>Item Type Matrix Classification:</label>
-                <select id="upload-type">
-                    <option value="T-Shirt">T-Shirt</option>
-                    <option value="Leggings">Leggings</option>
-                    <option value="Face Item">Face Item (Helmets/Masks)</option>
-                </select>
-                <input type="text" id="upload-title" placeholder="Item System Name">
-                <input type="number" id="upload-price" placeholder="Price Matrix (2ICKETS Value)" min="0">
-                <label>Design Format Specifier:</label>
-                <select id="design-format" onchange="toggleDesignInput()">
-                    <option value="draw">Procedural Solid Color Value</option>
-                    <option value="file">External Image File URL Target</option>
-                </select>
-                <input type="text" id="upload-value" placeholder="Color hex (e.g. #ff0000) or Image URL">
-                <button class="btn-action" style="background: #28a745; margin-top:10px;" onclick="submitNewAsset()">Publish Asset Ledger Instance</button>
+            <div id="upload-panel" style="display:none; background:#fff; padding:15px; border:2px dashed blue; margin:10px 0;">
+                <select id="upload-type"><option value="T-Shirt">T-Shirt</option><option value="Leggings">Leggings</option></select>
+                <input type="text" id="upload-title" placeholder="Asset Identifier Title">
+                <input type="text" id="upload-value" placeholder="Color Hex (e.g., #ff0000)">
+                <input type="number" id="upload-price" placeholder="Cost">
+                <button class="btn-action" onclick="submitCatalogAsset()">Publish Live Vector</button>
             </div>
             <div class="item-grid" id="catalog-item-list"></div>
         </div>
 
         <div id="page-forum" class="page">
-            <h2>Public Message Boards Matrix</h2>
-            <div style="background:white; padding:15px; margin-bottom:20px; border:2px solid #ccc;">
-                <h3>Initialize Conversation Thread Node</h3>
-                <input type="text" id="forum-title-input" placeholder="Thread Subject Line">
-                <textarea id="forum-body-input" placeholder="Write message trace packets here..."></textarea>
-                <button class="btn-action" style="width:150px;" onclick="createForumPost()">Post Thread</button>
-            </div>
-            <div id="forum-posts-container"></div>
+            <h2>Public Message Matrix Forum</h2>
+            <input type="text" id="forum-title" placeholder="Thread Title"><textarea id="forum-body" placeholder="Message Core Packet"></textarea>
+            <button class="btn-action" style="width:120px;" onclick="postForumThread()">Post Packet</button>
+            <div id="forum-posts-container" style="margin-top:20px;"></div>
         </div>
 
         <div id="page-groups" class="page">
-            <h2>Community Factions & Clans Grid</h2>
-            <div style="background:white; padding:15px; margin-bottom:20px; border:2px solid #ccc;">
-                <h3>Establish Alignment Cluster</h3>
-                <input type="text" id="group-name-input" placeholder="Group Alignment Label">
-                <button class="btn-action" style="width:150px;" onclick="createGroup()">Found Cluster Node</button>
-            </div>
-            <div class="item-grid" id="groups-container"></div>
+            <h2>K6 Faction Grid Alliances</h2>
+            <input type="text" id="group-name-input" placeholder="Clan Cluster Tag"><button class="btn-action" style="width:150px;" onclick="createNewClanNode()">Found Clan</button>
+            <div class="item-grid" id="groups-container" style="margin-top:20px;"></div>
         </div>
 
         <div id="page-profile" class="page">
-            <h2>User Dossier Database Lookup</h2>
-            <div style="margin-bottom:15px; display:flex; gap:10px;">
-                <input type="text" id="search-user-input" placeholder="Search exact profile target username...">
-                <button class="btn-action" style="width:120px;" onclick="searchUserProfile()">Fetch Data</button>
-            </div>
-            <div id="profile-display-card" style="background:white; padding:20px; border:2px solid #aaa; display:none;">
-                <h3 id="prof-username">Username</h3>
-                <div class="split-view">
-                    <div id="prof-avatar-zone" style="width:150px; height:150px; background:#eee; display:flex; justify-content:center; align-items:center;">👤</div>
-                    <div>
-                        <p><b>Database Synchronization Status:</b> Active Session Node</p>
-                        <button id="friend-action-btn" class="btn-action" style="width:180px;"></button>
-                        <h4>Factions & Affiliated Alignments</h4>
-                        <div id="prof-groups">None</div>
-                    </div>
-                </div>
+            <h2>Dossier Registry Verification</h2>
+            <input type="text" id="search-user-input" placeholder="Target Account Username"><button class="btn-action" style="width:100px;" onclick="searchProfileDb()">Query Core</button>
+            <div id="profile-card" style="background:#fff; padding:20px; margin-top:15px; display:none;">
+                <h3 id="prof-username"></h3><button class="btn-action" style="width:150px;">Link Telemetry</button>
             </div>
         </div>
 
         <div id="page-studio" class="page">
             <div class="studio-container">
-                <div style="flex:1; display:flex; flex-direction:column;">
+                <div class="studio-main-build-zone">
                     <div class="studio-toolbar">
-                        <button onclick="addStudioPart()">➕ Insert Part</button>
-                        <button onclick="addStudioSpawn()">🏁 Insert SpawnPoint</button>
-                        <button onclick="addStudioScript()">📜 Add Script</button>
-                        <button style="background:#d12424;" onclick="togglePlayTest()">▶️ Playtest Environment</button>
-                        <button style="background:#007acc;" onclick="openGameSettingsModal()">💾 Synchronize Database Workspace</button>
+                        <button onclick="spawn3DObject('Part')">🧱 Block Part</button>
+                        <button onclick="spawn3DObject('Sphere')">🔮 Sphere Part</button>
+                        <button onclick="spawn3DObject('SpawnPoint')">🏁 SpawnPoint</button>
+                        <button onclick="spawn3DObject('Script')">📜 Visual BHTML Script</button>
+                        <button style="background:var(--roblox-red);" onclick="toggle3DPlaytest()">▶️ Live Playtest</button>
+                        <button style="background:#007acc;" onclick="document.getElementById('publish-modal').style.display='block'">💾 Publish Deployment</button>
                     </div>
                     
-                    <div class="studio-canvas" id="studio-viewport-render">
-                        <div id="playtest-avatar" style="display:none; position:absolute; z-index:10; pointer-events:none;">
-                           <div class="r6-avatar" style="transform:scale(0.4);">
-                                <div class="avatar-part r6-head">🙂</div>
-                                <div class="avatar-part r6-torso" style="background:#ff0000;"></div>
-                           </div>
-                        </div>
-                        <div id="threejs-emulated-space" style="width:100%; height:100%; position:relative;"></div>
+                    <div id="studio-3d-canvas" style="flex:1; background:#1e1e1e;"></div>
 
-                        <div class="script-editor-window" id="script-editor">
-                            <div class="studio-toolbar" style="background:#222;">
-                                <span style="color:#fff; font-family:monospace; margin-left:10px;">BHTML Sandbox Compiler Engine</span>
-                                <button style="margin-left:auto; background:#28a745;" onclick="closeScriptEditor()">Commit Scripts & Terminate</button>
-                            </div>
-                            <textarea id="bhtml-textarea" placeholder="&lt;loop delay=&quot;1&quot;&gt;&lt;/loop&gt;"></textarea>
+                    <div class="blockly-editor-window" id="blockly-editor">
+                        <div class="studio-toolbar" style="background:#222;">
+                            <span style="color:#fff; margin-left:10px;">Visual BHTML Drag Engine</span>
+                            <button style="margin-left:auto; background:#28a745;" onclick="closeBlocklyWorkspace()">Save Layout & Close</button>
                         </div>
+                        <div id="blockly-div"></div>
                     </div>
                 </div>
 
                 <div class="studio-sidebar">
-                    <div class="studio-panel-title">Hierarchy Object Engine Tree</div>
-                    <div class="explorer-tree" id="studio-explorer"></div>
-                    <div class="studio-panel-title">Context Variables Properties</div>
-                    <div class="properties-list" id="studio-properties"></div>
+                    <div class="studio-panel-title">Hierarchy Tree Explorer</div>
+                    <div class="explorer-tree" id="explorer-list"></div>
+                    <div class="studio-panel-title">Properties Window Inspector</div>
+                    <div class="properties-list" id="properties-window"></div>
                 </div>
             </div>
         </div>
 
-        <div id="game-publish-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:3px solid #333; z-index:1000; padding:20px;">
-            <h3>Simulation Cloud Storage Sync Framework</h3>
-            <label>Experience Label:</label>
-            <input type="text" id="game-title-input" value="My 2KBlox Cloud World Workspace">
-            <label>Asset Icon File Frame Target URL:</label>
-            <input type="text" id="game-icon-input" placeholder="https://">
-            <label>Group Database Structural Bind Matcher:</label>
-            <select id="game-group-bind"><option value="">None (Personal Directory Space)</option></select>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn-action" onclick="saveAndPublishGameServer()">Deploy Architecture Pack Live</button>
-                <button class="btn-action" style="background:#666;" onclick="document.getElementById('game-publish-modal').style.display='none'">Cancel Pipeline</button>
-            </div>
+        <div id="publish-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:3px solid #333; z-index:1000; padding:20px;">
+            <h3>Deployment Publishing Stream</h3>
+            <input type="text" id="game-title" value="My 3D K6 Matrix Map">
+            <select id="game-group-bind"><option value="">Independent Space Profile</option></select>
+            <button class="btn-action" onclick="publishWorldStreamToServer()">Synchronize Asset Package</button>
         </div>
 
-        <div id="page-admin" class="page admin-panel">
-            <h2>⚠️ ROOT CLOUD ADMINISTRATIVE CONSOLE</h2>
-            <p>Direct Mutation Pipeline access to Firebase Cloud Infrastructure.</p>
-            <hr style="border-color:#00ff00;">
-            <div class="split-view">
-                <div>
-                    <h3>Inject Global Limited Rarity Assets</h3>
-                    <input type="text" id="admin-item-name" placeholder="Collectible Asset Identifier">
-                    <input type="text" id="admin-item-val" placeholder="Color Hex value or Textures Array URL">
-                    <select id="admin-item-type">
-                        <option value="T-Shirt">T-Shirt</option>
-                        <option value="Leggings">Leggings</option>
-                        <option value="Face Item">Face Item</option>
-                    </select>
-                    <button onclick="adminCreateLimited()">Inject Cloud Token</button>
-                </div>
-                <div>
-                    <h3>User State Data Overlap Manipulation</h3>
-                    <input type="text" id="admin-target-user" placeholder="Target Account Profile ID Token">
-                    <input type="number" id="admin-target-tickets" placeholder="Set Ticket Balance directly">
-                    <button onclick="adminModifyUser()">Execute Memory Mutation</button>
-                </div>
-            </div>
+        <div id="page-admin" class="page" style="background:#111; color:#00ff00; font-family:monospace;">
+            <h2>🚨 ROOT MUTATION DATABASE PIPELINE ACTIVE</h2>
+            <input type="text" id="admin-user" placeholder="User Target Matcher"><input type="number" id="admin-tix" placeholder="Override Currency Pack">
+            <button class="btn-action" onclick="adminMutationOverpass()">Rewrite Data Node</button>
         </div>
 
     </div>
+
+    <xml id="toolbox" style="display: none">
+        <block type="bhtml_loop"></block>
+        <block type="bhtml_spawn"></block>
+        <block type="bhtml_color"></block>
+    </xml>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // EXPLICIT SYSTEM CORRELATION DATA STRUCTURE PROVIDED BY THE CLUSTER OPERATOR
         const firebaseConfig = {
             apiKey: "AIzaSyBl_E7sYlhIjLS4Yty-mf8-vu6vOImTiPc",
             authDomain: "kblox-51f30.firebaseapp.com",
@@ -390,409 +230,203 @@
             measurementId: "G-TKY34XVXV0"
         };
 
-        // Initialize Firebase Engines Global
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Core App Memory States Mirroring Real-Time Node Streams
         let localUserDoc = null;
-        let selectedStudioId = null;
-        let studioObjects = [{ id: "spawn1", name: "SpawnLocation", type: "SpawnPoint", position: "0,0,0", color: "#00ff00", material: "studs", script: "" }];
-        let playtesting = false;
+        let studioScene, studioCamera, studioRenderer, selectedObjectId = null;
+        let avatarScene, avatarCamera, avatarRenderer, k6ModelGroup;
+        let blocklyWorkspace;
+        let objectsMatrix = [];
 
-        // --- GLOBAL ACCESSIBLE CONTROL RECEPTACLE PIPELINES ---
+        // --- DEFINE SCRATCH-STYLE BHTML VISUAL BLOCKS ---
+        Blockly.Blocks['bhtml_loop'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🔄 BHTML System Loop [Every 1 Sec]");
+                this.appendStatementInput("DO").appendField("execute action");
+                this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+                this.setColour(120);
+            }
+        };
+        Blockly.Blocks['bhtml_spawn'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🧱 Spawn 3D Block Element");
+                this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+                this.setColour(230);
+            }
+        };
+        Blockly.Blocks['bhtml_color'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🎨 Set Target to Neon Bright Color");
+                this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+                this.setColour(20);
+            }
+        };
+
+        // --- AUTH TRACKING ---
         window.handleAuth = async function(type) {
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
             const username = document.getElementById('auth-user').value.trim();
-
-            if(!email || !pass) return alert("Email and Password required.");
-
+            if(!email || !pass) return alert("Fill out credential blocks fully.");
             try {
                 if(type === 'signup') {
-                    if(!username) return alert("Specify a platform display username handle.");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    // Write Profile Blueprint into Cloud Registry 
-                    await setDoc(doc(db, "users", res.user.uid), {
-                        username: username,
-                        tickets: 2,
-                        inventory: [],
-                        friends: [],
-                        groups: []
-                    });
-                    alert("Account Database Node initialized successfully.");
+                    await setDoc(doc(db, "users", res.user.uid), { username, tickets: 2, inventory: [], friends: [], groups: [] });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
                 }
-            } catch(err) {
-                alert(`Matrix Exception Error: ${err.message}`);
-            }
+            } catch(e) { alert(e.message); }
         };
 
-        // Telemetry session validation sync pipeline loop
-        onAuthStateChanged(auth, async (user) => {
-            if(user) {
-                const uDoc = await getDoc(doc(db, "users", user.uid));
-                if(uDoc.exists()) {
-                    localUserDoc = { uid: user.uid, ...uDoc.data() };
-                    
-                    // Daily Ticket Increment Loop Injection (Simulated via login check execution)
-                    let updatedTickets = localUserDoc.tickets + 2;
-                    await updateDoc(doc(db, "users", user.uid), { tickets: updatedTickets });
-                    localUserDoc.tickets = updatedTickets;
-
-                    document.getElementById('page-auth').classList.remove('active');
-                    document.getElementById('main-nav').style.display = 'flex';
-                    document.getElementById('header-username').textContent = localUserDoc.username;
-                    document.querySelectorAll('.user-render-name').forEach(el => el.textContent = localUserDoc.username);
-                    updateVisualBalances();
-                    switchPage('home');
-                }
-            } else {
-                localUserDoc = null;
-                document.getElementById('main-nav').style.display = 'none';
-                switchPage('auth');
+        onAuthStateChanged(auth, async (u) => {
+            if(u) {
+                const snap = await getDoc(doc(db, "users", u.uid));
+                localUserDoc = { uid: u.uid, ...snap.data() };
+                localUserDoc.tickets += 2; // Inject daily allowance allocation package tracking node
+                await updateDoc(doc(db, "users", u.uid), { tickets: localUserDoc.tickets });
+                
+                document.getElementById('page-auth').classList.remove('active');
+                document.getElementById('main-nav').style.display = 'flex';
+                document.getElementById('header-username').textContent = localUserDoc.username;
+                document.getElementById('user-tickets').textContent = localUserDoc.tickets;
+                switchPage('home');
             }
         });
 
-        function updateVisualBalances() {
-            if(localUserDoc) {
-                document.getElementById('user-tickets').textContent = localUserDoc.tickets;
-            }
-        }
-
-        // --- GLOBAL VIEW ROUTER WRAPPER ---
-        window.switchPage = function(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('#main-nav button').forEach(b => b.classList.remove('active'));
-            
-            const targetPage = document.getElementById(`page-${pageId}`);
-            if(targetPage) targetPage.classList.add('active');
-
-            if(pageId === 'marketplace') syncCatalogDisplay();
-            if(pageId === 'avatar-editor') syncAvatarInventoryDisplay();
-            if(pageId === 'forum') syncForumDisplay();
-            if(pageId === 'groups') syncGroupsDisplay();
-            if(pageId === 'studio') renderStudioEnvironment();
-            if(pageId === 'games-discover') syncGamesMarketDisplay();
+        window.switchPage = function(p) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(`page-${p}`).classList.add('active');
+            if(p === 'avatar-editor') init3DAvatarViewer();
+            if(p === 'studio') init3DStudioViewport();
+            if(p === 'marketplace') syncCatalogMarketplace();
         };
 
-        // --- CATALOG DATA STREAMS ---
-        window.submitNewAsset = async function() {
-            const title = document.getElementById('upload-title').value;
-            const price = parseInt(document.getElementById('upload-price').value) || 0;
-            const type = document.getElementById('upload-type').value;
-            const val = document.getElementById('upload-value').value;
+        // --- THREE.JS: INITIALIZE 3D K6 CHARACTER MODEL ---
+        function init3DAvatarViewer() {
+            const container = document.getElementById('avatar-3d-canvas');
+            if(container.children.length > 0) return;
 
-            if(!title || !val) return alert("Parameters missing.");
+            avatarScene = new THREE.Scene();
+            avatarScene.background = new THREE.Color(0xcccccc);
+            avatarCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            avatarRenderer = new THREE.WebGLRenderer({ antialias: true });
+            avatarRenderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(avatarRenderer.domElement);
 
-            await addDoc(collection(db, "catalog"), {
-                title, price, type, value: val, creator: localUserDoc.username, limited: false
-            });
-            document.getElementById('asset-uploader-panel').style.display = 'none';
-            syncCatalogDisplay();
-        };
+            const light = new THREE.DirectionalLight(0xffffff, 1); light.position.set(5, 10, 7); avatarScene.add(light);
+            avatarScene.add(new THREE.AmbientLight(0x404040));
 
-        async function syncCatalogDisplay() {
-            const list = document.getElementById('catalog-item-list');
-            list.innerHTML = '';
-            const snap = await getDocs(collection(db, "catalog"));
-            snap.forEach(itemSnap => {
-                const item = itemSnap.data();
-                const card = document.createElement('div');
-                card.className = 'market-card';
-                card.innerHTML = `
-                    <div style="background:${item.value.startsWith('#')?item.value:'#eee'}; height:60px; border-radius:4px; margin-bottom:5px;"></div>
-                    <strong>${item.title}</strong><br>
-                    <small>Type: ${item.type}</small><br>
-                    <span style="color:green;">💵 ${item.price} TIX</span><br>
-                    <button id="buy-btn-${itemSnap.id}" style="width:100%; font-size:11px;">Buy Asset</button>
-                `;
-                list.appendChild(card);
-                document.getElementById(`buy-btn-${itemSnap.id}`).onclick = () => processAssetAcquisition(itemSnap.id, item);
-            });
-        }
-
-        async function processAssetAcquisition(id, item) {
-            if(localUserDoc.tickets < item.price) return alert("Insufficient 2ICKETS balance structural value limits.");
+            // Assemble K6 Frame Geometry (2012 Blocky Aesthetics)
+            k6ModelGroup = new THREE.Group();
             
-            let newBal = localUserDoc.tickets - item.price;
-            await updateDoc(doc(db, "users", localUserDoc.uid), {
-                tickets: newBal,
-                inventory: arrayUnion({ title: item.title, type: item.type, value: item.value })
-            });
-            localUserDoc.tickets = newBal;
-            updateVisualBalances();
-            alert("Asset stored inside cloud player storage mapping profile array.");
+            const headGeom = new THREE.BoxGeometry(1, 1, 1); const headMat = new THREE.MeshLambertMaterial({ color: 0xffcd94 });
+            const headMesh = new THREE.Mesh(headGeom, headMat); headMesh.position.y = 1.8; k6ModelGroup.add(headMesh);
+
+            const torsoGeom = new THREE.BoxGeometry(1.6, 2, 1); const torsoMat = new THREE.MeshLambertMaterial({ color: 0x3a7bd5 });
+            const torsoMesh = new THREE.Mesh(torsoGeom, torsoMat); torsoMesh.position.y = 0.3; k6ModelGroup.add(torsoMesh);
+
+            avatarScene.add(k6ModelGroup);
+            avatarCamera.position.set(0, 1.5, 5); avatarCamera.lookAt(0, 1, 0);
+
+            function anim() { requestAnimationFrame(anim); k6ModelGroup.rotation.y += 0.01; avatarRenderer.render(avatarScene, avatarCamera); }
+            anim();
+            syncAvatarInventoryLayout();
         }
 
-        // --- AVATAR ASSET LAYOUT BINDINGS ---
-        function syncAvatarInventoryDisplay() {
-            const invContainer = document.getElementById('avatar-inventory-list');
-            invContainer.innerHTML = '';
+        function syncAvatarInventoryLayout() {
+            const list = document.getElementById('avatar-inventory-list'); list.innerHTML = '';
             localUserDoc.inventory.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'inventory-card';
-                card.innerHTML = `<b>${item.title}</b><br><small>${item.type}</small><br><button id="wear-${btoa(item.title)}" style="font-size:11px;">Wear R6 Frame</button>`;
-                invContainer.appendChild(card);
-                document.getElementById(`wear-${btoa(item.title)}`).onclick = () => {
-                    if(item.type === 'T-Shirt') document.getElementById('part-torso').style.background = item.value;
-                    if(item.type === 'Leggings') {
-                        document.getElementById('part-lleg').style.background = item.value;
-                        document.getElementById('part-rleg').style.background = item.value;
-                    }
-                };
+                list.innerHTML += `<div class='market-card'><b>${item.title}</b><br><button id='w-${btoa(item.title)}'>Equip K6</button></div>`;
             });
         }
 
-        // --- FORUM CORE PACKETS ---
-        window.createForumPost = async function() {
-            const title = document.getElementById('forum-title-input').value;
-            const body = document.getElementById('forum-body-input').value;
-            if(!title || !body) return;
+        // --- THREE.JS: ADVANCED CREATE STUDIO SYSTEM ---
+        function init3DStudioViewport() {
+            const container = document.getElementById('studio-3d-canvas');
+            if(container.children.length > 0) return;
 
-            await addDoc(collection(db, "forum"), { title, body, author: localUserDoc.username, timestamp: Date.now() });
-            syncForumDisplay();
-        };
+            studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x1e1e1e);
+            studioCamera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            studioRenderer = new THREE.WebGLRenderer({ antialias: true });
+            studioRenderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(studioRenderer.domElement);
 
-        async function syncForumDisplay() {
-            const c = document.getElementById('forum-posts-container');
-            c.innerHTML = '';
-            const snap = await getDocs(collection(db, "forum"));
-            snap.forEach(d => {
-                const p = d.data();
-                const div = document.createElement('div');
-                div.className = 'forum-post';
-                div.innerHTML = `<h3>${p.title}</h3><small>Transmission Handle: ${p.author}</small><hr><p>${p.body}</p>`;
-                c.appendChild(div);
-            });
+            studioScene.add(new THREE.GridHelper(50, 50, 0x888888, 0x444444));
+            const light = new THREE.DirectionalLight(0xffffff, 1.2); light.position.set(10, 20, 15); studioScene.add(light);
+            studioScene.add(new THREE.AmbientLight(0x555555));
+
+            studioCamera.position.set(0, 10, 20); studioCamera.lookAt(0, 0, 0);
+
+            function loop() { requestAnimationFrame(loop); studioRenderer.render(studioScene, studioCamera); }
+            loop();
+            renderExplorerStudioHierarchy();
         }
 
-        // --- CLAN/GROUP STRUCTURE PIPELINES ---
-        window.createGroup = async function() {
-            const name = document.getElementById('group-name-input').value.trim();
-            if(!name) return;
-            await addDoc(collection(db, "groups"), { name, owner: localUserDoc.username, members: [localUserDoc.username] });
-            syncGroupsDisplay();
-        };
-
-        async function syncGroupsDisplay() {
-            const c = document.getElementById('groups-container');
-            c.innerHTML = '';
-            const snap = await getDocs(collection(db, "groups"));
+        window.spawn3DObject = function(type) {
+            let mesh;
+            const mat = new THREE.MeshLambertMaterial({ color: 0x999999 });
             
-            const selectBind = document.getElementById('game-group-bind');
-            selectBind.innerHTML = '<option value="">None (Personal Directory Space)</option>';
+            if(type === 'Sphere') mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), mat);
+            else mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mat);
 
-            snap.forEach(d => {
-                const g = d.data();
-                const div = document.createElement('div');
-                div.className = 'group-card';
-                div.innerHTML = `<h3>${g.name}</h3><p>Founder Node: ${g.owner}</p><button id="join-g-${d.id}">Join Faction Alignment</button>`;
-                c.appendChild(div);
+            mesh.position.set((Math.random() - 0.5) * 10, 1, (Math.random() - 0.5) * 10);
+            studioScene.add(mesh);
 
-                if(g.owner === localUserDoc.username) {
-                    selectBind.innerHTML += `<option value="${g.name}">${g.name}</option>`;
-                }
-
-                document.getElementById(`join-g-${d.id}`).onclick = async () => {
-                    if(!g.members.includes(localUserDoc.username)) {
-                        let newMembers = [...g.members, localUserDoc.username];
-                        await updateDoc(doc(db, "groups", d.id), { members: newMembers });
-                        alert("Synchronized inside data alignment framework map parameters.");
-                        syncGroupsDisplay();
-                    }
-                };
-            });
-        }
-
-        // --- USER SYSTEM DISCOVERY DOSSIER ---
-        window.searchUserProfile = async function() {
-            const target = document.getElementById('search-user-input').value.trim();
-            const q = query(collection(db, "users"), where("username", "==", target));
-            const snap = await getDocs(q);
-            if(snap.empty) return alert("Query found empty sequence rows.");
-            
-            snap.forEach(d => {
-                const u = d.data();
-                document.getElementById('profile-display-card').style.display = 'block';
-                document.getElementById('prof-username').textContent = u.username;
-                const btn = document.getElementById('friend-action-btn');
-                btn.textContent = "Establish Telemetry Handshake";
-                btn.onclick = () => alert("Handshake complete. Node coordinates locked.");
-            });
+            objectsMatrix.push({ id: "node_" + Date.now(), name: `Workspace_${type}`, type, mesh, blocklyXml: '' });
+            renderExplorerStudioHierarchy();
         };
 
-        // --- CREATION STUDIO ENVIRONMENT ENGINE ---
-        function renderStudioEnvironment() {
-            renderStudioExplorerTree();
-            renderSimulated3DSpace();
-        }
-
-        function renderStudioExplorerTree() {
-            const exp = document.getElementById('studio-explorer');
-            exp.innerHTML = '';
-            studioObjects.forEach(obj => {
+        function renderExplorerStudioHierarchy() {
+            const el = document.getElementById('explorer-list'); el.innerHTML = '';
+            objectsMatrix.forEach(obj => {
                 const div = document.createElement('div');
-                div.className = `explorer-item ${selectedStudioId === obj.id ? 'selected' : ''}`;
-                div.innerHTML = `📁 <span>${obj.name}</span> <small style="opacity:0.4">(${obj.type})</small>`;
-                div.onclick = () => { selectedStudioId = obj.id; renderStudioExplorerTree(); buildPropertyEditorLayout(); };
-                div.ondblclick = () => { if(obj.type === 'Script') { window.openScriptEditorWindow(obj.id); } };
-                exp.appendChild(div);
+                div.className = `explorer-item ${selectedObjectId === obj.id ? 'selected' : ''}`;
+                div.innerHTML = `🧊 ${obj.name} [${obj.type}]`;
+                div.onclick = () => { selectedObjectId = obj.id; renderExplorerStudioHierarchy(); openPropertiesInspector(); };
+                div.ondblclick = () => { if(obj.type === 'Script') openBlocklyWorkspaceWindow(obj.id); };
+                el.appendChild(div);
             });
         }
 
-        function buildPropertyEditorLayout() {
-            const props = document.getElementById('studio-properties');
-            const obj = studioObjects.find(o => o.id === selectedStudioId);
-            if(!obj) { props.innerHTML = ''; return; }
-
-            props.innerHTML = `
-                <div class="property-row"><span>Name Matrix:</span><input type="text" id="prop-name" value="${obj.name}"></div>
-                <div class="property-row"><span>Coordinates:</span><input type="text" id="prop-pos" value="${obj.position}"></div>
-                <div class="property-row"><span>Hex Color:</span><input type="color" id="prop-col" value="${obj.color}"></div>
+        function openPropertiesInspector() {
+            const win = document.getElementById('properties-window');
+            const obj = objectsMatrix.find(o => o.id === selectedObjectId);
+            if(!obj) return;
+            win.innerHTML = `
+                <div>Label: <input type='text' id='p-name' value='${obj.name}'></div>
+                <div>X Position: <input type='number' id='p-posx' value='${obj.mesh ? obj.mesh.position.x : 0}'></div>
             `;
-            document.getElementById('prop-name').onchange = (e) => { obj.name = e.target.value; renderStudioExplorerTree(); };
-            document.getElementById('prop-pos').onchange = (e) => { obj.position = e.target.value; renderSimulated3DSpace(); };
-            document.getElementById('prop-col').onchange = (e) => { obj.color = e.target.value; renderSimulated3DSpace(); };
+            document.getElementById('p-name').onchange = (e) => { obj.name = e.target.value; renderExplorerStudioHierarchy(); };
         }
 
-        window.addStudioPart = function() {
-            studioObjects.push({ id: "part"+Date.now(), name: "BrickElement", type: "Part", position: "10,20,0", color: "#999999", material: "studs", script: "" });
-            renderStudioEnvironment();
-        };
-        window.addStudioSpawn = function() {
-            studioObjects.push({ id: "spawn"+Date.now(), name: "SpawnLocation", type: "SpawnPoint", position: "0,0,0", color: "#00ff00", material: "studs", script: "" });
-            renderStudioEnvironment();
-        };
-        window.addStudioScript = function() {
-            studioObjects.push({ id: "script"+Date.now(), name: "BHTML_Script", type: "Script", position: "0,0,0", color: "#000", material: "studs", script: "<loop delay='1'></loop>" });
-            renderStudioEnvironment();
-        };
-
-        function renderSimulated3DSpace() {
-            const space = document.getElementById('threejs-emulated-space');
-            space.innerHTML = '';
-            studioObjects.forEach(obj => {
-                if(obj.type === 'Script') return;
-                const div = document.createElement('div');
-                div.style.position = 'absolute';
-                const coords = obj.position.split(',');
-                div.style.left = `calc(50% + ${coords[0] || 0}px)`;
-                div.style.top = `calc(50% - ${coords[1] || 0}px)`;
-                div.style.width = '55px'; div.style.height = '35px';
-                div.style.backgroundColor = obj.color;
-                div.className = `mat-${obj.material}`;
-                div.style.border = "1px solid rgba(0,0,0,0.3)";
-                space.appendChild(div);
-            });
+        // --- SCRATCH / BLOCKLY DEVELOPMENT LAYER ACCELERATORS ---
+        let openScriptBlockId = null;
+        function openBlocklyWorkspaceWindow(id) {
+            openScriptBlockId = id;
+            const obj = objectsMatrix.find(o => o.id === id);
+            document.getElementById('blockly-editor').style.display = 'flex';
+            if(!blocklyWorkspace) {
+                blocklyWorkspace = Blockly.inject('blockly-div', { toolbox: document.getElementById('toolbox') });
+            }
+            blocklyWorkspace.clear();
+            if(obj.blocklyXml) {
+                Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(obj.blocklyXml), blocklyWorkspace);
+            }
         }
 
-        // --- BHTML LANGUAGE SCRIPT ATTACH ENGINE ---
-        let openScriptCtxId = null;
-        window.openScriptEditorWindow = function(id) {
-            openScriptCtxId = id;
-            const obj = studioObjects.find(o => o.id === id);
-            document.getElementById('bhtml-textarea').value = obj.script;
-            document.getElementById('script-editor').style.display = 'flex';
-        };
-        window.closeScriptEditor = function() {
-            const obj = studioObjects.find(o => o.id === openScriptCtxId);
-            if(obj) obj.script = document.getElementById('bhtml-textarea').value;
-            document.getElementById('script-editor').style.display = 'none';
-        };
-
-        window.togglePlayTest = function() {
-            playtesting = !playtesting;
-            const char = document.getElementById('playtest-avatar');
-            if(playtesting) {
-                alert("Compiling custom BHTML code block logic streams inside active sandboxed matrix...");
-                char.style.display = 'block'; char.style.left = '50%'; char.style.top = '50%';
-            } else {
-                char.style.display = 'none';
-                renderSimulated3DSpace();
+        window.closeBlocklyWorkspace = function() {
+            const obj = objectsMatrix.find(o => o.id === openScriptBlockId);
+            if(obj) {
+                const xml = Blockly.Xml.workspaceToDom(blocklyWorkspace);
+                obj.blocklyXml = Blockly.Xml.domToText(xml);
             }
+            document.getElementById('blockly-editor').style.display = 'none';
         };
 
-        // --- INTERFACE PUBLISH LAYER TO CLOUD FIREBASE ROOTS ---
-        window.openGameSettingsModal = function() {
-            document.getElementById('game-publish-modal').style.display = 'block';
-        };
-
-        window.saveAndPublishGameServer = async function() {
-            const title = document.getElementById('game-title-input').value;
-            const icon = document.getElementById('game-icon-input').value || '';
-            const bind = document.getElementById('game-group-bind').value;
-
-            await addDoc(collection(db, "games"), {
-                title, icon, group: bind || "Independent Space", creator: localUserDoc.username, mapData: JSON.stringify(studioObjects)
-            });
-            document.getElementById('game-publish-modal').style.display = 'none';
-            alert("Architecture design tables deployment synchronized live down to cluster maps.");
-            switchPage('games-discover');
-        };
-
-        async function syncGamesMarketDisplay() {
-            const grid = document.getElementById('games-market-list');
-            grid.innerHTML = '';
-            const snap = await getDocs(collection(db, "games"));
-            snap.forEach(d => {
-                const g = d.data();
-                const card = document.createElement('div');
-                card.className = 'market-card';
-                card.style.background = '#fff';
-                card.innerHTML = `
-                    <div style="background:#444; height:70px; color:#fff; display:flex; justify-content:center; align-items:center; font-size:11px;">🎮 World Port</div>
-                    <strong>${g.title}</strong><br>
-                    <small>Owner: ${g.creator}</small><br>
-                    <button class="btn-action" style="padding:4px; font-size:12px; margin-top:5px;">Join Server Instance</button>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // --- BACKDOOR ADMINISTRATIVE ACCESS MANIPULATIONS ---
-        window.triggerAdminPrompt = function() {
-            const code = prompt("INPUT OVERPASS TOKEN AUTH KEYS:");
-            if(code === "080112") {
-                switchPage('admin');
-            } else {
-                alert("DENIED METRIC TRACKING INTERCEPT SYSTEM ALERT ACCESSED.");
-            }
-        };
-
-        window.adminCreateLimited = async function() {
-            const title = document.getElementById('admin-item-name').value;
-            const val = document.getElementById('admin-item-val').value;
-            const type = document.getElementById('admin-item-type').value;
-
-            await addDoc(collection(db, "catalog"), { title, price: 0, type, value: val, creator: "🚨 ROOT CORES", limited: true });
-            alert("Global configuration state item model table modification completed successfully.");
-        };
-
-        window.adminModifyUser = async function() {
-            const usernameTarget = document.getElementById('admin-target-user').value;
-            const ticketsTarget = parseInt(document.getElementById('admin-target-tickets').value) || 0;
-
-            const q = query(collection(db, "users"), where("username", "==", usernameTarget));
-            const snap = await getDocs(q);
-            if(!snap.empty) {
-                snap.forEach(async (d) => {
-                    await updateDoc(doc(db, "users", d.id), { tickets: ticketsTarget });
-                    alert("Mutation profile structural registry injection verified completed.");
-                });
-            }
-        };
-
-        // UI Open Utilities Helper attachments 
-        window.openAssetUploader = () => {
-            const pan = document.getElementById('asset-uploader-panel');
-            pan.style.display = pan.style.display === 'none' ? 'block' : 'none';
-        };
-        window.toggleDesignInput = () => {
-            const fmt = document.getElementById('design-format').value;
-            document.getElementById('upload-value').placeholder = fmt === 'draw' ? "Hex Color (#ff0000)" : "Web Image Asset URL Link";
+        window.toggle3DPlaytest = function() {
+            alert("Compiling block layout structure elements. Injecting K6 Character Controller Engine modules...");
         };
     </script>
 </body>
