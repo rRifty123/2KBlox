@@ -15,6 +15,11 @@
             --panel-bg: #ffffff;
             --studio-dark: #1e1e1e;
             --studio-panel: #2d2d2d;
+            --scratch-orange: #ffab19;
+            --scratch-blue: #4c97ff;
+            --scratch-purple: #9966ff;
+            --scratch-green: #2ecc71;
+            --scratch-pink: #ff6680;
         }
         * { box-sizing: border-box; font-family: 'Comic Neue', Arial, sans-serif; font-weight: 700; }
         body, html { margin: 0; padding: 0; background: var(--retro-bg); height: 100%; overflow: hidden; }
@@ -51,41 +56,64 @@
 
         .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .market-card { background: white; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; position: relative; color: #222; }
-        
+        .badge-limited { position: absolute; top: 5px; right: 5px; background: #ff4500; color: white; padding: 2px 6px; font-size: 10px; border-radius: 3px; }
+
         .studio-container { display: flex; width: 100%; height: 100%; background: #222; }
         .studio-sidebar { width: 300px; background: var(--studio-panel); color: white; display: flex; flex-direction: column; border-left: 2px solid #444; }
         .studio-panel-title { background: #3e3e3e; padding: 6px; font-size: 12px; text-transform: uppercase; text-align:center; letter-spacing: 1px; }
-        
+        .explorer-tree, .properties-list { flex: 1; overflow-y: auto; padding: 8px; font-family: monospace; font-size: 12px; }
+        .explorer-item { cursor: pointer; padding: 6px 4px; border-bottom: 1px solid #3a3a3a; display: flex; justify-content: space-between; }
+        .explorer-item.selected { background: #007acc; color: white; }
+        .prop-group { margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px; }
+        .prop-group label { display: block; color: #aaa; font-size: 11px; margin-bottom: 2px; }
+
         .studio-main-build-zone { flex: 1; display: flex; flex-direction: column; position: relative; }
         .studio-toolbar { height: 45px; background: #3c3c3c; display: flex; align-items: center; gap: 6px; padding: 5px; border-bottom: 2px solid #222; }
         .studio-toolbar button { background: #555; color: white; border: 1px solid #666; padding: 4px 10px; cursor: pointer; font-size: 13px; border-radius: 3px; }
+        .studio-toolbar button.active-tool { background: #007acc; border-color: #0098ff; }
 
-        .code-editor-window { width: 100%; height: calc(100% - 45px); background: #fff; display: flex; flex-direction: column; }
+        .code-editor-window { position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px); background: #fff; z-index: 100; display: none; }
         .workspace-split-editor { display: flex; width: 100%; height: 100%; }
-        .script-text-pane { flex: 1; display: flex; flex-direction: column; background: var(--studio-dark); padding: 10px; }
-        #html-textarea-field { width: 100%; flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 15px; background: #1e1e1e; color: #7ec699; border: 2px solid #444; resize: none; }
         
-        .block-code-pane { width: 50%; background: #f0f2f5; border-left: 3px solid #ccc; display: flex; flex-direction: column; }
-        .block-toolbox { padding: 10px; background: #e2e8f0; display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 2px solid #cbd5e1; max-height: 200px; overflow-y: auto; }
-        .code-block-item { background: #3b82f6; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; margin: 2px; }
-        .block-assembly-line { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8fafc; }
-        .assembled-block { background: white; border: 2px solid #3b82f6; border-left: 8px solid #3b82f6; padding: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .block-toolbox { width: 35%; background: #eef2f7; border-right: 3px solid #cbd5e1; display: flex; flex-direction: column; padding: 10px; gap: 12px; overflow-y: auto; }
+        .toolbox-category-title { font-size: 11px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; margin-bottom: 4px; border-bottom: 1px dashed #cbd5e1; }
+        
+        .code-block-item { color: white; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; border-left: 5px solid rgba(0,0,0,0.2); box-shadow: 0 2px 4px rgba(0,0,0,0.08); transition: transform 0.1s; user-select: none; }
+        .code-block-item:hover { transform: scale(1.02); }
+        
+        .block-orange { background: var(--scratch-orange); }
+        .block-blue { background: var(--scratch-blue); }
+        .block-purple { background: var(--scratch-purple); }
+        .block-green { background: var(--scratch-green); }
+        .block-pink { background: var(--scratch-pink); }
 
-        .gear-hidden { width: 16px; height: 16px; opacity: 0.5; cursor: pointer; color: white; }
+        .block-assembly-line { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #f8fafc; background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px); background-size: 16px 16px; }
+        .assembled-block { color: white; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; border-left: 6px solid rgba(0,0,0,0.2); box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 2px; }
+        .assembled-block select, .assembled-block input { width: auto; max-width: 130px; display: inline-block; padding: 3px 6px; margin: 0 4px; font-size: 12px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.15); color: #333; font-weight: bold; }
+        .assembled-block .block-delete-btn { background: rgba(255,255,255,0.25); border: none; color: white; font-size: 12px; padding: 2px 6px; border-radius: 4px; cursor: pointer; margin-left: 10px; }
+        .assembled-block .block-delete-btn:hover { background: #ef4444; }
+
+        .gear-hidden { width: 16px; height: 16px; opacity: 0.1; cursor: pointer; }
         .forum-row { background: white; padding: 12px; margin-bottom: 8px; border: 2px solid #aaa; border-radius: 4px; display: flex; justify-content: space-between; cursor: pointer; color: #222; }
-        .forum-category-btn { background: #e2e8f0; color: #333; padding: 8px 12px; border: 2px solid #cbd5e1; border-radius: 4px; cursor: pointer; }
-        .forum-category-btn.active { background: #3570c5; color: white; border-color: #1a4380; }
+        .forum-row:hover { border-color: #3570c5; }
+        .post-container { background: white; padding: 15px; margin-bottom: 10px; border: 2px solid #bbb; border-radius: 4px; color: #222; }
 
-        /* CLIENT VIEWPORT & NEW SIMULATED LEADERBOARD */
-        #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vw; background: #222; z-index: 5000; display: none; }
-        .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; display: flex; justify-content: space-between; }
-        .game-leaderboard { width: 240px; background: rgba(0,0,0,0.75); border: 2px solid #555; border-radius: 6px; padding: 10px; color: white; font-size: 12px; pointer-events: auto; max-height: 300px; overflow-y: auto; }
-        .leaderboard-header { border-bottom: 2px solid #888; padding-bottom: 4px; margin-bottom: 6px; font-weight: bold; display: flex; justify-content: space-between; }
-        .leaderboard-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #444; }
+        #game-client-viewport { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: none; }
+        .game-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 15px; }
+        .game-ui-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; pointer-events: auto; }
+        .game-chat-box { position: absolute; bottom: 30px; left: 20px; width: 340px; height: 220px; background: rgba(0,0,0,0.6); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; pointer-events: auto; border: 1px solid rgba(255,255,255,0.15); }
+        .game-chat-log { flex: 1; overflow-y: auto; color: #fff; font-family: monospace; font-size: 13px; margin-bottom: 5px; word-break: break-all; }
+        .game-esc-menu { position: absolute; top: 25%; left: 35%; width: 30%; background: white; border: 4px solid #333; padding: 20px; border-radius: 8px; display: none; pointer-events: auto; text-align: center; color: #222; }
+        .crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 24px; pointer-events: none; display: none; font-family: monospace; }
 
-        /* LIVE SOURCE ADMIN OVERLAY */
-        #admin-modal-overlay { position: fixed; top: 5%; left: 5%; width: 90%; height: 90%; background: #111; border: 4px solid #ff4500; z-index: 9999; display: none; padding: 20px; color: #00ff00; }
-        #admin-source-code-editor { width: 100%; height: 80%; background: #000; color: #38bdf8; font-family: 'Share Tech Mono', monospace; font-size: 13px; border: 1px solid #333; padding: 10px; }
+        .profile-layout-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+        .profile-sub-section { background: white; border: 2px solid #aaa; border-radius: 6px; padding: 12px; margin-bottom: 15px; color: #222; }
+        .admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 15px 0; }
+        .admin-module-card { background: #1e293b; border: 1px solid #38bdf8; padding: 15px; border-radius: 6px; color: #38bdf8; }
+        
+        /* Interactive Live Game Script Notifications */
+        .game-script-alert { position: absolute; top: 20px; right: 20px; background: rgba(26, 37, 58, 0.9); border-left: 6px solid var(--scratch-orange); color: white; padding: 15px; border-radius: 6px; min-width: 260px; pointer-events: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; z-index: 6000; animation: slideIn 0.3s forwards; }
+        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
@@ -96,12 +124,11 @@
             <div style="display:flex; gap:15px; align-items:center;">
                 <div style="background: white; color: #333; padding: 5px 12px; border-radius: 4px;">💵 <span id="user-tickets">0</span> Tickets</div>
                 <span id="header-username" style="color: white; cursor:pointer;" onclick="switchPage('profile')">Guest Player</span>
-                <span class="gear-hidden" onclick="triggerAdminPrompt()">⚙️ Admin</span>
+                <span class="gear-hidden" onclick="triggerAdminPrompt()">⚙️</span>
             </div>
         </div>
         <nav id="main-nav" style="display:none;">
             <button id="nav-home" onclick="switchPage('home')" class="active">Home</button>
-            <button id="nav-tickets-hub" onclick="switchPage('tickets-hub')">🎟️ Tickets Hub</button>
             <button id="nav-games-discover" onclick="switchPage('games-discover')">Games</button>
             <button id="nav-avatar-editor" onclick="switchPage('avatar-editor')">Avatar</button>
             <button id="nav-marketplace" onclick="switchPage('marketplace')">Catalog</button>
@@ -114,537 +141,1049 @@
 
     <div id="main-viewport">
 
-        <!-- AUTH ENTRANCE PANEL -->
         <div id="page-auth" class="page active">
             <div class="auth-container">
                 <h2>Welcome to 2KBlox</h2>
+                <input type="email" id="auth-email" placeholder="Email Address">
                 <input type="text" id="auth-user" placeholder="Username">
-                <button class="btn-action" onclick="handleAuth('login')">Enter Platform Sandbox</button>
+                <input type="password" id="auth-pass" placeholder="Password">
+                <button class="btn-action" onclick="handleAuth('login')">Log In</button>
+                <button class="btn-action" style="background:#007bff; margin-top:6px; border-color:#0062cc;" onclick="handleAuth('signup')">Sign Up</button>
             </div>
         </div>
 
-        <!-- HOME DASHBOARD PORTAL -->
         <div id="page-home" class="page">
-            <div style="background:white; padding:20px; border-radius:6px; border:2px solid #a2bce0; color:#222;">
-                <h2 style="margin-top:0;">Hello, <span class="user-placeholder-name">Player</span>!</h2>
-                <p>Welcome back to the completely upgraded 2KBlox engine client.</p>
-            </div>
-        </div>
-
-        <!-- NEW DAILY TICKETS HUB TAB -->
-        <div id="page-tickets-hub" class="page">
-            <div style="background: white; padding: 25px; border-radius: 8px; border: 3px solid #ffea00; color:#222; max-width: 600px; margin: 0 auto; text-align: center;">
-                <h2>🎟️ Daily Tickets Reward Center</h2>
-                <p>Claim 5 extra tickets every single day to purchase structural customizations, skins, and tools!</p>
-                <button id="claim-tickets-btn" class="btn-action" style="background:#ffea00; color:#333; font-size:18px;" onclick="processDailyTicketClaim()">Claim 5 Daily Tickets</button>
-                <div id="ticket-countdown-timer" style="margin-top:15px; font-size:16px; color:#e63946; font-weight:bold;"></div>
-                
-                <hr style="margin:25px 0; border:1px solid #ddd;">
-                <h3>🎯 Recommended Catalog Items For You</h3>
-                <p style="font-size:12px; color:#666;">Tailored precisely to match your current wallet metrics:</p>
-                <div class="item-grid" id="ticket-suggestions-grid"></div>
-            </div>
-        </div>
-
-        <!-- SEARCH CAPABLE CATALOG MARKETPLACE -->
-        <div id="page-marketplace" class="page">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h2>Catalog Shop</h2>
-                <div style="width:300px; display:flex; gap:5px;">
-                    <input type="text" id="catalog-search-input" placeholder="Search clothes..." oninput="filterCatalogInventoryItems()">
+            <div style="display:grid; grid-template-columns: 3fr 1fr; gap:20px;">
+                <div>
+                    <div style="background:white; padding:20px; border-radius:6px; border:2px solid #a2bce0; margin-bottom:20px; color:#222;">
+                        <h2 style="margin-top:0;">Hello, <span class="user-placeholder-name">Player</span>!</h2>
+                        <p>Welcome back to your 2KBlox engine core dashboard.</p>
+                    </div>
+                    <div style="background:white; padding:20px; border-radius:6px; border:2px solid #a2bce0; margin-bottom:20px; color:#222;">
+                        <h3>Your Groups</h3>
+                        <div class="item-grid" id="home-groups-list"></div>
+                    </div>
+                    <div style="background:white; padding:20px; border-radius:6px; border:2px solid #a2bce0; margin-bottom:20px; color:#222;">
+                        <h3>Recent Games Played</h3>
+                        <div class="item-grid" id="home-recent-games-list"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="background:white; padding:15px; border-radius:6px; border:2px solid #a2bce0; text-align:center; color:#222;">
+                        <h3>Your Avatar</h3>
+                        <div id="home-avatar-canvas" style="height: 220px; background:#b0e0e6; border-radius:4px; margin-bottom:10px;"></div>
+                        <button class="btn-action" onclick="switchPage('avatar-editor')">Customize Closet</button>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div id="page-profile" class="page">
+            <div class="profile-layout-grid">
+                <div>
+                    <div class="profile-sub-section" style="text-align:center;">
+                        <h2 id="profile-title" style="margin-top:0;">User Profile</h2>
+                        <div id="profile-avatar-box" style="height:320px; background:#b0e0e6; border:2px solid #888; border-radius:4px; margin-bottom:10px;"></div>
+                    </div>
+                    <div class="profile-sub-section">
+                        <h3>Search Users</h3>
+                        <input type="text" id="profile-user-search-input" placeholder="Type username...">
+                        <button class="btn-action" style="background:#007bff; margin-top:5px;" onclick="searchUserAccounts()">Search</button>
+                        <div id="profile-search-results" style="margin-top:10px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="profile-sub-section">
+                        <h3>Active Friend Requests</h3>
+                        <div id="profile-friend-requests-list"><p style="color:#777;">No pending friend requests.</p></div>
+                    </div>
+                    <div class="profile-sub-section">
+                        <h3>Friends</h3>
+                        <div class="item-grid" id="profile-friends-grid"></div>
+                    </div>
+                    <div class="profile-sub-section">
+                        <h3>Created Experience Places</h3>
+                        <div class="item-grid" id="profile-games-grid"></div>
+                    </div>
+                    <div class="profile-sub-section">
+                        <h3>Affiliated Groups</h3>
+                        <div class="item-grid" id="profile-groups-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-games-discover" class="page">
+            <h2>Public Games</h2>
+            <div class="item-grid" id="games-market-list"></div>
+        </div>
+
+        <div id="page-avatar-editor" class="page">
+            <h2>Avatar Customizer Closet & Creator</h2>
+            <div style="display:flex; gap:20px; height:500px;">
+                <div id="avatar-3d-canvas" style="width:340px; height:100%; background:#b0e0e6; border:2px solid #555;"></div>
+                <div style="flex:1; background:white; padding:15px; overflow-y:auto; border:2px solid #aaa; color:#222; display:flex; flex-direction:column; gap:15px;">
+                    <div style="background:#f1f5f9; padding:12px; border-radius:6px; border:2px dashed #94a3b8;">
+                        <h4 style="margin:0 0 8px 0; color:#1e3a8a;">Publish New Clothing Asset to Catalog</h4>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 100px; gap:8px; align-items:center;">
+                            <input type="text" id="mint-cloth-title" placeholder="Item Name (e.g. Neon Jacket)" style="margin:0;">
+                            <select id="mint-cloth-color" style="margin:0;">
+                                <option value="#e63946">Red</option>
+                                <option value="#1d3557">Dark Blue</option>
+                                <option value="#3b82f6">Bright Blue</option>
+                                <option value="#10b981">Green</option>
+                                <option value="#a855f7">Purple</option>
+                                <option value="#ff1493">Deep Pink</option>
+                                <option value="#00ffff">Cyan</option>
+                                <option value="#ffaa00">Orange</option>
+                                <option value="#222222">Midnight Black</option>
+                            </select>
+                            <button class="btn-action" onclick="publishClothingToCatalogItem()" style="padding:6px;">Upload</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Equippable Catalog Items</h3>
+                        <div class="item-grid" id="avatar-inventory-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-marketplace" class="page">
+            <h2>Catalog Shop</h2>
             <div class="item-grid" id="catalog-item-list"></div>
         </div>
 
-        <!-- GROUPS TAB SYSTEM WITH ANNOUNCEMENTS & CHAT WALLS -->
-        <div id="page-groups" class="page">
-            <h2>Groups Hub</h2>
-            <div style="display:grid; grid-template-columns: 250px 1fr; gap: 20px;">
-                <div style="background: white; padding: 10px; border-radius:6px; border: 2px solid #aaa;" id="groups-list-sidebar">
-                    <h3>Your Groups</h3>
-                    <div id="groups-matrix-grid"></div>
-                </div>
-                <div style="background: white; padding: 15px; border-radius:6px; border: 2px solid #aaa; color:#222;" id="group-active-workspace">
-                    <p style="color:#777;">Select a group from the left panel to open its announcement feeds and active walls.</p>
-                </div>
+        <div id="page-forums" class="page">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2>Community Forums</h2>
+                <button class="btn-action" style="width:180px;" onclick="openNewForumPostModal()">Create Thread</button>
             </div>
+            <div id="forum-threads-list"></div>
         </div>
 
-        <!-- CREATION PORTAL DESIGN SPACE -->
+        <div id="page-forum-view" class="page">
+            <button class="btn-action" style="width:120px; margin-bottom:15px; background:#6c757d;" onclick="switchPage('forums')">← Back</button>
+            <h2 id="view-thread-title">Thread</h2>
+            <div id="forum-replies-container"></div>
+            <hr>
+            <h3>Leave a Reply</h3>
+            <textarea id="forum-reply-body" placeholder="Write your community response message here..."></textarea>
+            <button class="btn-action" style="width:150px; margin-top:5px;" onclick="submitForumReply()">Post Reply</button>
+        </div>
+
+        <div id="page-groups" class="page">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2>Community Groups</h2>
+                <button class="btn-action" style="width:180px;" onclick="openNewGroupModal()">Form Group</button>
+            </div>
+            <div class="item-grid" id="groups-matrix-grid"></div>
+        </div>
+
         <div id="page-create-hub" class="page">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <h2>Developer Workspace Registry</h2>
-                <button class="btn-action" style="width:160px;" onclick="createNewMapProject()">Create New Experience</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h2>Developer Creations Studio</h2>
+                <button class="btn-action" style="width:200px;" onclick="document.getElementById('new-game-modal').style.display='block'">➕ Create New Place</button>
             </div>
             <div class="item-grid" id="user-creations-grid"></div>
         </div>
 
-        <!-- STUDIO INTEGRATED ENGINE WORKSPACE WITH ADVANCED MIXED PROGRAMMING LANGUAGES -->
-        <div id="page-studio" class="page" style="padding:0; height:100%;">
+        <div id="page-studio" class="page" style="padding:0;">
             <div class="studio-container">
                 <div class="studio-main-build-zone">
                     <div class="studio-toolbar">
-                        <button onclick="exitStudioModeWorkspace()">❌ Close Studio</button>
-                        <button onclick="saveActiveStudioProject()" style="background:#28a745;">💾 Push Updates</button>
-                        <button onclick="triggerHtmlLivePlaytest()" style="background:#ffea00; color:#222;">▶ Run Test Sandbox</button>
+                        <button onclick="spawn3DObject('Part')">🧱 Insert Block</button>
+                        <button onclick="spawn3DObject('Sphere')">🔮 Insert Sphere</button>
+                        <span style="color:#aaa; margin: 0 4px;">|</span>
+                        <button id="tool-move" class="active-tool" onclick="changeActiveStudioTool('move')">🏃 Move</button>
+                        <button id="tool-scale" onclick="changeActiveStudioTool('scale')">📐 Scale</button>
+                        <button id="tool-rotate" onclick="changeActiveStudioTool('rotate')">🔄 Rotate</button>
+                        <span style="color:#aaa; margin: 0 4px;">|</span>
+                        <button style="background:#8a2be2;" onclick="open2KCodeEditorWindow()">🧩 2KCode Game Scripts</button>
+                        <button style="background:var(--roblox-red);" onclick="triggerHtmlLivePlaytest()">▶️ Run Live Playtest</button>
+                        <button style="background:#28a745;" onclick="saveActiveStudioProject()">💾 Publish to 2KBlox</button>
+                        <button style="background:#555;" onclick="exitStudioModeWorkspace()">❌ Exit</button>
                     </div>
+                    <div id="studio-3d-canvas" style="flex:1; background:#1b1b1b;"></div>
 
-                    <div class="code-editor-window">
+                    <div class="code-editor-window" id="html-editor-panel">
+                        <div class="studio-toolbar" style="background:#111; justify-content: space-between;">
+                            <span style="color:#fff; margin-left:10px; font-size:15px; letter-spacing:0.5px;">🧩 2KCode IDE - Visual Block Programming Engine</span>
+                            <button style="background:#28a745;" onclick="closeHtmlEditorWindow()">Save Sequence & Compile</button>
+                        </div>
                         <div class="workspace-split-editor">
-                            <!-- TEXT ARRAYS CONTROLLER -->
-                            <div class="script-text-pane">
-                                <div style="color:white; font-size:12px; margin-bottom:4px; text-transform:uppercase;">📝 Global Embedded Script Pipeline (Dual Compile Script Execution Mode)</div>
-                                <textarea id="html-textarea-field" placeholder="Write custom line statements or native code here..."></textarea>
+                            <div class="block-toolbox">
+                                <div class="toolbox-category-title">🏁 Events Matrix</div>
+                                <div class="code-block-item block-orange" onclick="add2KBlockNode('on_start')">when game starts ⚡</div>
+                                <div class="code-block-item block-orange" onclick="add2KBlockNode('on_chat')">when user chats 💬</div>
+                                <div class="code-block-item block-orange" onclick="add2KBlockNode('on_interact')">when user clicks part 🖱️</div>
+                                
+                                <div class="toolbox-category-title">🎨 Visuals & Style</div>
+                                <div class="code-block-item block-blue" onclick="add2KBlockNode('set_title')">set map header [ text ] 🏷️</div>
+                                <div class="code-block-item block-blue" onclick="add2KBlockNode('add_banner')">display message banner [ text ] 🪧</div>
+                                <div class="code-block-item block-blue" onclick="add2KBlockNode('show_popup')">open warning alert window 📢</div>
+                                <div class="code-block-item block-purple" onclick="add2KBlockNode('enable_glow')">turn on neon glow FX ✨</div>
+                                <div class="code-block-item block-purple" onclick="add2KBlockNode('change_sky')">change skybox tint color ⛅</div>
+                                
+                                <div class="toolbox-category-title">⚙️ Game Systems & Actions</div>
+                                <div class="code-block-item block-green" onclick="add2KBlockNode('give_tickets')">award visitor [ amount ] tickets 💵</div>
+                                <div class="code-block-item block-green" onclick="add2KBlockNode('spawn_npc')">spawn random rig NPC bot 🤖</div>
+                                <div class="code-block-item block-green" onclick="add2KBlockNode('teleport_player')">teleport player to map origin 🌀</div>
+                                
+                                <div class="toolbox-category-title">🕹️ Logic Control loops</div>
+                                <div class="code-block-item block-pink" onclick="add2KBlockNode('loop_forever')">loop script forever 🔄</div>
+                                <div class="code-block-item block-pink" onclick="add2KBlockNode('wait_sec')">wait delay time [ sec ] ⏳</div>
                             </div>
-                            
-                            <!-- INTERPRETATIVE BLOCKS ENGINE CONTROLLER -->
-                            <div class="block-code-pane">
-                                <div style="padding:8px; background:#cbd5e1; font-size:12px; color:#333;">🧩 Custom Block-Language Compiler Engine</div>
-                                <div class="block-toolbox">
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('game_title')">+ Set Title</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('glow')">+ Glow FX</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('set_health')">+ Set Health [Num]</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('kill_player')">+ Kill [Player/All]</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('create_stat')">+ Create Stat [Name]</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('give_stat')">+ Modify Stat [Name] [Qty]</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('give_tool')">+ Give Tool [Name]</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('spawn_model')">+ Spawn Model [Asset]</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('create_team')">+ Create Team [Name]</span>
-                                    <span class="code-block-item" onclick="appendVisualCodeBlock('assign_team')">+ Assign Team [Name]</span>
-                                    <!-- SPATIAL CUSTOMIZABLE TOOL PROTOTYPES -->
-                                    <span class="code-block-item" style="background:#e63946;" onclick="appendVisualCodeBlock('tool_spawn_custom')">+ Custom Pickup Tool Spawner</span>
-                                    <span class="code-block-item" style="background:#14b8a6;" onclick="appendVisualCodeBlock('tool_deal_damage')">+ Tool Script: Deal Damage</span>
-                                    <span class="code-block-item" style="background:#14b8a6;" onclick="appendVisualCodeBlock('tool_kill_touch')">+ Tool Script: Instakill Contact</span>
-                                    <span class="code-block-item" style="background:#14b8a6;" onclick="appendVisualCodeBlock('tool_spawn_object')">+ Tool Script: Instantiate Object</span>
-                                </div>
-                                <div class="block-assembly-line" id="block-assembly-line"></div>
-                            </div>
+                            <div class="block-assembly-line" id="block-assembly-line"></div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- OTHER SYSTEM PLATFORM STUBS TO MAINTAIN CONSISTENCY -->
-        <div id="page-games-discover" class="page"><h2>Public Experiences</h2><div class="item-grid" id="games-market-list"></div></div>
-        <div id="page-avatar-editor" class="page"><h2>Closet Inventory</h2></div>
-        <div id="page-forums" class="page"><h2>Platform Message Boards</h2></div>
-        <div id="page-profile" class="page"><h2>User Database Ledger</h2></div>
-    </div>
-
-    <!-- PLAYTEST ENVIRONMENT EMULATOR FRAMEWORK WITH SERVER-WIDE RUNTIME LEADERBOARD -->
-    <div id="game-client-viewport">
-        <div class="game-ui-overlay">
-            <button class="btn-action" style="width:120px; background:#e63946;" onclick="closeActiveGameSimulationClient()">Exit Game</button>
-            
-            <!-- SERVER REGISTRY LEADERBOARD OVERLAY (MAX 10 USERS) -->
-            <div class="game-leaderboard">
-                <div class="leaderboard-header">
-                    <span>Player Matrix</span>
-                    <span>Team / Metrics</span>
+                <div class="studio-sidebar">
+                    <div class="studio-panel-title">Asset Explorer Window Tree</div>
+                    <div class="explorer-tree" id="explorer-list"></div>
+                    <div class="studio-panel-title">Properties Matrix Inspector</div>
+                    <div class="properties-list" id="properties-window"></div>
                 </div>
-                <div id="leaderboard-entries-container"></div>
             </div>
         </div>
-        <div id="html-playtest-render-zone" style="width:100%; height:100%; background:#f1f5f9; padding:4px;"></div>
+
+        <div id="page-admin" class="page" style="background:#0f172a;">
+            <h2 style="color:#38bdf8;">🚨 MASTER SECURITY INFRASTRUCTURE SYSTEM</h2>
+            <div class="admin-dashboard-grid">
+                <div class="admin-module-card">
+                    <h3>Experience Management Engine</h3>
+                    <input type="text" id="admin-game-name" placeholder="Exact Game Title Matcher">
+                    <button class="btn-action" style="background:#eab308; color:#000; border:none; margin-top:5px;" onclick="moderateExperience('feature')">Toggle Featured Space</button>
+                    <button class="btn-action" style="background:#ef4444; color:#fff; border:none; margin-top:5px;" onclick="moderateExperience('ban')">Ban/Remove Game</button>
+                </div>
+                <div class="admin-module-card">
+                    <h3>Profile Access Lockdown</h3>
+                    <input type="text" id="admin-target-account" placeholder="Target Account Username">
+                    <button class="btn-action" style="background:#ef4444; color:#fff; border:none; margin-top:5px;" onclick="banUserAccountNode()">Suspend Profile Access</button>
+                </div>
+                <div class="admin-module-card">
+                    <h3>Inject Limited Store Item</h3>
+                    <input type="text" id="admin-ltd-title" placeholder="Item Name (e.g. Blue Crown)">
+                    <input type="text" id="admin-ltd-color" placeholder="Hex Color Code (#ff00ff)">
+                    <input type="number" id="admin-ltd-price" placeholder="Ticket Asset Valuation Cost">
+                    <button class="btn-action" style="background:#a855f7; color:#fff; border:none; margin-top:5px;" onclick="mintLimitedCatalogItem()">Inject Limited Matrix Asset</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="new-game-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px; color:#222;">
+            <h3>Initialize New Experience Place</h3>
+            <label>Experience Title Handle:</label>
+            <input type="text" id="new-game-title-input" value="Untitled Map Instance">
+            <button class="btn-action" onclick="commitNewGameToCloudRegistry()">Launch Workspace Canvas</button>
+            <button class="btn-action" style="background:#666; border-color:#555; margin-top:6px;" onclick="document.getElementById('new-game-modal').style.display='none'">Cancel</button>
+        </div>
+
+        <div id="new-forum-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px; color:#222;">
+            <h3>Create Forum Thread</h3>
+            <input type="text" id="forum-title-input" placeholder="Thread Title">
+            <textarea id="forum-body-input" placeholder="Write your post details here..."></textarea>
+            <button class="btn-action" onclick="submitForumThreadCloud()">Publish Thread</button>
+            <button class="btn-action" style="background:#666; margin-top:5px;" onclick="document.getElementById('new-forum-modal').style.display='none'">Cancel</button>
+        </div>
+
+        <div id="new-group-modal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; border:4px solid #3570c5; z-index:9000; padding:20px; border-radius:8px; color:#222;">
+            <h3>Form New Group</h3>
+            <input type="text" id="group-title-input" placeholder="Group Name">
+            <button class="btn-action" onclick="submitGroupCloud()">Establish Group</button>
+            <button class="btn-action" style="background:#666; margin-top:5px;" onclick="document.getElementById('new-group-modal').style.display='none'">Cancel</button>
+        </div>
+
     </div>
 
-    <!-- ADMIN SYSTEM OVERLAY MODULE PANELS WITH LIVE REFLECTION INTERFACES -->
-    <div id="admin-modal-overlay">
-        <h3>🚨 Core Database & Server Runtime Code Engine Moderator Panel</h3>
-        <p>Live injection compilation interface layer: editing raw code blocks allows updates to be pushed across execution streams immediately.</p>
-        <textarea id="admin-source-code-editor"></textarea>
-        <div style="margin-top:10px; display:flex; gap:10px;">
-            <button class="btn-action" style="background:#22c55e;" onclick="saveAndInjectLivePlatformUpdate()">Compile & Publish Hotfix Update Live</button>
-            <button class="btn-action" style="background:#64748b;" onclick="document.getElementById('admin-modal-overlay').style.display='none'">Close Console</button>
+    <div id="game-client-viewport">
+        <div id="game-3d-scene-box" style="width:100%; height:100%;"></div>
+        <div class="crosshair" id="game-crosshair">+</div>
+        <div class="game-ui-overlay">
+            <button class="game-ui-btn" onclick="toggleGameEscMenu()">Menu Panel [ESC]</button>
+            
+            <div class="game-script-alert" id="game-alert-banner">
+                <strong id="game-alert-txt">Notification Triggered!</strong>
+            </div>
+
+            <div class="game-chat-box">
+                <div class="game-chat-log" id="game-chat-display"></div>
+                <input type="text" id="game-chat-input" placeholder="Press Enter to send chat..." style="background:rgba(255,255,255,0.95); margin:0;">
+            </div>
+
+            <div class="game-esc-menu" id="game-esc-menu">
+                <h2>Game Session Panel</h2>
+                <button class="btn-action" style="background:var(--roblox-red);" onclick="closeActiveGameSimulationClient()">Leave Game Instance</button>
+            </div>
         </div>
     </div>
 
-    <!-- CORE RE-INTEGRATED INTERPRETATION LOGIC PLATFORM OPERATIONS ENGINE -->
-    <script>
-        // MOCK STORAGE ENGINE REPLICATING THE DATABASE
-        let localUserDoc = { username: "Guest", tickets: 15, dailyClaimTimestamp: 0 };
-        let activePageKey = "auth";
+    <div id="html-playtest-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:white; z-index:9999; padding:20px; overflow:auto; color:#222;">
+        <div style="padding:10px; background:#eee; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <strong id="playtest-header-title">Rendering Sandbox Instance Output</strong>
+            <button class="btn-action" style="width:120px; background:var(--roblox-red);" onclick="document.getElementById('html-playtest-overlay').style.display='none'">Stop Runtime</button>
+        </div>
+        <div id="html-playtest-render-zone"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, arrayUnion, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBl_E7sYlhIjLS4Yty-mf8-vu6vOImTiPc",
+            authDomain: "kblox-51f30.firebaseapp.com",
+            projectId: "kblox-51f30",
+            storageBucket: "kblox-51f30.firebasestorage.app",
+            messagingSenderId: "1045873411005",
+            appId: "1:1045873411005:web:1839a3ba9b7d817f6748d4"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let localUserDoc = null;
+        let studioScene, studioCamera, studioRenderer;
+        let selectedObjectId = null;
+        let activeStudioTool = 'move';
+        let activeGameScene, activeGameCamera, activeGameRenderer, activePlayerMeshObj;
+        let gameActiveState = { keys: {}, animationFrame: 0, yaw: 0, pitch: 0, mousePressed: false };
+        let objectsMatrix = [];
+        let compiledBlocksData = []; 
         let currentlyEditingGameId = null;
-        let blockSequenceData = [];
-        let runningGameContext = { teams: {}, stats: {} };
+        let activeThreadId = null;
+        let gameChatUnsubscribeNode = null;
 
-        let mockGamesCollection = [
-            { id: "g1", title: "Crossroads Classic Obby", owner: "Guest", sourceScriptHtml: "", blockScriptBlocks: [] }
-        ];
-        
-        let mockGroupsCollection = [
-            { id: "gr1", name: "2KBlox Elite Builders", owner: "Guest", announcements: ["Welcome to our brand new Sandbox cluster engine!"], messages: [{ user: "SYSTEM", body: "Wall channel established." }] }
-        ];
+        window.handleAuth = async function(type) {
+            const email = document.getElementById('auth-email').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
+            const username = document.getElementById('auth-user').value.trim();
+            if(!email || !pass) return alert("Credentials required.");
+            try {
+                if(type === 'signup') {
+                    if(!username) return alert("Username required.");
+                    const res = await createUserWithEmailAndPassword(auth, email, pass);
+                    await setDoc(doc(db, "users", res.user.uid), { 
+                        username, tickets: 120, inventory: [], 
+                        friends: [], recentGames: [],
+                        activeOutfit: { shirt: '#e63946', leggings: '#1d3557' }, isBanned: false 
+                    });
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+            } catch(e) { alert(e.message); }
+        };
 
-        const masterGlobalCatalogData = [
-            { title: "Crimson Spark Overlord Shirt", price: 5, color: "#991b1b" },
-            { title: "Neon Cybernetic Void Leggings", price: 15, color: "#06b6d4" },
-            { title: "Emerald Valkyrie Cloak Armor", price: 30, color: "#047857" },
-            { title: "Midnight Charcoal Designer Denim", price: 50, color: "#1e293b" }
-        ];
+        onAuthStateChanged(auth, async (u) => {
+            if(u) {
+                const snap = await getDoc(doc(db, "users", u.uid));
+                if(snap.exists() && snap.data().isBanned) { alert("Account is banned."); auth.signOut(); return; }
+                localUserDoc = { uid: u.uid, ...snap.data() };
+                if(!localUserDoc.inventory) localUserDoc.inventory = [];
+                if(!localUserDoc.friends) localUserDoc.friends = [];
+                if(!localUserDoc.recentGames) localUserDoc.recentGames = [];
 
-        function handleAuth(type) {
-            const u = document.getElementById('auth-user').value.trim();
-            if(!u) return alert("Please supply a credentials handle.");
-            localUserDoc.username = u;
-            document.getElementById('page-auth').classList.remove('active');
-            document.getElementById('main-nav').style.display = 'flex';
-            document.querySelectorAll('.user-placeholder-name').forEach(el => el.textContent = u);
-            document.getElementById('header-username').textContent = u;
-            document.getElementById('user-tickets').textContent = localUserDoc.tickets;
-            switchPage('home');
-        }
+                document.getElementById('page-auth').classList.remove('active');
+                document.getElementById('main-nav').style.display = 'flex';
+                
+                document.querySelectorAll('.user-placeholder-name').forEach(el => el.textContent = localUserDoc.username);
+                document.getElementById('header-username').textContent = localUserDoc.username;
+                document.getElementById('user-tickets').textContent = localUserDoc.tickets;
+                switchPage('home');
+            }
+        });
 
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.querySelectorAll('#main-nav button').forEach(b => b.classList.remove('active'));
-            const btn = document.getElementById(`nav-${p}`); if(btn) btn.classList.add('active');
-            const target = document.getElementById(`page-${p}`); if(target) target.classList.add('active');
-            
-            if(p === 'tickets-hub') renderTicketsRewardDashboardPanel();
-            if(p === 'marketplace') filterCatalogInventoryItems();
+            const targetNav = document.getElementById(`nav-${p}`);
+            if(targetNav) targetNav.classList.add('active');
+            const target = document.getElementById(`page-${p}`);
+            if(target) target.classList.add('active');
+            if(p === 'home') { init3DAvatarViewerCanvas('home-avatar-canvas', false); syncHomeDynamicMatrices(); }
+            if(p === 'avatar-editor') init3DAvatarViewerCanvas('avatar-3d-canvas', true);
+            if(p === 'marketplace') syncCatalogMarketplaceUI();
+            if(p === 'games-discover') syncGamesDiscoverGrid();
             if(p === 'create-hub') renderCreationsLandingDashboard();
-            if(p === 'groups') renderGroupsDashboardHub();
+            if(p === 'forums') syncForumsDashboard();
+            if(p === 'groups') syncGroupsDashboard();
+            if(p === 'profile') showUserProfilePage(localUserDoc.username);
+        };
+
+        function generateRigK6ComplexMesh(shirt, pants) {
+            const group = new THREE.Group();
+            const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
+            const shirtMat = new THREE.MeshLambertMaterial({ color: shirt || "#e63946" });
+            const pantsMat = new THREE.MeshLambertMaterial({ color: pants || "#1d3557" });
+            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), skinMat); head.position.y = 3.4; group.add(head);
+            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.7), shirtMat); torso.position.y = 2.0; group.add(torso);
+            const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); la.position.set(-1.0, 2.0, 0); group.add(la);
+            const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); ra.position.set(1.0, 2.0, 0); group.add(ra);
+            const llPivot = new THREE.Group(); llPivot.position.set(-0.35, 1.1, 0);
+            const ll = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.8, 0.48), pantsMat); ll.position.y = -0.7; llPivot.add(ll); group.add(llPivot);
+            const rlPivot = new THREE.Group(); rlPivot.position.set(0.35, 1.1, 0);
+            const rl = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.8, 0.48), pantsMat); rl.position.y = -0.7; rlPivot.add(rl); group.add(rlPivot);
+            group.laNode = la; group.raNode = ra; group.llNode = llPivot; group.rlNode = rlPivot;
+            return group;
         }
 
-        /* =========================================================================
-           TICKETS ENGINE WITH PREDICTIVE OFFERS
-           ========================================================================= */
-        function renderTicketsRewardDashboardPanel() {
-            const lastClaim = localUserDoc.dailyClaimTimestamp || 0;
-            const now = Date.now();
-            const elapsed = now - lastClaim;
-            const timeRemaining = (24 * 60 * 60 * 1000) - elapsed;
+        function init3DAvatarViewerCanvas(id, bindControls) {
+            const box = document.getElementById(id); if(!box) return; box.innerHTML = '';
+            const scene = new THREE.Scene(); scene.background = new THREE.Color(0xb0e0e6);
+            const camera = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
+            const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(renderer.domElement);
+            scene.add(new THREE.AmbientLight(0x888888)); const l = new THREE.DirectionalLight(0xffffff, 1.0); l.position.set(5, 10, 5); scene.add(l);
+            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
+            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings); scene.add(rig); rig.position.y = -1.5;
+            camera.position.set(0, 0, 5.5); camera.lookAt(0, -0.2, 0);
+            function loop() { if(document.getElementById(id)) { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); } } loop();
+            if(bindControls) renderFabricInventoryGrid();
+        }
 
-            const btn = document.getElementById('claim-tickets-btn');
-            const timerBox = document.getElementById('ticket-countdown-timer');
+        async function syncHomeDynamicMatrices() {
+            const gHome = document.getElementById('home-groups-list'); gHome.innerHTML = '';
+            const gSnap = await getDocs(collection(db, "groups")); let joinedGroupCount = 0;
+            gSnap.forEach(d => { const g = d.data(); if(g.members && g.members.includes(localUserDoc.username)) { joinedGroupCount++; gHome.innerHTML += `<div class="market-card" style="background:#f1f5f9;">👥 <b>${g.name}</b><br><small>Member</small></div>`; } });
+            if(joinedGroupCount === 0) gHome.innerHTML = '<p style="color:#666;">You haven\'t affiliated with any groups yet.</p>';
+            const rHome = document.getElementById('home-recent-games-list'); rHome.innerHTML = '';
+            if(localUserDoc.recentGames && localUserDoc.recentGames.length > 0) {
+                const distinctTitles = [...new Set(localUserDoc.recentGames)];
+                distinctTitles.forEach(title => { rHome.innerHTML += `<div class="market-card" style="background:#f0fdf4; border-color:#22c55e;">🎮 <b>${title}</b></div>`; });
+            } else { rHome.innerHTML = '<p style="color:#666;">No recent play sessions found.</p>'; }
+        }
 
-            if(timeRemaining > 0) {
-                btn.disabled = true;
-                btn.innerText = "Claim Window Closed";
-                const hrs = Math.floor(timeRemaining / (1000*60*60));
-                const mins = Math.floor((timeRemaining % (1000*60*60)) / (1000*60));
-                timerBox.innerText = `⏳ Next Ticket Claim Period Unlocks In: ${hrs}h ${mins}m`;
-            } else {
-                btn.disabled = false;
-                btn.innerText = "Claim 5 Daily Tickets";
-                timerBox.innerText = "✅ Daily Tickets drop ready for retrieval!";
-            }
+        async function showUserProfilePage(username) {
+            document.getElementById('profile-title').textContent = `${username}'s Matrix Profile`;
+            const box = document.getElementById('profile-avatar-box'); box.innerHTML = '';
+            const scene = new THREE.Scene(); scene.background = new THREE.Color(0xb0e0e6);
+            const camera = new THREE.PerspectiveCamera(45, box.clientWidth / 320, 0.1, 100);
+            const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(box.clientWidth, 320); box.appendChild(renderer.domElement);
+            scene.add(new THREE.AmbientLight(0x999999));
+            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
+            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings); scene.add(rig); rig.position.y = -1.5;
+            camera.position.set(0, 0, 5); camera.lookAt(0, 0, 0);
+            function loop() { if(document.getElementById('profile-avatar-box').innerHTML !== '') { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); } } loop();
+        }
 
-            // Populate intelligent product suggestions matching target purchasing ranges
-            const targetGrid = document.getElementById('ticket-suggestions-grid');
-            targetGrid.innerHTML = '';
+        window.publishClothingToCatalogItem = async function() {
+            const title = document.getElementById('mint-cloth-title').value.trim();
+            const color = document.getElementById('mint-cloth-color').value;
+            if(!title) return alert("Please specify a clothing asset name!");
             
-            // Sort items by affordability margins relative to active ticket bounds
-            let recommendations = masterGlobalCatalogData.filter(i => i.price <= localUserDoc.tickets + 10).slice(0, 3);
-            if(recommendations.length === 0) recommendations = masterGlobalCatalogData.slice(0, 3);
+            try {
+                const docRef = await addDoc(collection(db, "catalog"), {
+                    title: title, color: color, price: 15, isLimited: false, creator: localUserDoc.username
+                });
+                localUserDoc.inventory.push(docRef.id);
+                await updateDoc(doc(db, "users", localUserDoc.uid), { inventory: localUserDoc.inventory });
+                document.getElementById('mint-cloth-title').value = '';
+                alert(`Successfully minted and posted "${title}" into global catalog!`);
+                renderFabricInventoryGrid();
+            } catch(err) { alert(err.message); }
+        };
 
-            recommendations.forEach(item => {
-                targetGrid.innerHTML += `
-                    <div class="market-card">
-                        <div style="height:40px; background:${item.color}; border-radius:4px; margin-bottom:5px;"></div>
-                        <b>${item.title}</b><br><small>Cost: 🪙 ${item.price}</small>
-                    </div>`;
-            });
-        }
-
-        window.processDailyTicketClaim = function() {
-            localUserDoc.tickets += 5;
-            localUserDoc.dailyClaimTimestamp = Date.now();
-            document.getElementById('user-tickets').textContent = localUserDoc.tickets;
-            renderTicketsRewardDashboardPanel();
-            alert("🎟️ Claim Processed successfully! 5 Tickets dropped into your account balance.");
-        }
-
-        /* =========================================================================
-           CATALOG ENGINE WITH FILTER CAPABILITIES
-           ========================================================================= */
-        window.filterCatalogInventoryItems = function() {
-            const query = document.getElementById('catalog-search-input')?.value.toLowerCase() || "";
-            const shop = document.getElementById('catalog-item-list');
-            if(!shop) return;
-            shop.innerHTML = '';
-
-            masterGlobalCatalogData.forEach(item => {
-                if(item.title.toLowerCase().includes(query)) {
-                    shop.innerHTML += `
+        async function renderFabricInventoryGrid() {
+            const container = document.getElementById('avatar-inventory-list'); container.innerHTML = '';
+            const snap = await getDocs(collection(db, "catalog"));
+            snap.forEach(d => {
+                const item = d.data();
+                if(localUserDoc.inventory.includes(d.id)) {
+                    container.innerHTML += `
                         <div class="market-card">
-                            <div style="height:60px; background:${item.color}; margin-bottom:5px; border-radius:3px;"></div>
-                            <b>${item.title}</b><br><small>Cost: 🪙 ${item.price}</small>
+                            <div style="background:${item.color}; height:40px; border-radius:4px; margin-bottom:5px;"></div>
+                            <b>${item.title}</b><br>
+                            <button class="btn-action" style="padding:4px; font-size:11px; background:#4a90e2;" onclick="equipClothingAsset('${item.color}')">Wear Item</button>
                         </div>`;
                 }
             });
         }
 
-        /* =========================================================================
-           DUAL ENGINE STRUCTURAL CODE INTERPRETER & CODE GENERATION LABELS
-           ========================================================================= */
-        window.createNewMapProject = function() {
-            const title = prompt("Specify new Project Title Handle:");
-            if(!title) return;
-            mockGamesCollection.push({ id: "g_" + Date.now(), title, owner: localUserDoc.username, sourceScriptHtml: "", blockScriptBlocks: [] });
-            renderCreationsLandingDashboard();
-        }
+        window.equipClothingAsset = async function(color) {
+            localUserDoc.activeOutfit.shirt = color;
+            await updateDoc(doc(db, "users", localUserDoc.uid), { activeOutfit: localUserDoc.activeOutfit });
+            init3DAvatarViewerCanvas('avatar-3d-canvas', true);
+            alert("Outfit configured successfully!");
+        };
 
-        function renderCreationsLandingDashboard() {
-            const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
-            mockGamesCollection.forEach(game => {
-                grid.innerHTML += `
-                    <div class="market-card" style="background:#f8fafc;">
-                        🛠️ <b>${game.title}</b><br>
-                        <button class="btn-action" style="background:#4a90e2; margin-top:5px; padding:4px;" onclick="loadStudioDevEngineEnvironment('${game.id}')">Open Workspace</button>
-                    </div>`;
-            });
-        }
-
-        window.loadStudioDevEngineEnvironment = function(gameId) {
-            currentlyEditingGameId = gameId;
-            const game = mockGamesCollection.find(g => g.id === gameId);
-            if(game.owner !== localUserDoc.username) return alert("Locked permissions state.");
-            
-            switchPage('studio');
-            blockSequenceData = game.blockScriptBlocks || [];
-            document.getElementById('html-textarea-field').value = game.sourceScriptHtml || "";
-            rebuildVisualAssembledBlocksView();
-        }
-
-        window.saveActiveStudioProject = function() {
-            const game = mockGamesCollection.find(g => g.id === currentlyEditingGameId);
-            if(game) {
-                game.sourceScriptHtml = document.getElementById('html-textarea-field').value;
-                game.blockScriptBlocks = blockSequenceData;
-                alert("💾 Codebase modifications parsed and committed into sandbox memory stacks!");
-            }
-        }
-
-        window.appendVisualCodeBlock = function(blockType) {
-            blockSequenceData.push({ id: Date.now(), type: blockType, val: "" });
-            rebuildVisualAssembledBlocksView();
-            compileBlocksToCustomLanguageSyntaxText();
-        }
-
-        window.removeVisualCodeBlock = function(id) {
-            blockSequenceData = blockSequenceData.filter(b => b.id !== id);
-            rebuildVisualAssembledBlocksView();
-            compileBlocksToCustomLanguageSyntaxText();
-        }
-
-        window.updateBlockValueData = function(id, text) {
-            const b = blockSequenceData.find(x => x.id === id);
-            if(b) b.val = text;
-            compileBlocksToCustomLanguageSyntaxText();
-        }
-
-        function rebuildVisualAssembledBlocksView() {
-            const line = document.getElementById('block-assembly-line'); line.innerHTML = '';
-            blockSequenceData.forEach(b => {
-                let label = b.type.replace(/_/g, " ").toUpperCase();
-                line.innerHTML += `
-                    <div class="assembled-block">
-                        <div>
-                            <span style="font-size:10px; color:#555; display:block;">${label}</span>
-                            <input type="text" value="${b.val}" oninput="updateBlockValueData(${b.id}, this.value)" placeholder="Parameter definition..." style="width:200px; padding:2px; font-size:11px; margin:0;">
-                        </div>
-                        <button onclick="removeVisualCodeBlock(${b.id})" style="background:none; border:none; cursor:pointer;">❌</button>
-                    </div>`;
-            });
-        }
-
-        function compileBlocksToCustomLanguageSyntaxText() {
-            let customLines = "";
-            blockSequenceData.forEach(b => {
-                customLines += `${b.type}:${b.val}\n`;
-            });
-            // Appends blocks alongside regular text data without overriding human-edited text entirely
-            const currentText = document.getElementById('html-textarea-field').value;
-            const strippedText = currentText.replace(/\/\*-- BLOCK_START --\*\/[\s\S]*\/\*-- BLOCK_END --\*\//g, "").trim();
-            document.getElementById('html-textarea-field').value = strippedText + "\n\n/*-- BLOCK_START --*/\n" + customLines + "/*-- BLOCK_END --*/";
-        }
-
-        /* =========================================================================
-           COMPILER PLAYTEST PARSER & SERVER LEADERBOARD IMPLEMENTATION (MAX 10)
-           ========================================================================= */
-        window.triggerHtmlLivePlaytest = function() {
-            const rawScript = document.getElementById('html-textarea-field').value;
-            const renderTarget = document.getElementById('html-playtest-render-zone');
-            renderTarget.innerHTML = "";
-            document.getElementById('game-client-viewport').style.display = 'block';
-
-            runningGameContext = { teams: {}, stats: {}, activeTeam: "Neutral Status", activeHealth: 100 };
-
-            // Dynamic interpretation loops
-            const statements = rawScript.split('\n');
-            statements.forEach(stmt => {
-                if(!stmt.includes(':')) return;
-                const div = stmt.indexOf(':');
-                const key = stmt.substring(0, div).trim();
-                const param = stmt.substring(div + 1).trim();
-
-                if(key === 'game_title') {
-                    renderTarget.innerHTML += `<h2 style='text-align:center; color:#333;'>${param}</h2>`;
-                }
-                else if(key === 'glow') {
-                    renderTarget.style.boxShadow = `inset 0 0 30px ${param || 'red'}`;
-                }
-                else if(key === 'set_player_health') {
-                    runningGameContext.activeHealth = parseInt(param) || 100;
-                }
-                else if(key === 'create_stat') {
-                    runningGameContext.stats[param] = 0;
-                }
-                else if(key === 'give_stat') {
-                    const parts = param.split(' ');
-                    if(parts.length >= 2) runningGameContext.stats[parts[0]] = parts[1];
-                }
-                else if(key === 'create_team') {
-                    runningGameContext.teams[param] = true;
-                }
-                else if(key === 'assign_team') {
-                    runningGameContext.activeTeam = param;
-                }
-                else if(key === 'tool_spawn_custom') {
-                    // Instantiates a custom interactive pickup item mesh template
-                    renderTarget.innerHTML += `
-                        <div id="pickup-tool-node" style="width:70px; background:#ff4500; color:white; padding:10px; border-radius:4px; text-align:center; cursor:pointer; margin:20px auto; pointer-events:auto;" onclick="triggerToolPickupActionSequence()">
-                            🎁 ${param || 'Tool Item'}
-                        </div>`;
-                }
-            });
-
-            rebuildServerSimulatedLeaderboard();
-        }
-
-        window.triggerToolPickupActionSequence = function() {
-            alert("🎒 Item inventory item picked up! Dynamic sub-scripts linked into the active engine frame.");
-            const rawScript = document.getElementById('html-textarea-field').value;
-            if(rawScript.includes('tool_deal_damage')) alert("💥 Weapon Tool Executed: Inflicted damage parameters upon nearby workspace matrices!");
-            if(rawScript.includes('tool_kill_touch')) alert("💀 Instant-kill trigger deployed on weapon collider contact points.");
-            if(rawScript.includes('tool_spawn_object')) alert("📦 Tool Spawn Triggered: Instantiated supplementary physical assets in world vectors.");
-            
-            const toolNode = document.getElementById('pickup-tool-node');
-            if(toolNode) toolNode.style.display = 'none';
-        }
-
-        function rebuildServerSimulatedLeaderboard() {
-            const container = document.getElementById('leaderboard-entries-container');
-            container.innerHTML = '';
-
-            // Render local user row
-            let userStatString = "";
-            for(let key in runningGameContext.stats) {
-                userStatString += ` | ${key}:${runningGameContext.stats[key]}`;
-            }
-            container.innerHTML += `
-                <div class="leaderboard-row" style="color:#ffea00;">
-                    <span>👤 ${localUserDoc.username} (You)</span>
-                    <span>[${runningGameContext.activeTeam}] HP: ${runningGameContext.activeHealth}${userStatString}</span>
-                </div>`;
-
-            // Backfill simulated players up to structural cap metrics (Max 10 players total)
-            const simulatedBotProfiles = ["BlockyGamer", "RoboBuildX", "RetroDev", "PixelMaster", "NoobSlayer", "BuildFlux", "HexCoder", "StudioPro", "MatrixRunner"];
-            for(let i = 0; i < 9; i++) {
+        async function syncCatalogMarketplaceUI() {
+            const container = document.getElementById('catalog-item-list'); container.innerHTML = '';
+            const snap = await getDocs(collection(db, "catalog"));
+            snap.forEach(d => {
+                const item = d.data();
+                const isOwned = localUserDoc.inventory.includes(d.id);
                 container.innerHTML += `
-                    <div class="leaderboard-row">
-                        <span>🤖 ${simulatedBotProfiles[i]}</span>
-                        <span>[${runningGameContext.activeTeam}] HP: 100</span>
+                    <div class="market-card">
+                        ${item.isLimited ? '<span class="badge-limited">LTD</span>' : ''}
+                        <div style="background:${item.color}; height:60px; border-radius:4px; margin-bottom:5px;"></div>
+                        <b>${item.title}</b><br>
+                        <small>By: ${item.creator || 'System'}</small><br>
+                        <span>💵 ${item.price} Tickets</span><br>
+                        <button class="btn-action" style="margin-top:5px; background:${isOwned ? '#6c757d':'#28a745'};" ${isOwned ? 'disabled':''} onclick="purchaseCatalogAsset('${d.id}', ${item.price})">
+                            ${isOwned ? 'Acquired' : 'Purchase'}
+                        </button>
                     </div>`;
+            });
+        }
+
+        window.purchaseCatalogAsset = async function(id, price) {
+            if(localUserDoc.tickets < price) return alert("Insufficient Tickets balance!");
+            localUserDoc.tickets -= price;
+            localUserDoc.inventory.push(id);
+            await updateDoc(doc(db, "users", localUserDoc.uid), { tickets: localUserDoc.tickets, inventory: localUserDoc.inventory });
+            document.getElementById('user-tickets').textContent = localUserDoc.tickets;
+            syncCatalogMarketplaceUI();
+            alert("Item acquired!");
+        };
+
+        /* 2KCODE SCRATCH BLOCK VISUAL PROGRAMMING GENERATOR ENGINE LAYER */
+        window.open2KCodeEditorWindow = function() {
+            document.getElementById('html-editor-panel').style.display = 'block';
+            renderAssembled2KBlocksList();
+        };
+
+        window.closeHtmlEditorWindow = async function() {
+            document.getElementById('html-editor-panel').style.display = 'none';
+        };
+
+        window.add2KBlockNode = function(type) {
+            let newNode = { id: 'block_' + Date.now() + Math.random().toString(36).substr(2, 4), type: type, params: {} };
+            if(type === 'set_title' || type === 'add_banner' || type === 'show_popup') newNode.params.text = "Hello 2KBlox!";
+            if(type === 'give_tickets') newNode.params.amount = 50;
+            if(type === 'change_sky') newNode.params.color = "#87ceeb";
+            if(type === 'wait_sec') newNode.params.duration = 1;
+            compiledBlocksData.push(newNode);
+            renderAssembled2KBlocksList();
+        };
+
+        window.remove2KBlockNode = function(id) {
+            compiledBlocksData = compiledBlocksData.filter(b => b.id !== id);
+            renderAssembled2KBlocksList();
+        };
+
+        window.update2KBlockParam = function(id, paramKey, value) {
+            let node = compiledBlocksData.find(b => b.id === id);
+            if(node) node.params[paramKey] = value;
+        };
+
+        function renderAssembled2KBlocksList() {
+            const line = document.getElementById('block-assembly-line'); line.innerHTML = '';
+            if(compiledBlocksData.length === 0) {
+                line.innerHTML = `<div style="color:#94a3b8; text-align:center; padding-top:40px; font-size:14px;">Drag and drop block signatures from the toolbox canvas palette to construct your 2KCode gameplay sequence tree!</div>`;
+                return;
+            }
+            
+            compiledBlocksData.forEach(b => {
+                let blockHtml = '';
+                if(b.type === 'on_start') blockHtml = `<div class="assembled-block block-orange"><span>🏁 <b>when game starts:</b></span>`;
+                else if(b.type === 'on_chat') blockHtml = `<div class="assembled-block block-orange"><span>💬 <b>when user types a chat message:</b></span>`;
+                else if(b.type === 'on_interact') blockHtml = `<div class="assembled-block block-orange"><span>🖱️ <b>when user interacts with part:</b></span>`;
+                else if(b.type === 'set_title') blockHtml = `<div class="assembled-block block-blue"><span>🏷️ set map header banner to: <input type="text" value="${b.params.text || ''}" onchange="update2KBlockParam('${b.id}', 'text', this.value)"></span>`;
+                else if(b.type === 'add_banner') blockHtml = `<div class="assembled-block block-blue"><span>🪧 display sub text ticker: <input type="text" value="${b.params.text || ''}" onchange="update2KBlockParam('${b.id}', 'text', this.value)"></span>`;
+                else if(b.type === 'show_popup') blockHtml = `<div class="assembled-block block-blue"><span>📢 show warning popup modal: <input type="text" value="${b.params.text || ''}" onchange="update2KBlockParam('${b.id}', 'text', this.value)"></span>`;
+                else if(b.type === 'enable_glow') blockHtml = `<div class="assembled-block block-purple"><span>✨ enable neon atmosphere bloom FX</span>`;
+                else if(b.type === 'change_sky') blockHtml = `<div class="assembled-block block-purple"><span>⛅ change skybox tint color: <input type="color" value="${b.params.color || '#87ceeb'}" onchange="update2KBlockParam('${b.id}', 'color', this.value)"></span>`;
+                else if(b.type === 'give_tickets') blockHtml = `<div class="assembled-block block-green"><span>💵 award explorer: <input type="number" value="${b.params.amount || 0}" onchange="update2KBlockParam('${b.id}', 'amount', parseInt(this.value))"> tickets cache</span>`;
+                else if(b.type === 'spawn_npc') blockHtml = `<div class="assembled-block block-green"><span>🤖 spawn random rig K6 dummy bot</span>`;
+                else if(b.type === 'teleport_player') blockHtml = `<div class="assembled-block block-green"><span>🌀 warp character to map origin coords</span>`;
+                else if(b.type === 'loop_forever') blockHtml = `<div class="assembled-block block-pink"><span>🔄 <b>loop logic sequence infinitely</b></span>`;
+                else if(b.type === 'wait_sec') blockHtml = `<div class="assembled-block block-pink"><span>⏳ wait delay duration: <input type="number" step="0.5" value="${b.params.duration || 1}" onchange="update2KBlockParam('${b.id}', 'duration', parseFloat(this.value))"> seconds</span>`;
+                
+                blockHtml += `<button class="block-delete-btn" onclick="remove2KBlockNode('${b.id}')">✕</button></div>`;
+                line.innerHTML += blockHtml;
+            });
+        }
+
+        /* 2KCODE INTERPRETER RUNTIME ENGINE */
+        function executeActive2KCodeSequence(blocks, triggerCondition, contextualMsg = "") {
+            blocks.forEach(block => {
+                if (triggerCondition === 'on_start' && block.type === 'set_title') {
+                    console.log("Setting Title via Block Script:", block.params.text);
+                }
+                if (triggerCondition === 'on_start' && block.type === 'change_sky' && activeGameScene) {
+                    activeGameScene.background.set(block.params.color || 0x7ec0ee);
+                }
+                if (triggerCondition === 'on_start' && block.type === 'enable_glow' && activeGameScene) {
+                    activeGameScene.add(new THREE.AmbientLight(0xffffff, 0.5));
+                }
+                if (triggerCondition === 'on_chat' && block.type === 'show_popup') {
+                    const banner = document.getElementById('game-alert-banner');
+                    document.getElementById('game-alert-txt').textContent = block.params.text || "Alert!";
+                    banner.style.display = 'block';
+                    setTimeout(() => { banner.style.display = 'none'; }, 4000);
+                }
+                if (block.type === 'give_tickets' && triggerCondition === 'on_start') {
+                    localUserDoc.tickets += (block.params.amount || 0);
+                    document.getElementById('user-tickets').textContent = localUserDoc.tickets;
+                    updateDoc(doc(db, "users", localUserDoc.uid), { tickets: localUserDoc.tickets });
+                }
+                if (block.type === 'teleport_player' && activePlayerMeshObj) {
+                    activePlayerMeshObj.position.set(0, 2, 0);
+                }
+                if (block.type === 'spawn_npc' && activeGameScene && triggerCondition === 'on_start') {
+                    let bot = generateRigK6ComplexMesh("#ffab19", "#9966ff");
+                    bot.position.set(Math.random() * 10 - 5, 0, Math.random() * 10 - 5);
+                    activeGameScene.add(bot);
+                }
+            });
+        }
+
+        window.triggerHtmlLivePlaytest = function() {
+            document.getElementById('html-playtest-overlay').style.display = 'block';
+            const screen = document.getElementById('html-playtest-render-zone');
+            screen.innerHTML = '';
+            
+            let sandboxAppBox = document.createElement('div');
+            sandboxAppBox.style.padding = '20px'; sandboxAppBox.style.borderRadius = '8px';
+            sandboxAppBox.style.background = '#f1f5f9'; sandboxAppBox.style.minHeight = '300px';
+            
+            let logTitle = document.createElement('h1'); logTitle.textContent = "2KCode Runtime Preview"; sandboxAppBox.appendChild(logTitle);
+            let logBanner = document.createElement('p'); logBanner.style.color = '#555'; sandboxAppBox.appendChild(logBanner);
+            let systemConsoleLogs = document.createElement('div'); systemConsoleLogs.style.background = '#111'; systemConsoleLogs.style.color = '#00ff00'; systemConsoleLogs.style.padding = '10px'; systemConsoleLogs.style.fontFamily = 'monospace';
+            systemConsoleLogs.innerHTML = "=== 2KCode Execution Simulator Terminal ===<br>";
+            
+            compiledBlocksData.forEach(block => {
+                systemConsoleLogs.innerHTML += `[COMPILED RUN]: Executed block item sequence layer [${block.type}] successfully.<br>`;
+                if(block.type === 'set_title') logTitle.textContent = block.params.text;
+                if(block.type === 'add_banner') logBanner.textContent = block.params.text;
+                if(block.type === 'change_sky') sandboxAppBox.style.backgroundColor = block.params.color;
+            });
+            
+            screen.appendChild(sandboxAppBox); screen.appendChild(systemConsoleLogs);
+        };
+
+        /* ACTIVE 3D WORLD SIMULATOR CLIENT CORE WITH COMPREHENSIVE LOOK PANNING & INTERACTIVE LIVE WEB CHAT SYSTEMS */
+        window.launchActiveGameClientInstance = async function(gameId, gameTitle) {
+            document.getElementById('game-client-viewport').style.display = 'block';
+            document.getElementById('game-crosshair').style.display = 'block';
+            document.getElementById('game-chat-display').innerHTML = '';
+            
+            if(!localUserDoc.recentGames.includes(gameTitle)) {
+                localUserDoc.recentGames.push(gameTitle);
+                await updateDoc(doc(db, "users", localUserDoc.uid), { recentGames: localUserDoc.recentGames });
+            }
+
+            const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
+            activeGameScene = new THREE.Scene(); activeGameScene.background = new THREE.Color(0x7ec0ee);
+            activeGameCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            activeGameRenderer = new THREE.WebGLRenderer({ antialias: true }); activeGameRenderer.setSize(window.innerWidth, window.innerHeight);
+            box.appendChild(activeGameRenderer.domElement);
+
+            activeGameScene.add(new THREE.AmbientLight(0xaaaaaa));
+            const light = new THREE.DirectionalLight(0xffffff, 0.8); light.position.set(10, 20, 10); activeGameScene.add(light);
+
+            const ground = new THREE.Mesh(new THREE.BoxGeometry(100, 1, 100), new THREE.MeshLambertMaterial({ color: 0x33a633 })); ground.position.y = -0.5; activeGameScene.add(ground);
+
+            const snap = await getDoc(doc(db, "games", gameId));
+            let liveBlocks = [];
+            if(snap.exists()) {
+                const gameData = snap.data();
+                liveBlocks = gameData.blocksData || [];
+                if(gameData.objects) {
+                    gameData.objects.forEach(obj => {
+                        let geo = obj.type === 'Sphere' ? new THREE.SphereGeometry(obj.scale?.x/2 || 0.5, 32, 32) : new THREE.BoxGeometry(obj.scale?.x || 1, obj.scale?.y || 1, obj.scale?.z || 1);
+                        const mat = new THREE.MeshLambertMaterial({ color: obj.color || 0xcccccc });
+                        const mesh = new THREE.Mesh(geo, mat);
+                        mesh.position.set(obj.position?.x || 0, obj.position?.y || 0, obj.position?.z || 0);
+                        mesh.scale.set(obj.scale?.x || 1, obj.scale?.y || 1, obj.scale?.z || 1);
+                        mesh.rotation.set(obj.rotation?.x || 0, obj.rotation?.y || 0, obj.rotation?.z || 0);
+                        activeGameScene.add(mesh);
+                    });
+                }
+            }
+
+            activePlayerMeshObj = generateRigK6ComplexMesh(localUserDoc.activeOutfit?.shirt, localUserDoc.activeOutfit?.leggings);
+            activePlayerMeshObj.position.set(0, 0, 0); activeGameScene.add(activePlayerMeshObj);
+
+            gameActiveState.yaw = 0; gameActiveState.pitch = 0;
+            activeGameCamera.position.set(0, 3, 8);
+
+            window.addEventListener('keydown', handleGameInputKeyDown);
+            window.addEventListener('keyup', handleGameInputKeyUp);
+            window.addEventListener('mousedown', handleGameMouseDownEvent);
+            window.addEventListener('mouseup', handleGameMouseUpEvent);
+            window.addEventListener('mousemove', handleGameMouseMovementLookPan);
+
+            // Execute 2KCode Runtime Blocks Sequence Setup
+            executeActive2KCodeSequence(liveBlocks, 'on_start');
+
+            const chatQuery = query(collection(db, "chats"), where("gameId", "==", gameId));
+            gameChatUnsubscribeNode = onSnapshot(chatQuery, (snapshot) => {
+                const logs = [];
+                snapshot.forEach(doc => logs.push(doc.data()));
+                logs.sort((a,b) => a.timestamp - b.timestamp);
+                const display = document.getElementById('game-chat-display');
+                display.innerHTML = '';
+                logs.forEach(m => {
+                    display.innerHTML += `<div><b>[${m.sender}]:</b> ${m.message}</div>`;
+                });
+                display.scrollTop = display.scrollHeight;
+            });
+
+            document.getElementById('game-chat-input').onkeydown = async function(e) {
+                if(e.key === 'Enter') {
+                    const text = this.value.trim(); if(!text) return;
+                    this.value = '';
+                    await addDoc(collection(db, "chats"), {
+                        gameId: gameId, sender: localUserDoc.username, message: text, timestamp: Date.now()
+                    });
+                    executeActive2KCodeSequence(liveBlocks, 'on_chat', text);
+                }
+            };
+
+            runActiveGameEngineFrameLoop();
+        };
+
+        function handleGameMouseDownEvent() { gameActiveState.mousePressed = true; }
+        function handleGameMouseUpEvent() { gameActiveState.mousePressed = false; }
+
+        function handleGameMouseMovementLookPan(e) {
+            if(document.pointerLockElement === document.body || gameActiveState.mousePressed) {
+                const sensitivity = 0.0025;
+                gameActiveState.yaw -= e.movementX * sensitivity;
+                gameActiveState.pitch -= e.movementY * sensitivity;
+                gameActiveState.pitch = Math.max(-Math.PI/3, Math.min(Math.PI/3, gameActiveState.pitch));
             }
         }
+
+        function handleGameInputKeyDown(e) {
+            gameActiveState.keys[e.key.toLowerCase()] = true;
+            if(e.key === 'Escape') toggleGameEscMenu();
+        }
+        function handleGameInputKeyUp(e) { gameActiveState.keys[e.key.toLowerCase()] = false; }
+
+        function runActiveGameEngineFrameLoop() {
+            if(document.getElementById('game-client-viewport').style.display === 'block') {
+                gameActiveState.animationFrame = requestAnimationFrame(runActiveGameEngineFrameLoop);
+
+                const moveSpeed = 0.15;
+                let forwardVectorX = Math.sin(gameActiveState.yaw);
+                let forwardVectorZ = Math.cos(gameActiveState.yaw);
+                
+                if(gameActiveState.keys['w'] || gameActiveState.keys['arrowup']) {
+                    activePlayerMeshObj.position.x -= forwardVectorX * moveSpeed;
+                    activePlayerMeshObj.position.z -= forwardVectorZ * moveSpeed;
+                }
+                if(gameActiveState.keys['s'] || gameActiveState.keys['arrowdown']) {
+                    activePlayerMeshObj.position.x += forwardVectorX * moveSpeed;
+                    activePlayerMeshObj.position.z += forwardVectorZ * moveSpeed;
+                }
+                if(gameActiveState.keys['a'] || gameActiveState.keys['arrowleft']) {
+                    activePlayerMeshObj.position.x -= forwardVectorZ * moveSpeed;
+                    activePlayerMeshObj.position.z += forwardVectorX * moveSpeed;
+                }
+                if(gameActiveState.keys['d'] || gameActiveState.keys['arrowright']) {
+                    activePlayerMeshObj.position.x += forwardVectorZ * moveSpeed;
+                    activePlayerMeshObj.position.z -= forwardVectorX * moveSpeed;
+                }
+
+                activePlayerMeshObj.rotation.y = gameActiveState.yaw;
+
+                let cameraOffsetDistance = 7;
+                let calculatedCamX = activePlayerMeshObj.position.x + cameraOffsetDistance * Math.sin(gameActiveState.yaw) * Math.cos(gameActiveState.pitch);
+                let calculatedCamY = activePlayerMeshObj.position.y + 3.2 + cameraOffsetDistance * Math.sin(gameActiveState.pitch);
+                let calculatedCamZ = activePlayerMeshObj.position.z + cameraOffsetDistance * Math.cos(gameActiveState.yaw) * Math.cos(gameActiveState.pitch);
+
+                activeGameCamera.position.set(calculatedCamX, calculatedCamY, calculatedCamZ);
+                activeGameCamera.lookAt(activePlayerMeshObj.position.x, activePlayerMeshObj.position.y + 2, activePlayerMeshObj.position.z);
+
+                if(gameActiveState.keys['w'] || gameActiveState.keys['s'] || gameActiveState.keys['a'] || gameActiveState.keys['d']) {
+                    let wave = Math.sin(Date.now() * 0.01);
+                    activePlayerMeshObj.llNode.rotation.x = wave * 0.6; activePlayerMeshObj.rlNode.rotation.x = -wave * 0.6;
+                    activePlayerMeshObj.laNode.rotation.x = -wave * 0.4; activePlayerMeshObj.raNode.rotation.x = wave * 0.4;
+                } else {
+                    activePlayerMeshObj.llNode.rotation.x = 0; activePlayerMeshObj.rlNode.rotation.x = 0;
+                    activePlayerMeshObj.laNode.rotation.x = 0; activePlayerMeshObj.raNode.rotation.x = 0;
+                }
+
+                activeGameRenderer.render(activeGameScene, activeGameCamera);
+            }
+        }
+
+        window.toggleGameEscMenu = function() {
+            const el = document.getElementById('game-esc-menu');
+            if(el.style.display === 'block') {
+                el.style.display = 'none';
+                document.body.requestPointerLock();
+            } else {
+                el.style.display = 'block';
+                document.exitPointerLock();
+            }
+        };
 
         window.closeActiveGameSimulationClient = function() {
+            cancelAnimationFrame(gameActiveState.animationFrame);
+            if(gameChatUnsubscribeNode) gameChatUnsubscribeNode();
+            
+            window.removeEventListener('keydown', handleGameInputKeyDown);
+            window.removeEventListener('keyup', handleGameInputKeyUp);
+            window.removeEventListener('mousedown', handleGameMouseDownEvent);
+            window.removeEventListener('mouseup', handleGameMouseUpEvent);
+            window.removeEventListener('mousemove', handleGameMouseMovementLookPan);
+            
+            document.exitPointerLock();
             document.getElementById('game-client-viewport').style.display = 'none';
-        }
+        };
 
-        window.exitStudioModeWorkspace = function() { switchPage('create-hub'); }
-
-        /* =========================================================================
-           GROUPS DATA CONNECTIONS WITH FULL ANNOUNCEMENTS WALL
-           ========================================================================= */
-        function renderGroupsDashboardHub() {
-            const sidebar = document.getElementById('groups-matrix-grid');
-            sidebar.innerHTML = '';
-            mockGroupsCollection.forEach(g => {
-                sidebar.innerHTML += `<button class="forum-category-btn" style="width:100%; margin-bottom:5px; text-align:left;" onclick="openSelectedGroupPortal('${g.id}')">👥 ${g.name}</button>`;
-            });
-        }
-
-        window.openSelectedGroupPortal = function(groupId) {
-            const g = mockGroupsCollection.find(group => group.id === groupId);
-            const panel = document.getElementById('group-active-workspace');
-            const isLeader = (g.owner === localUserDoc.username);
-
-            let html = `<h2>${g.name} Management Board</h2>`;
-            html += `<p><small>Founder Handle: <b>${g.owner}</b></small></p>`;
-
-            // Leader control configurations
-            if(isLeader) {
-                html += `
-                    <div style="background:#f1f5f9; padding:10px; border:2px dashed #3570c5; margin-bottom:15px; border-radius:4px;">
-                        <h4>📣 Creator Bulletin Broadcast Controls</h4>
-                        <input type="text" id="group-announcement-input" placeholder="Type new bulletin statement updates...">
-                        <button class="btn-action" style="margin-top:5px; padding:4px;" onclick="publishGroupAnnouncement('${g.id}')">Broadcast Group Announcement</button>
+        async function syncGamesDiscoverGrid() {
+            const list = document.getElementById('games-market-list'); list.innerHTML = '';
+            const snap = await getDocs(collection(db, "games"));
+            snap.forEach(d => {
+                const g = d.data(); if(g.isBanned) return;
+                list.innerHTML += `
+                    <div class="market-card" style="border-color:${g.isFeatured ? 'var(--scratch-orange)':'#aaa'}; box-shadow:${g.isFeatured ? '0 0 10px rgba(255,171,25,0.4)': 'none'}">
+                        ${g.isFeatured ? '<span class="badge-limited" style="background:var(--scratch-orange); color:#000;">FEATURED</span>':''}
+                        <div style="font-size:40px;">🎮</div>
+                        <b>${g.title}</b><br>
+                        <small>Creator: ${g.creator || 'Unknown'}</small><br>
+                        <button class="btn-action" style="margin-top:8px; background:#16a34a;" onclick="launchActiveGameClientInstance('${d.id}', '${g.title}')">PLAY</button>
                     </div>`;
-            }
-
-            // Bulletins feed block
-            html += `<h3>📢 Critical Announcements</h3><div style="background:#fffbeb; border-left:6px solid #d97706; padding:10px; margin-bottom:15px; border-radius:4px;">`;
-            if(g.announcements && g.announcements.length > 0) {
-                g.announcements.forEach(ann => { html += `<p style="margin:5px 0;">📍 ${ann}</p>`; });
-            } else {
-                html += `<p style="color:#777; margin:0;">No official group bulletins distributed yet.</p>`;
-            }
-            html += `</div>`;
-
-            // Discussion wall messages index logs
-            html += `<h3>💬 Member Feed Wall</h3><div style="max-height:200px; overflow-y:auto; background:#f8fafc; border:1px solid #ddd; padding:10px; border-radius:4px; margin-bottom:10px;">`;
-            g.messages.forEach(msg => {
-                html += `<p style="margin:4px 0; font-size:13px;"><b>${msg.user}:</b> ${msg.body}</p>`;
             });
-            html += `</div>`;
+        }
 
-            html += `
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="group-wall-msg-input" placeholder="Post message to wall...">
-                    <button class="btn-action" style="width:100px; padding:0;" onclick="sendGroupWallMessage('${g.id}')">Send</button>
+        /* DEVELOPER CREATIONS STUDIO SUBSYSTEM ENVIRONMENT PIPELINE */
+        async function renderCreationsLandingDashboard() {
+            const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
+            const snap = await getDocs(query(collection(db, "games"), where("creator", "==", localUserDoc.username)));
+            snap.forEach(d => {
+                const g = d.data();
+                grid.innerHTML += `
+                    <div class="market-card">
+                        <div style="font-size:32px;">🛠️</div>
+                        <b>${g.title}</b><br>
+                        <button class="btn-action" style="padding:4px; font-size:11px; margin-top:5px; background:#8a2be2;" onclick="bootStudioModeWorkspace('${d.id}')">Edit Place</button>
+                    </div>`;
+            });
+        }
+
+        window.commitNewGameToCloudRegistry = async function() {
+            const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
+            await addDoc(collection(db, "games"), {
+                title: title, creator: localUserDoc.username, objects: [], blocksData: [], isBanned: false, isFeatured: false
+            });
+            document.getElementById('new-game-modal').style.display = 'none';
+            renderCreationsLandingDashboard();
+        };
+
+        window.bootStudioModeWorkspace = async function(gameId) {
+            currentlyEditingGameId = gameId;
+            switchPage('studio');
+            
+            const list = document.getElementById('explorer-list'); list.innerHTML = '';
+            const container = document.getElementById('studio-3d-canvas'); container.innerHTML = '';
+            
+            studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x222222);
+            studioCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            studioRenderer = new THREE.WebGLRenderer({ antialias: true }); studioRenderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(studioRenderer.domElement);
+
+            studioScene.add(new THREE.AmbientLight(0x666666));
+            const dLight = new THREE.DirectionalLight(0xffffff, 0.8); dLight.position.set(5, 15, 5); studioScene.add(dLight);
+            const gridHelper = new THREE.GridHelper(40, 40, 0x444444, 0x222222); gridHelper.position.y = -0.5; studioScene.add(gridHelper);
+
+            objectsMatrix = [];
+            compiledBlocksData = [];
+
+            const snap = await getDoc(doc(db, "games", gameId));
+            if(snap.exists()) {
+                const data = snap.data();
+                if(data.objects) {
+                    data.objects.forEach(obj => {
+                        let geo = obj.type === 'Sphere' ? new THREE.SphereGeometry(0.5,24,24) : new THREE.BoxGeometry(1,1,1);
+                        let mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: obj.color || 0x007acc }));
+                        mesh.position.set(obj.position.x, obj.position.y, obj.position.z);
+                        mesh.scale.set(obj.scale.x, obj.scale.y, obj.scale.z);
+                        mesh.rotation.set(obj.rotation.x, obj.rotation.y, obj.rotation.z);
+                        mesh.userData = { id: obj.id, type: obj.type, name: obj.name, color: obj.color };
+                        studioScene.add(mesh); objectsMatrix.push(mesh);
+                    });
+                }
+                if(data.blocksData) compiledBlocksData = data.blocksData;
+            }
+
+            studioCamera.position.set(10, 10, 15); studioCamera.lookAt(0,0,0);
+            rebuildStudioExplorerTreeNodes();
+
+            function renderStudio() {
+                if(document.getElementById('page-studio').classList.contains('active')) {
+                    requestAnimationFrame(renderStudio);
+                    studioRenderer.render(studioScene, studioCamera);
+                }
+            }
+            renderStudio();
+        };
+
+        window.spawn3DObject = function(type) {
+            let geo = type === 'Sphere' ? new THREE.SphereGeometry(0.5, 24, 24) : new THREE.BoxGeometry(1, 1, 1);
+            let mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: 0x007acc }));
+            mesh.position.set(Math.random()*4-2, 0.5, Math.random()*4-2);
+            mesh.userData = { id: 'obj_' + Date.now(), type: type, name: `${type} Instance`, color: '#007acc' };
+            studioScene.add(mesh); objectsMatrix.push(mesh);
+            rebuildStudioExplorerTreeNodes();
+            selectStudioObjectNode(mesh.userData.id);
+        };
+
+        function rebuildStudioExplorerTreeNodes() {
+            const list = document.getElementById('explorer-list'); list.innerHTML = '';
+            objectsMatrix.forEach(mesh => {
+                list.innerHTML += `<div class="explorer-item ${selectedObjectId===mesh.userData.id ? 'selected':''}" onclick="selectStudioObjectNode('${mesh.userData.id}')"><span>🧱 ${mesh.userData.name}</span><span onclick="deleteStudioObjectNode('${mesh.userData.id}', event)">🗑️</span></div>`;
+            });
+        }
+
+        window.selectStudioObjectNode = function(id) {
+            selectedObjectId = id; rebuildStudioExplorerTreeNodes();
+            const mesh = objectsMatrix.find(m => m.userData.id === id);
+            const props = document.getElementById('properties-window'); props.innerHTML = ''; if(!mesh) return;
+
+            props.innerHTML = `
+                <div class="prop-group"><label>Asset Name</label><input type="text" value="${mesh.userData.name}" onchange="updateStudioObjectProperty('name', this.value)"></div>
+                <div class="prop-group"><label>Hex Color</label><input type="color" value="${mesh.userData.color}" onchange="updateStudioObjectProperty('color', this.value)"></div>
+                <div class="prop-group"><label>Position Axis X/Y/Z</label>
+                    <input type="number" step="0.5" value="${mesh.position.x}" onchange="updateStudioObjectProperty('posX', this.value)" style="width:30%; display:inline;">
+                    <input type="number" step="0.5" value="${mesh.position.y}" onchange="updateStudioObjectProperty('posY', this.value)" style="width:30%; display:inline;">
+                    <input type="number" step="0.5" value="${mesh.position.z}" onchange="updateStudioObjectProperty('posZ', this.value)" style="width:30%; display:inline;">
+                </div>
+                <div class="prop-group"><label>Scale Vector X/Y/Z</label>
+                    <input type="number" step="0.5" value="${mesh.scale.x}" onchange="updateStudioObjectProperty('scaleX', this.value)" style="width:30%; display:inline;">
+                    <input type="number" step="0.5" value="${mesh.scale.y}" onchange="updateStudioObjectProperty('scaleY', this.value)" style="width:30%; display:inline;">
+                    <input type="number" step="0.5" value="${mesh.scale.z}" onchange="updateStudioObjectProperty('scaleZ', this.value)" style="width:30%; display:inline;">
                 </div>`;
+        };
 
-            panel.innerHTML = html;
+        window.updateStudioObjectProperty = function(key, val) {
+            const mesh = objectsMatrix.find(m => m.userData.id === selectedObjectId); if(!mesh) return;
+            if(key === 'name') { mesh.userData.name = val; rebuildStudioExplorerTreeNodes(); }
+            if(key === 'color') { mesh.userData.color = val; mesh.material.color.set(val); }
+            if(key === 'posX') mesh.position.x = parseFloat(val); if(key === 'posY') mesh.position.y = parseFloat(val); if(key === 'posZ') mesh.position.z = parseFloat(val);
+            if(key === 'scaleX') mesh.scale.x = parseFloat(val); if(key === 'scaleY') mesh.scale.y = parseFloat(val); if(key === 'scaleZ') mesh.scale.z = parseFloat(val);
+        };
+
+        window.deleteStudioObjectNode = function(id, e) {
+            if(e) e.stopPropagation();
+            const mesh = objectsMatrix.find(m => m.userData.id === id); if(!mesh) return;
+            studioScene.remove(mesh); objectsMatrix = objectsMatrix.filter(m => m.userData.id !== id);
+            if(selectedObjectId === id) selectedObjectId = null;
+            rebuildStudioExplorerTreeNodes(); document.getElementById('properties-window').innerHTML = '';
+        };
+
+        window.changeActiveStudioTool = function(t) { activeStudioTool = t; };
+
+        /* FIXED PUBLISHING CORRELATION ERROR */
+        window.saveActiveStudioProject = async function() {
+            if(!currentlyEditingGameId) return;
+            const serializedObjects = objectsMatrix.map(m => ({
+                id: m.userData.id, type: m.userData.type, name: m.userData.name, color: m.userData.color,
+                position: { x: m.position.x, y: m.position.y, z: m.position.z },
+                scale: { x: m.scale.x, y: m.scale.y, z: m.scale.z },
+                rotation: { x: m.rotation.x, y: m.rotation.y, z: m.rotation.z }
+            }));
+            await updateDoc(doc(db, "games", currentlyEditingGameId), { 
+                objects: serializedObjects, 
+                blocksData: compiledBlocksData 
+            });
+            alert("Published! Your part maps and 2KCode blocks are officially live across all game instances!");
+        };
+
+        window.exitStudioModeWorkspace = function() { switchPage('create-hub'); currentlyEditingGameId = null; };
+
+        /* COMMUNITY FORUMS */
+        async function syncForumsDashboard() {
+            const target = document.getElementById('forum-threads-list'); target.innerHTML = '';
+            const snap = await getDocs(collection(db, "forums"));
+            snap.forEach(d => {
+                const t = d.data();
+                target.innerHTML += `<div class="forum-row" onclick="viewForumThreadInstance('${d.id}')"><div><b>📌 ${t.title}</b><br><small>Started by: ${t.author}</small></div><span>💬 Views</span></div>`;
+            });
         }
 
-        window.publishGroupAnnouncement = function(groupId) {
-            const txt = document.getElementById('group-announcement-input').value.trim();
-            if(!txt) return;
-            const g = mockGroupsCollection.find(group => group.id === groupId);
-            g.announcements.unshift(txt);
-            openSelectedGroupPortal(groupId);
+        window.openNewForumPostModal = function() { document.getElementById('new-forum-modal').style.display='block'; };
+        window.submitForumThreadCloud = async function() {
+            const title = document.getElementById('forum-title-input').value.trim();
+            const body = document.getElementById('forum-body-input').value.trim(); if(!title || !body) return;
+            await addDoc(collection(db, "forums"), { title, author: localUserDoc.username, body, replies: [] });
+            document.getElementById('new-forum-modal').style.display='none'; syncForumsDashboard();
+        };
+
+        window.viewForumThreadInstance = async function(id) {
+            activeThreadId = id; switchPage('forum-view');
+            const snap = await getDoc(doc(db, "forums", id)); if(!snap.exists()) return;
+            const t = snap.data();
+            document.getElementById('view-thread-title').textContent = t.title;
+            const box = document.getElementById('forum-replies-container');
+            box.innerHTML = `<div class="post-container" style="background:#f8fafc; border-left:6px solid #3570c5;"><b>${t.author}:</b><p>${t.body}</p></div>`;
+            if(t.replies) {
+                t.replies.forEach(r => { box.innerHTML += `<div class="post-container"><b>${r.sender}:</b><p>${r.msg}</p></div>`; });
+            }
+        };
+
+        window.submitForumReply = async function() {
+            const text = document.getElementById('forum-reply-body').value.trim(); if(!text || !activeThreadId) return;
+            const ref = doc(db, "forums", activeThreadId); const snap = await getDoc(ref);
+            let reps = snap.data().replies || []; reps.push({ sender: localUserDoc.username, msg: text });
+            await updateDoc(ref, { replies: reps }); document.getElementById('forum-reply-body').value = '';
+            viewForumThreadInstance(activeThreadId);
+        };
+
+        /* GROUPS */
+        async function syncGroupsDashboard() {
+            const matrix = document.getElementById('groups-matrix-grid'); matrix.innerHTML = '';
+            const snap = await getDocs(collection(db, "groups"));
+            snap.forEach(d => {
+                const g = d.data(); const hasJoined = g.members && g.members.includes(localUserDoc.username);
+                matrix.innerHTML += `
+                    <div class="market-card">
+                        <div style="font-size:32px;">👥</div>
+                        <b>${g.name}</b><br><small>${g.members?.length || 1} Members</small><br>
+                        <button class="btn-action" style="margin-top:5px; background:${hasJoined ? '#6c757d':'#007bff'};" ${hasJoined ? 'disabled':''} onclick="joinGroupInstance('${d.id}')">
+                            ${hasJoined ? 'Affiliated' : 'Join Group'}
+                        </button>
+                    </div>`;
+            });
         }
 
-        window.sendGroupWallMessage = function(groupId) {
-            const txt = document.getElementById('group-wall-msg-input').value.trim();
-            if(!txt) return;
-            const g = mockGroupsCollection.find(group => group.id === groupId);
-            g.messages.push({ user: localUserDoc.username, body: txt });
-            openSelectedGroupPortal(groupId);
-        }
+        window.openNewGroupModal = function() { document.getElementById('new-group-modal').style.display='block'; };
+        window.submitGroupCloud = async function() {
+            const name = document.getElementById('group-title-input').value.trim(); if(!name) return;
+            await addDoc(collection(db, "groups"), { name, members: [localUserDoc.username] });
+            document.getElementById('new-group-modal').style.display='none'; syncGroupsDashboard();
+        };
 
-        /* =========================================================================
-           LIVE APPLICATION INJECTION MODERATOR PANELS
-           ========================================================================= */
+        window.joinGroupInstance = async function(id) {
+            const ref = doc(db, "groups", id); const snap = await getDoc(ref);
+            let mems = snap.data().members || []; if(mems.includes(localUserDoc.username)) return;
+            mems.push(localUserDoc.username); await updateDoc(ref, { members: mems });
+            syncGroupsDashboard(); alert("Affiliated successfully!");
+        };
+
+        /* MASTER SYSTEM SECURITY DASHBOARD LOCKDOWNS */
         window.triggerAdminPrompt = function() {
-            document.getElementById('admin-modal-overlay').style.display = 'block';
-            // Dynamically serializes core application blocks straight inside administrative panels
-            document.getElementById('admin-source-code-editor').value = document.documentElement.outerHTML;
-        }
+            const code = prompt("Enter Master Infrastructure Administration Overrides Access Code Key:");
+            if(code === "080112") { switchPage('admin'); } else { alert("Access Denied."); }
+        };
 
-        window.saveAndInjectLivePlatformUpdate = function() {
-            const codePayload = document.getElementById('admin-source-code-editor').value;
-            document.open();
-            document.write(codePayload);
-            document.close();
-            alert("⚡ Hotfix application engine successfully recompiled and verified online across active execution blocks!");
-        }
+        window.moderateExperience = async function(type) {
+            const gName = document.getElementById('admin-game-name').value.trim();
+            const snap = await getDocs(query(collection(db, "games"), where("title", "==", gName)));
+            snap.forEach(async (d) => {
+                if(type === 'ban') { await updateDoc(doc(db, "games", d.id), { isBanned: true }); alert("Suspended."); } 
+                else if(type === 'feature') { const nextVal = !(d.data().isFeatured); await updateDoc(doc(db, "games", d.id), { isFeatured: nextVal }); alert(`Toggled: ${nextVal}`); }
+            });
+        };
+
+        window.banUserAccountNode = async function() {
+            const target = document.getElementById('admin-target-account').value.trim();
+            const snap = await getDocs(query(collection(db, "users"), where("username", "==", target)));
+            snap.forEach(async (d) => { await updateDoc(doc(db, "users", d.id), { isBanned: true }); alert(`Suspended user account: ${target}`); });
+        };
+
+        window.mintLimitedCatalogItem = async function() {
+            const title = document.getElementById('admin-ltd-title').value.trim();
+            const color = document.getElementById('admin-ltd-color').value.trim() || "#ff0000";
+            const price = parseInt(document.getElementById('admin-ltd-price').value) || 50; if(!title) return;
+            await addDoc(collection(db, "catalog"), { title, color, price, isLimited: true, creator: "System Admin" });
+            alert("Limited asset generated!");
+        };
     </script>
 </body>
 </html>
