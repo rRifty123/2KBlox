@@ -111,7 +111,6 @@
         .admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 15px 0; }
         .admin-module-card { background: #1e293b; border: 1px solid #38bdf8; padding: 15px; border-radius: 6px; color: #38bdf8; }
         
-        /* Interactive Live Game Script Notifications */
         .game-script-alert { position: absolute; top: 20px; right: 20px; background: rgba(26, 37, 58, 0.9); border-left: 6px solid var(--scratch-orange); color: white; padding: 15px; border-radius: 6px; min-width: 260px; pointer-events: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; z-index: 6000; animation: slideIn 0.3s forwards; }
         @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
     </style>
@@ -402,16 +401,13 @@
         <div class="crosshair" id="game-crosshair">+</div>
         <div class="game-ui-overlay">
             <button class="game-ui-btn" onclick="toggleGameEscMenu()">Menu Panel [ESC]</button>
-            
             <div class="game-script-alert" id="game-alert-banner">
                 <strong id="game-alert-txt">Notification Triggered!</strong>
             </div>
-
             <div class="game-chat-box">
                 <div class="game-chat-log" id="game-chat-display"></div>
                 <input type="text" id="game-chat-input" placeholder="Press Enter to send chat..." style="background:rgba(255,255,255,0.95); margin:0;">
             </div>
-
             <div class="game-esc-menu" id="game-esc-menu">
                 <h2>Game Session Panel</h2>
                 <button class="btn-action" style="background:var(--roblox-red);" onclick="closeActiveGameSimulationClient()">Leave Game Instance</button>
@@ -440,6 +436,7 @@
             messagingSenderId: "1045873411005",
             appId: "1:1045873411005:web:1839a3ba9b7d817f6748d4"
         };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -448,10 +445,12 @@
         let studioScene, studioCamera, studioRenderer;
         let selectedObjectId = null;
         let activeStudioTool = 'move';
+        
         let activeGameScene, activeGameCamera, activeGameRenderer, activePlayerMeshObj;
         let gameActiveState = { keys: {}, animationFrame: 0, yaw: 0, pitch: 0, mousePressed: false };
+        
         let objectsMatrix = [];
-        let compiledBlocksData = []; 
+        let compiledBlocksData = [];
         let currentlyEditingGameId = null;
         let activeThreadId = null;
         let gameChatUnsubscribeNode = null;
@@ -460,15 +459,20 @@
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
             const username = document.getElementById('auth-user').value.trim();
+
             if(!email || !pass) return alert("Credentials required.");
             try {
                 if(type === 'signup') {
                     if(!username) return alert("Username required.");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "users", res.user.uid), { 
-                        username, tickets: 120, inventory: [], 
-                        friends: [], recentGames: [],
-                        activeOutfit: { shirt: '#e63946', leggings: '#1d3557' }, isBanned: false 
+                    await setDoc(doc(db, "users", res.user.uid), {
+                        username,
+                        tickets: 120,
+                        inventory: [],
+                        friends: [],
+                        recentGames: [],
+                        activeOutfit: { shirt: '#e63946', leggings: '#1d3557' },
+                        isBanned: false
                     });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
@@ -479,7 +483,11 @@
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 const snap = await getDoc(doc(db, "users", u.uid));
-                if(snap.exists() && snap.data().isBanned) { alert("Account is banned."); auth.signOut(); return; }
+                if(snap.exists() && snap.data().isBanned) {
+                    alert("Account is banned.");
+                    auth.signOut();
+                    return;
+                }
                 localUserDoc = { uid: u.uid, ...snap.data() };
                 if(!localUserDoc.inventory) localUserDoc.inventory = [];
                 if(!localUserDoc.friends) localUserDoc.friends = [];
@@ -487,10 +495,15 @@
 
                 document.getElementById('page-auth').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
-                
                 document.querySelectorAll('.user-placeholder-name').forEach(el => el.textContent = localUserDoc.username);
                 document.getElementById('header-username').textContent = localUserDoc.username;
                 document.getElementById('user-tickets').textContent = localUserDoc.tickets;
+                
+                initCatalogRealtimeFeed();
+                initForumsRealtimeFeed();
+                initGroupsRealtimeFeed();
+                initPublicGamesDiscoverFeed();
+                renderLocalUserContextData();
                 switchPage('home');
             }
         });
@@ -498,668 +511,698 @@
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.querySelectorAll('#main-nav button').forEach(b => b.classList.remove('active'));
-            const targetNav = document.getElementById(`nav-${p}`);
-            if(targetNav) targetNav.classList.add('active');
-            const target = document.getElementById(`page-${p}`);
-            if(target) target.classList.add('active');
-            if(p === 'home') { init3DAvatarViewerCanvas('home-avatar-canvas', false); syncHomeDynamicMatrices(); }
-            if(p === 'avatar-editor') init3DAvatarViewerCanvas('avatar-3d-canvas', true);
-            if(p === 'marketplace') syncCatalogMarketplaceUI();
-            if(p === 'games-discover') syncGamesDiscoverGrid();
-            if(p === 'create-hub') renderCreationsLandingDashboard();
-            if(p === 'forums') syncForumsDashboard();
-            if(p === 'groups') syncGroupsDashboard();
-            if(p === 'profile') showUserProfilePage(localUserDoc.username);
+            
+            const targetedPage = document.getElementById(`page-${p}`);
+            if(targetedPage) targetedPage.classList.add('active');
+            
+            const navBtn = document.getElementById(`nav-${p}`);
+            if(navBtn) navBtn.classList.add('active');
+
+            if(p === 'create-hub') renderUserCreationsHubList();
+            if(p === 'avatar-editor') setTimeout(() => { init3DAvatarClosetWorkspace(); }, 150);
         };
 
-        function generateRigK6ComplexMesh(shirt, pants) {
-            const group = new THREE.Group();
-            const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
-            const shirtMat = new THREE.MeshLambertMaterial({ color: shirt || "#e63946" });
-            const pantsMat = new THREE.MeshLambertMaterial({ color: pants || "#1d3557" });
-            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), skinMat); head.position.y = 3.4; group.add(head);
-            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 0.7), shirtMat); torso.position.y = 2.0; group.add(torso);
-            const la = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); la.position.set(-1.0, 2.0, 0); group.add(la);
-            const ra = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), skinMat); ra.position.set(1.0, 2.0, 0); group.add(ra);
-            const llPivot = new THREE.Group(); llPivot.position.set(-0.35, 1.1, 0);
-            const ll = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.8, 0.48), pantsMat); ll.position.y = -0.7; llPivot.add(ll); group.add(llPivot);
-            const rlPivot = new THREE.Group(); rlPivot.position.set(0.35, 1.1, 0);
-            const rl = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.8, 0.48), pantsMat); rl.position.y = -0.7; rlPivot.add(rl); group.add(rlPivot);
-            group.laNode = la; group.raNode = ra; group.llNode = llPivot; group.rlNode = rlPivot;
-            return group;
+        function renderLocalUserContextData() {
+            const grid = document.getElementById('profile-friends-grid');
+            if(grid) {
+                grid.innerHTML = '';
+                if(localUserDoc.friends.length === 0) grid.innerHTML = '<p style="color:#777;">No friends added yet.</p>';
+                localUserDoc.friends.forEach(f => {
+                    grid.innerHTML += `<div class="market-card">👤 <strong>${f}</strong></div>`;
+                });
+            }
+            fetchIncomingFriendRequestsNodes();
         }
 
-        function init3DAvatarViewerCanvas(id, bindControls) {
-            const box = document.getElementById(id); if(!box) return; box.innerHTML = '';
-            const scene = new THREE.Scene(); scene.background = new THREE.Color(0xb0e0e6);
-            const camera = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
-            const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(renderer.domElement);
-            scene.add(new THREE.AmbientLight(0x888888)); const l = new THREE.DirectionalLight(0xffffff, 1.0); l.position.set(5, 10, 5); scene.add(l);
-            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
-            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings); scene.add(rig); rig.position.y = -1.5;
-            camera.position.set(0, 0, 5.5); camera.lookAt(0, -0.2, 0);
-            function loop() { if(document.getElementById(id)) { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); } } loop();
-            if(bindControls) renderFabricInventoryGrid();
+        async function fetchIncomingFriendRequestsNodes() {
+            const container = document.getElementById('profile-friend-requests-list');
+            if(!container) return;
+            const q = query(collection(db, "friendRequests"), where("to", "==", localUserDoc.username), where("status", "==", "pending"));
+            const snap = await getDocs(q);
+            container.innerHTML = '';
+            if(snap.empty) container.innerHTML = '<p style="color:#777;">No pending friend requests.</p>';
+            snap.forEach(d => {
+                const data = d.data();
+                container.innerHTML += `
+                    <div class="forum-row" style="cursor:default;">
+                        <span>Request from <strong>${data.from}</strong></span>
+                        <button class="btn-action" style="width:90px; padding:4px; background:#28a745;" onclick="acceptFriendRequestNode('${d.id}', '${data.from}')">Accept</button>
+                    </div>`;
+            });
         }
 
-        async function syncHomeDynamicMatrices() {
-            const gHome = document.getElementById('home-groups-list'); gHome.innerHTML = '';
-            const gSnap = await getDocs(collection(db, "groups")); let joinedGroupCount = 0;
-            gSnap.forEach(d => { const g = d.data(); if(g.members && g.members.includes(localUserDoc.username)) { joinedGroupCount++; gHome.innerHTML += `<div class="market-card" style="background:#f1f5f9;">👥 <b>${g.name}</b><br><small>Member</small></div>`; } });
-            if(joinedGroupCount === 0) gHome.innerHTML = '<p style="color:#666;">You haven\'t affiliated with any groups yet.</p>';
-            const rHome = document.getElementById('home-recent-games-list'); rHome.innerHTML = '';
-            if(localUserDoc.recentGames && localUserDoc.recentGames.length > 0) {
-                const distinctTitles = [...new Set(localUserDoc.recentGames)];
-                distinctTitles.forEach(title => { rHome.innerHTML += `<div class="market-card" style="background:#f0fdf4; border-color:#22c55e;">🎮 <b>${title}</b></div>`; });
-            } else { rHome.innerHTML = '<p style="color:#666;">No recent play sessions found.</p>'; }
+        window.searchUserAccounts = async function() {
+            const target = document.getElementById('profile-user-search-input').value.trim();
+            const resZone = document.getElementById('profile-search-results');
+            if(!target || !resZone) return;
+            resZone.innerHTML = 'Searching...';
+            const q = query(collection(db, "users"), where("username", "==", target));
+            const snap = await getDocs(q);
+            resZone.innerHTML = '';
+            if(snap.empty) { resZone.innerHTML = 'No user matched.'; return; }
+            snap.forEach(d => {
+                const data = d.data();
+                if(data.username === localUserDoc.username) return;
+                resZone.innerHTML += `
+                    <div class="market-card" style="width:100%;">
+                        <strong>${data.username}</strong><br><br>
+                        <button class="btn-action" style="background:#3570c5;" onclick="sendFriendRequestCloud('${data.username}')">Send Friend Request</button>
+                    </div>`;
+            });
+        };
+
+        window.sendFriendRequestCloud = async function(targetName) {
+            await addDoc(collection(db, "friendRequests"), { from: localUserDoc.username, to: targetName, status: "pending" });
+            alert(`Friend request transmitted to ${targetName}!`);
+        };
+
+        window.acceptFriendRequestNode = async function(reqId, senderName) {
+            await updateDoc(doc(db, "friendRequests", reqId), { status: "accepted" });
+            await updateDoc(doc(db, "users", auth.currentUser.uid), { friends: arrayUnion(senderName) });
+            
+            const snap = await getDocs(query(collection(db, "users"), where("username", "==", senderName)));
+            snap.forEach(async (d) => {
+                await updateDoc(doc(db, "users", d.id), { friends: arrayUnion(localUserDoc.username) });
+            });
+            
+            alert(`You are now friends with ${senderName}!`);
+            localUserDoc.friends.push(senderName);
+            renderLocalUserContextData();
+        };
+
+        function initCatalogRealtimeFeed() {
+            onSnapshot(collection(db, "catalog"), (snap) => {
+                const shopGrid = document.getElementById('catalog-item-list');
+                const invGrid = document.getElementById('avatar-inventory-list');
+                if(shopGrid) shopGrid.innerHTML = '';
+                if(invGrid) invGrid.innerHTML = '';
+
+                snap.forEach(d => {
+                    const item = d.data();
+                    const isOwned = localUserDoc.inventory.includes(d.id);
+                    const tag = item.isLimited ? '<span class="badge-limited">LTD</span>' : '';
+
+                    if(shopGrid) {
+                        shopGrid.innerHTML += `
+                            <div class="market-card">
+                                ${tag}
+                                <div style="width:40px; height:40px; background:${item.color}; margin:10px auto; border-radius:4px;"></div>
+                                <strong>${item.title}</strong><br>
+                                <span style="color:#28a745;">💵 ${item.price} Tickets</span><br><br>
+                                <button class="btn-action" style="background:${isOwned?'#6c757d':'#28a745'}" ${isOwned?'disabled':''} onclick="purchaseCatalogAssetItem('${d.id}', ${item.price})">
+                                    ${isOwned ? 'Owned' : 'Buy Asset'}
+                                </button>
+                            </div>`;
+                    }
+
+                    if(invGrid && isOwned) {
+                        invGrid.innerHTML += `
+                            <div class="market-card">
+                                <div style="width:40px; height:40px; background:${item.color}; margin:10px auto; border-radius:4px;"></div>
+                                <strong>${item.title}</strong><br><br>
+                                <button class="btn-action" style="background:#007bff;" onclick="wearInventoryClothingAsset('${item.type}', '${item.color}')">Equip Outfit</button>
+                            </div>`;
+                    }
+                });
+            });
         }
 
-        async function showUserProfilePage(username) {
-            document.getElementById('profile-title').textContent = `${username}'s Matrix Profile`;
-            const box = document.getElementById('profile-avatar-box'); box.innerHTML = '';
-            const scene = new THREE.Scene(); scene.background = new THREE.Color(0xb0e0e6);
-            const camera = new THREE.PerspectiveCamera(45, box.clientWidth / 320, 0.1, 100);
-            const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(box.clientWidth, 320); box.appendChild(renderer.domElement);
-            scene.add(new THREE.AmbientLight(0x999999));
-            const fit = localUserDoc.activeOutfit || { shirt: '#e63946', leggings: '#1d3557' };
-            const rig = generateRigK6ComplexMesh(fit.shirt, fit.leggings); scene.add(rig); rig.position.y = -1.5;
-            camera.position.set(0, 0, 5); camera.lookAt(0, 0, 0);
-            function loop() { if(document.getElementById('profile-avatar-box').innerHTML !== '') { requestAnimationFrame(loop); rig.rotation.y += 0.01; renderer.render(scene, camera); } } loop();
-        }
+        window.purchaseCatalogAssetItem = async function(id, price) {
+            if(localUserDoc.tickets < price) return alert("Insufficient Tickets.");
+            const nextTickets = localUserDoc.tickets - price;
+            localUserDoc.tickets = nextTickets;
+            localUserDoc.inventory.push(id);
+            document.getElementById('user-tickets').textContent = nextTickets;
+            await updateDoc(doc(db, "users", auth.currentUser.uid), { tickets: nextTickets, inventory: arrayUnion(id) });
+            alert("Asset added successfully to your inventory closet!");
+        };
 
         window.publishClothingToCatalogItem = async function() {
             const title = document.getElementById('mint-cloth-title').value.trim();
             const color = document.getElementById('mint-cloth-color').value;
-            if(!title) return alert("Please specify a clothing asset name!");
-            
-            try {
-                const docRef = await addDoc(collection(db, "catalog"), {
-                    title: title, color: color, price: 15, isLimited: false, creator: localUserDoc.username
-                });
-                localUserDoc.inventory.push(docRef.id);
-                await updateDoc(doc(db, "users", localUserDoc.uid), { inventory: localUserDoc.inventory });
-                document.getElementById('mint-cloth-title').value = '';
-                alert(`Successfully minted and posted "${title}" into global catalog!`);
-                renderFabricInventoryGrid();
-            } catch(err) { alert(err.message); }
+            if(!title) return alert("Asset label required.");
+            await addDoc(collection(db, "catalog"), { title, color, price: 15, isLimited: false, type: 'shirt' });
+            alert("Custom asset published into the 2KBlox ecosystem!");
+            document.getElementById('mint-cloth-title').value = '';
         };
 
-        async function renderFabricInventoryGrid() {
-            const container = document.getElementById('avatar-inventory-list'); container.innerHTML = '';
-            const snap = await getDocs(collection(db, "catalog"));
-            snap.forEach(d => {
-                const item = d.data();
-                if(localUserDoc.inventory.includes(d.id)) {
+        function initForumsRealtimeFeed() {
+            onSnapshot(collection(db, "forums"), (snap) => {
+                const container = document.getElementById('forum-threads-list');
+                if(!container) return;
+                container.innerHTML = '';
+                snap.forEach(d => {
+                    const data = d.data();
                     container.innerHTML += `
-                        <div class="market-card">
-                            <div style="background:${item.color}; height:40px; border-radius:4px; margin-bottom:5px;"></div>
-                            <b>${item.title}</b><br>
-                            <button class="btn-action" style="padding:4px; font-size:11px; background:#4a90e2;" onclick="equipClothingAsset('${item.color}')">Wear Item</button>
+                        <div class="forum-row" onclick="viewForumThreadDetails('${d.id}')">
+                            <div><strong>${data.title}</strong><br><small style="color:#666;">Posted by ${data.author}</small></div>
+                            <div>💬 Interaction Nodes</div>
                         </div>`;
-                }
-            });
-        }
-
-        window.equipClothingAsset = async function(color) {
-            localUserDoc.activeOutfit.shirt = color;
-            await updateDoc(doc(db, "users", localUserDoc.uid), { activeOutfit: localUserDoc.activeOutfit });
-            init3DAvatarViewerCanvas('avatar-3d-canvas', true);
-            alert("Outfit configured successfully!");
-        };
-
-        async function syncCatalogMarketplaceUI() {
-            const container = document.getElementById('catalog-item-list'); container.innerHTML = '';
-            const snap = await getDocs(collection(db, "catalog"));
-            snap.forEach(d => {
-                const item = d.data();
-                const isOwned = localUserDoc.inventory.includes(d.id);
-                container.innerHTML += `
-                    <div class="market-card">
-                        ${item.isLimited ? '<span class="badge-limited">LTD</span>' : ''}
-                        <div style="background:${item.color}; height:60px; border-radius:4px; margin-bottom:5px;"></div>
-                        <b>${item.title}</b><br>
-                        <small>By: ${item.creator || 'System'}</small><br>
-                        <span>💵 ${item.price} Tickets</span><br>
-                        <button class="btn-action" style="margin-top:5px; background:${isOwned ? '#6c757d':'#28a745'};" ${isOwned ? 'disabled':''} onclick="purchaseCatalogAsset('${d.id}', ${item.price})">
-                            ${isOwned ? 'Acquired' : 'Purchase'}
-                        </button>
-                    </div>`;
-            });
-        }
-
-        window.purchaseCatalogAsset = async function(id, price) {
-            if(localUserDoc.tickets < price) return alert("Insufficient Tickets balance!");
-            localUserDoc.tickets -= price;
-            localUserDoc.inventory.push(id);
-            await updateDoc(doc(db, "users", localUserDoc.uid), { tickets: localUserDoc.tickets, inventory: localUserDoc.inventory });
-            document.getElementById('user-tickets').textContent = localUserDoc.tickets;
-            syncCatalogMarketplaceUI();
-            alert("Item acquired!");
-        };
-
-        /* 2KCODE SCRATCH BLOCK VISUAL PROGRAMMING GENERATOR ENGINE LAYER */
-        window.open2KCodeEditorWindow = function() {
-            document.getElementById('html-editor-panel').style.display = 'block';
-            renderAssembled2KBlocksList();
-        };
-
-        window.closeHtmlEditorWindow = async function() {
-            document.getElementById('html-editor-panel').style.display = 'none';
-        };
-
-        window.add2KBlockNode = function(type) {
-            let newNode = { id: 'block_' + Date.now() + Math.random().toString(36).substr(2, 4), type: type, params: {} };
-            if(type === 'set_title' || type === 'add_banner' || type === 'show_popup') newNode.params.text = "Hello 2KBlox!";
-            if(type === 'give_tickets') newNode.params.amount = 50;
-            if(type === 'change_sky') newNode.params.color = "#87ceeb";
-            if(type === 'wait_sec') newNode.params.duration = 1;
-            compiledBlocksData.push(newNode);
-            renderAssembled2KBlocksList();
-        };
-
-        window.remove2KBlockNode = function(id) {
-            compiledBlocksData = compiledBlocksData.filter(b => b.id !== id);
-            renderAssembled2KBlocksList();
-        };
-
-        window.update2KBlockParam = function(id, paramKey, value) {
-            let node = compiledBlocksData.find(b => b.id === id);
-            if(node) node.params[paramKey] = value;
-        };
-
-        function renderAssembled2KBlocksList() {
-            const line = document.getElementById('block-assembly-line'); line.innerHTML = '';
-            if(compiledBlocksData.length === 0) {
-                line.innerHTML = `<div style="color:#94a3b8; text-align:center; padding-top:40px; font-size:14px;">Drag and drop block signatures from the toolbox canvas palette to construct your 2KCode gameplay sequence tree!</div>`;
-                return;
-            }
-            
-            compiledBlocksData.forEach(b => {
-                let blockHtml = '';
-                if(b.type === 'on_start') blockHtml = `<div class="assembled-block block-orange"><span>🏁 <b>when game starts:</b></span>`;
-                else if(b.type === 'on_chat') blockHtml = `<div class="assembled-block block-orange"><span>💬 <b>when user types a chat message:</b></span>`;
-                else if(b.type === 'on_interact') blockHtml = `<div class="assembled-block block-orange"><span>🖱️ <b>when user interacts with part:</b></span>`;
-                else if(b.type === 'set_title') blockHtml = `<div class="assembled-block block-blue"><span>🏷️ set map header banner to: <input type="text" value="${b.params.text || ''}" onchange="update2KBlockParam('${b.id}', 'text', this.value)"></span>`;
-                else if(b.type === 'add_banner') blockHtml = `<div class="assembled-block block-blue"><span>🪧 display sub text ticker: <input type="text" value="${b.params.text || ''}" onchange="update2KBlockParam('${b.id}', 'text', this.value)"></span>`;
-                else if(b.type === 'show_popup') blockHtml = `<div class="assembled-block block-blue"><span>📢 show warning popup modal: <input type="text" value="${b.params.text || ''}" onchange="update2KBlockParam('${b.id}', 'text', this.value)"></span>`;
-                else if(b.type === 'enable_glow') blockHtml = `<div class="assembled-block block-purple"><span>✨ enable neon atmosphere bloom FX</span>`;
-                else if(b.type === 'change_sky') blockHtml = `<div class="assembled-block block-purple"><span>⛅ change skybox tint color: <input type="color" value="${b.params.color || '#87ceeb'}" onchange="update2KBlockParam('${b.id}', 'color', this.value)"></span>`;
-                else if(b.type === 'give_tickets') blockHtml = `<div class="assembled-block block-green"><span>💵 award explorer: <input type="number" value="${b.params.amount || 0}" onchange="update2KBlockParam('${b.id}', 'amount', parseInt(this.value))"> tickets cache</span>`;
-                else if(b.type === 'spawn_npc') blockHtml = `<div class="assembled-block block-green"><span>🤖 spawn random rig K6 dummy bot</span>`;
-                else if(b.type === 'teleport_player') blockHtml = `<div class="assembled-block block-green"><span>🌀 warp character to map origin coords</span>`;
-                else if(b.type === 'loop_forever') blockHtml = `<div class="assembled-block block-pink"><span>🔄 <b>loop logic sequence infinitely</b></span>`;
-                else if(b.type === 'wait_sec') blockHtml = `<div class="assembled-block block-pink"><span>⏳ wait delay duration: <input type="number" step="0.5" value="${b.params.duration || 1}" onchange="update2KBlockParam('${b.id}', 'duration', parseFloat(this.value))"> seconds</span>`;
-                
-                blockHtml += `<button class="block-delete-btn" onclick="remove2KBlockNode('${b.id}')">✕</button></div>`;
-                line.innerHTML += blockHtml;
-            });
-        }
-
-        /* 2KCODE INTERPRETER RUNTIME ENGINE */
-        function executeActive2KCodeSequence(blocks, triggerCondition, contextualMsg = "") {
-            blocks.forEach(block => {
-                if (triggerCondition === 'on_start' && block.type === 'set_title') {
-                    console.log("Setting Title via Block Script:", block.params.text);
-                }
-                if (triggerCondition === 'on_start' && block.type === 'change_sky' && activeGameScene) {
-                    activeGameScene.background.set(block.params.color || 0x7ec0ee);
-                }
-                if (triggerCondition === 'on_start' && block.type === 'enable_glow' && activeGameScene) {
-                    activeGameScene.add(new THREE.AmbientLight(0xffffff, 0.5));
-                }
-                if (triggerCondition === 'on_chat' && block.type === 'show_popup') {
-                    const banner = document.getElementById('game-alert-banner');
-                    document.getElementById('game-alert-txt').textContent = block.params.text || "Alert!";
-                    banner.style.display = 'block';
-                    setTimeout(() => { banner.style.display = 'none'; }, 4000);
-                }
-                if (block.type === 'give_tickets' && triggerCondition === 'on_start') {
-                    localUserDoc.tickets += (block.params.amount || 0);
-                    document.getElementById('user-tickets').textContent = localUserDoc.tickets;
-                    updateDoc(doc(db, "users", localUserDoc.uid), { tickets: localUserDoc.tickets });
-                }
-                if (block.type === 'teleport_player' && activePlayerMeshObj) {
-                    activePlayerMeshObj.position.set(0, 2, 0);
-                }
-                if (block.type === 'spawn_npc' && activeGameScene && triggerCondition === 'on_start') {
-                    let bot = generateRigK6ComplexMesh("#ffab19", "#9966ff");
-                    bot.position.set(Math.random() * 10 - 5, 0, Math.random() * 10 - 5);
-                    activeGameScene.add(bot);
-                }
-            });
-        }
-
-        window.triggerHtmlLivePlaytest = function() {
-            document.getElementById('html-playtest-overlay').style.display = 'block';
-            const screen = document.getElementById('html-playtest-render-zone');
-            screen.innerHTML = '';
-            
-            let sandboxAppBox = document.createElement('div');
-            sandboxAppBox.style.padding = '20px'; sandboxAppBox.style.borderRadius = '8px';
-            sandboxAppBox.style.background = '#f1f5f9'; sandboxAppBox.style.minHeight = '300px';
-            
-            let logTitle = document.createElement('h1'); logTitle.textContent = "2KCode Runtime Preview"; sandboxAppBox.appendChild(logTitle);
-            let logBanner = document.createElement('p'); logBanner.style.color = '#555'; sandboxAppBox.appendChild(logBanner);
-            let systemConsoleLogs = document.createElement('div'); systemConsoleLogs.style.background = '#111'; systemConsoleLogs.style.color = '#00ff00'; systemConsoleLogs.style.padding = '10px'; systemConsoleLogs.style.fontFamily = 'monospace';
-            systemConsoleLogs.innerHTML = "=== 2KCode Execution Simulator Terminal ===<br>";
-            
-            compiledBlocksData.forEach(block => {
-                systemConsoleLogs.innerHTML += `[COMPILED RUN]: Executed block item sequence layer [${block.type}] successfully.<br>`;
-                if(block.type === 'set_title') logTitle.textContent = block.params.text;
-                if(block.type === 'add_banner') logBanner.textContent = block.params.text;
-                if(block.type === 'change_sky') sandboxAppBox.style.backgroundColor = block.params.color;
-            });
-            
-            screen.appendChild(sandboxAppBox); screen.appendChild(systemConsoleLogs);
-        };
-
-        /* ACTIVE 3D WORLD SIMULATOR CLIENT CORE WITH COMPREHENSIVE LOOK PANNING & INTERACTIVE LIVE WEB CHAT SYSTEMS */
-        window.launchActiveGameClientInstance = async function(gameId, gameTitle) {
-            document.getElementById('game-client-viewport').style.display = 'block';
-            document.getElementById('game-crosshair').style.display = 'block';
-            document.getElementById('game-chat-display').innerHTML = '';
-            
-            if(!localUserDoc.recentGames.includes(gameTitle)) {
-                localUserDoc.recentGames.push(gameTitle);
-                await updateDoc(doc(db, "users", localUserDoc.uid), { recentGames: localUserDoc.recentGames });
-            }
-
-            const box = document.getElementById('game-3d-scene-box'); box.innerHTML = '';
-            activeGameScene = new THREE.Scene(); activeGameScene.background = new THREE.Color(0x7ec0ee);
-            activeGameCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            activeGameRenderer = new THREE.WebGLRenderer({ antialias: true }); activeGameRenderer.setSize(window.innerWidth, window.innerHeight);
-            box.appendChild(activeGameRenderer.domElement);
-
-            activeGameScene.add(new THREE.AmbientLight(0xaaaaaa));
-            const light = new THREE.DirectionalLight(0xffffff, 0.8); light.position.set(10, 20, 10); activeGameScene.add(light);
-
-            const ground = new THREE.Mesh(new THREE.BoxGeometry(100, 1, 100), new THREE.MeshLambertMaterial({ color: 0x33a633 })); ground.position.y = -0.5; activeGameScene.add(ground);
-
-            const snap = await getDoc(doc(db, "games", gameId));
-            let liveBlocks = [];
-            if(snap.exists()) {
-                const gameData = snap.data();
-                liveBlocks = gameData.blocksData || [];
-                if(gameData.objects) {
-                    gameData.objects.forEach(obj => {
-                        let geo = obj.type === 'Sphere' ? new THREE.SphereGeometry(obj.scale?.x/2 || 0.5, 32, 32) : new THREE.BoxGeometry(obj.scale?.x || 1, obj.scale?.y || 1, obj.scale?.z || 1);
-                        const mat = new THREE.MeshLambertMaterial({ color: obj.color || 0xcccccc });
-                        const mesh = new THREE.Mesh(geo, mat);
-                        mesh.position.set(obj.position?.x || 0, obj.position?.y || 0, obj.position?.z || 0);
-                        mesh.scale.set(obj.scale?.x || 1, obj.scale?.y || 1, obj.scale?.z || 1);
-                        mesh.rotation.set(obj.rotation?.x || 0, obj.rotation?.y || 0, obj.rotation?.z || 0);
-                        activeGameScene.add(mesh);
-                    });
-                }
-            }
-
-            activePlayerMeshObj = generateRigK6ComplexMesh(localUserDoc.activeOutfit?.shirt, localUserDoc.activeOutfit?.leggings);
-            activePlayerMeshObj.position.set(0, 0, 0); activeGameScene.add(activePlayerMeshObj);
-
-            gameActiveState.yaw = 0; gameActiveState.pitch = 0;
-            activeGameCamera.position.set(0, 3, 8);
-
-            window.addEventListener('keydown', handleGameInputKeyDown);
-            window.addEventListener('keyup', handleGameInputKeyUp);
-            window.addEventListener('mousedown', handleGameMouseDownEvent);
-            window.addEventListener('mouseup', handleGameMouseUpEvent);
-            window.addEventListener('mousemove', handleGameMouseMovementLookPan);
-
-            // Execute 2KCode Runtime Blocks Sequence Setup
-            executeActive2KCodeSequence(liveBlocks, 'on_start');
-
-            const chatQuery = query(collection(db, "chats"), where("gameId", "==", gameId));
-            gameChatUnsubscribeNode = onSnapshot(chatQuery, (snapshot) => {
-                const logs = [];
-                snapshot.forEach(doc => logs.push(doc.data()));
-                logs.sort((a,b) => a.timestamp - b.timestamp);
-                const display = document.getElementById('game-chat-display');
-                display.innerHTML = '';
-                logs.forEach(m => {
-                    display.innerHTML += `<div><b>[${m.sender}]:</b> ${m.message}</div>`;
                 });
-                display.scrollTop = display.scrollHeight;
-            });
-
-            document.getElementById('game-chat-input').onkeydown = async function(e) {
-                if(e.key === 'Enter') {
-                    const text = this.value.trim(); if(!text) return;
-                    this.value = '';
-                    await addDoc(collection(db, "chats"), {
-                        gameId: gameId, sender: localUserDoc.username, message: text, timestamp: Date.now()
-                    });
-                    executeActive2KCodeSequence(liveBlocks, 'on_chat', text);
-                }
-            };
-
-            runActiveGameEngineFrameLoop();
-        };
-
-        function handleGameMouseDownEvent() { gameActiveState.mousePressed = true; }
-        function handleGameMouseUpEvent() { gameActiveState.mousePressed = false; }
-
-        function handleGameMouseMovementLookPan(e) {
-            if(document.pointerLockElement === document.body || gameActiveState.mousePressed) {
-                const sensitivity = 0.0025;
-                gameActiveState.yaw -= e.movementX * sensitivity;
-                gameActiveState.pitch -= e.movementY * sensitivity;
-                gameActiveState.pitch = Math.max(-Math.PI/3, Math.min(Math.PI/3, gameActiveState.pitch));
-            }
-        }
-
-        function handleGameInputKeyDown(e) {
-            gameActiveState.keys[e.key.toLowerCase()] = true;
-            if(e.key === 'Escape') toggleGameEscMenu();
-        }
-        function handleGameInputKeyUp(e) { gameActiveState.keys[e.key.toLowerCase()] = false; }
-
-        function runActiveGameEngineFrameLoop() {
-            if(document.getElementById('game-client-viewport').style.display === 'block') {
-                gameActiveState.animationFrame = requestAnimationFrame(runActiveGameEngineFrameLoop);
-
-                const moveSpeed = 0.15;
-                let forwardVectorX = Math.sin(gameActiveState.yaw);
-                let forwardVectorZ = Math.cos(gameActiveState.yaw);
-                
-                if(gameActiveState.keys['w'] || gameActiveState.keys['arrowup']) {
-                    activePlayerMeshObj.position.x -= forwardVectorX * moveSpeed;
-                    activePlayerMeshObj.position.z -= forwardVectorZ * moveSpeed;
-                }
-                if(gameActiveState.keys['s'] || gameActiveState.keys['arrowdown']) {
-                    activePlayerMeshObj.position.x += forwardVectorX * moveSpeed;
-                    activePlayerMeshObj.position.z += forwardVectorZ * moveSpeed;
-                }
-                if(gameActiveState.keys['a'] || gameActiveState.keys['arrowleft']) {
-                    activePlayerMeshObj.position.x -= forwardVectorZ * moveSpeed;
-                    activePlayerMeshObj.position.z += forwardVectorX * moveSpeed;
-                }
-                if(gameActiveState.keys['d'] || gameActiveState.keys['arrowright']) {
-                    activePlayerMeshObj.position.x += forwardVectorZ * moveSpeed;
-                    activePlayerMeshObj.position.z -= forwardVectorX * moveSpeed;
-                }
-
-                activePlayerMeshObj.rotation.y = gameActiveState.yaw;
-
-                let cameraOffsetDistance = 7;
-                let calculatedCamX = activePlayerMeshObj.position.x + cameraOffsetDistance * Math.sin(gameActiveState.yaw) * Math.cos(gameActiveState.pitch);
-                let calculatedCamY = activePlayerMeshObj.position.y + 3.2 + cameraOffsetDistance * Math.sin(gameActiveState.pitch);
-                let calculatedCamZ = activePlayerMeshObj.position.z + cameraOffsetDistance * Math.cos(gameActiveState.yaw) * Math.cos(gameActiveState.pitch);
-
-                activeGameCamera.position.set(calculatedCamX, calculatedCamY, calculatedCamZ);
-                activeGameCamera.lookAt(activePlayerMeshObj.position.x, activePlayerMeshObj.position.y + 2, activePlayerMeshObj.position.z);
-
-                if(gameActiveState.keys['w'] || gameActiveState.keys['s'] || gameActiveState.keys['a'] || gameActiveState.keys['d']) {
-                    let wave = Math.sin(Date.now() * 0.01);
-                    activePlayerMeshObj.llNode.rotation.x = wave * 0.6; activePlayerMeshObj.rlNode.rotation.x = -wave * 0.6;
-                    activePlayerMeshObj.laNode.rotation.x = -wave * 0.4; activePlayerMeshObj.raNode.rotation.x = wave * 0.4;
-                } else {
-                    activePlayerMeshObj.llNode.rotation.x = 0; activePlayerMeshObj.rlNode.rotation.x = 0;
-                    activePlayerMeshObj.laNode.rotation.x = 0; activePlayerMeshObj.raNode.rotation.x = 0;
-                }
-
-                activeGameRenderer.render(activeGameScene, activeGameCamera);
-            }
-        }
-
-        window.toggleGameEscMenu = function() {
-            const el = document.getElementById('game-esc-menu');
-            if(el.style.display === 'block') {
-                el.style.display = 'none';
-                document.body.requestPointerLock();
-            } else {
-                el.style.display = 'block';
-                document.exitPointerLock();
-            }
-        };
-
-        window.closeActiveGameSimulationClient = function() {
-            cancelAnimationFrame(gameActiveState.animationFrame);
-            if(gameChatUnsubscribeNode) gameChatUnsubscribeNode();
-            
-            window.removeEventListener('keydown', handleGameInputKeyDown);
-            window.removeEventListener('keyup', handleGameInputKeyUp);
-            window.removeEventListener('mousedown', handleGameMouseDownEvent);
-            window.removeEventListener('mouseup', handleGameMouseUpEvent);
-            window.removeEventListener('mousemove', handleGameMouseMovementLookPan);
-            
-            document.exitPointerLock();
-            document.getElementById('game-client-viewport').style.display = 'none';
-        };
-
-        async function syncGamesDiscoverGrid() {
-            const list = document.getElementById('games-market-list'); list.innerHTML = '';
-            const snap = await getDocs(collection(db, "games"));
-            snap.forEach(d => {
-                const g = d.data(); if(g.isBanned) return;
-                list.innerHTML += `
-                    <div class="market-card" style="border-color:${g.isFeatured ? 'var(--scratch-orange)':'#aaa'}; box-shadow:${g.isFeatured ? '0 0 10px rgba(255,171,25,0.4)': 'none'}">
-                        ${g.isFeatured ? '<span class="badge-limited" style="background:var(--scratch-orange); color:#000;">FEATURED</span>':''}
-                        <div style="font-size:40px;">🎮</div>
-                        <b>${g.title}</b><br>
-                        <small>Creator: ${g.creator || 'Unknown'}</small><br>
-                        <button class="btn-action" style="margin-top:8px; background:#16a34a;" onclick="launchActiveGameClientInstance('${d.id}', '${g.title}')">PLAY</button>
-                    </div>`;
-            });
-        }
-
-        /* DEVELOPER CREATIONS STUDIO SUBSYSTEM ENVIRONMENT PIPELINE */
-        async function renderCreationsLandingDashboard() {
-            const grid = document.getElementById('user-creations-grid'); grid.innerHTML = '';
-            const snap = await getDocs(query(collection(db, "games"), where("creator", "==", localUserDoc.username)));
-            snap.forEach(d => {
-                const g = d.data();
-                grid.innerHTML += `
-                    <div class="market-card">
-                        <div style="font-size:32px;">🛠️</div>
-                        <b>${g.title}</b><br>
-                        <button class="btn-action" style="padding:4px; font-size:11px; margin-top:5px; background:#8a2be2;" onclick="bootStudioModeWorkspace('${d.id}')">Edit Place</button>
-                    </div>`;
-            });
-        }
-
-        window.commitNewGameToCloudRegistry = async function() {
-            const title = document.getElementById('new-game-title-input').value.trim(); if(!title) return;
-            await addDoc(collection(db, "games"), {
-                title: title, creator: localUserDoc.username, objects: [], blocksData: [], isBanned: false, isFeatured: false
-            });
-            document.getElementById('new-game-modal').style.display = 'none';
-            renderCreationsLandingDashboard();
-        };
-
-        window.bootStudioModeWorkspace = async function(gameId) {
-            currentlyEditingGameId = gameId;
-            switchPage('studio');
-            
-            const list = document.getElementById('explorer-list'); list.innerHTML = '';
-            const container = document.getElementById('studio-3d-canvas'); container.innerHTML = '';
-            
-            studioScene = new THREE.Scene(); studioScene.background = new THREE.Color(0x222222);
-            studioCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            studioRenderer = new THREE.WebGLRenderer({ antialias: true }); studioRenderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(studioRenderer.domElement);
-
-            studioScene.add(new THREE.AmbientLight(0x666666));
-            const dLight = new THREE.DirectionalLight(0xffffff, 0.8); dLight.position.set(5, 15, 5); studioScene.add(dLight);
-            const gridHelper = new THREE.GridHelper(40, 40, 0x444444, 0x222222); gridHelper.position.y = -0.5; studioScene.add(gridHelper);
-
-            objectsMatrix = [];
-            compiledBlocksData = [];
-
-            const snap = await getDoc(doc(db, "games", gameId));
-            if(snap.exists()) {
-                const data = snap.data();
-                if(data.objects) {
-                    data.objects.forEach(obj => {
-                        let geo = obj.type === 'Sphere' ? new THREE.SphereGeometry(0.5,24,24) : new THREE.BoxGeometry(1,1,1);
-                        let mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: obj.color || 0x007acc }));
-                        mesh.position.set(obj.position.x, obj.position.y, obj.position.z);
-                        mesh.scale.set(obj.scale.x, obj.scale.y, obj.scale.z);
-                        mesh.rotation.set(obj.rotation.x, obj.rotation.y, obj.rotation.z);
-                        mesh.userData = { id: obj.id, type: obj.type, name: obj.name, color: obj.color };
-                        studioScene.add(mesh); objectsMatrix.push(mesh);
-                    });
-                }
-                if(data.blocksData) compiledBlocksData = data.blocksData;
-            }
-
-            studioCamera.position.set(10, 10, 15); studioCamera.lookAt(0,0,0);
-            rebuildStudioExplorerTreeNodes();
-
-            function renderStudio() {
-                if(document.getElementById('page-studio').classList.contains('active')) {
-                    requestAnimationFrame(renderStudio);
-                    studioRenderer.render(studioScene, studioCamera);
-                }
-            }
-            renderStudio();
-        };
-
-        window.spawn3DObject = function(type) {
-            let geo = type === 'Sphere' ? new THREE.SphereGeometry(0.5, 24, 24) : new THREE.BoxGeometry(1, 1, 1);
-            let mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: 0x007acc }));
-            mesh.position.set(Math.random()*4-2, 0.5, Math.random()*4-2);
-            mesh.userData = { id: 'obj_' + Date.now(), type: type, name: `${type} Instance`, color: '#007acc' };
-            studioScene.add(mesh); objectsMatrix.push(mesh);
-            rebuildStudioExplorerTreeNodes();
-            selectStudioObjectNode(mesh.userData.id);
-        };
-
-        function rebuildStudioExplorerTreeNodes() {
-            const list = document.getElementById('explorer-list'); list.innerHTML = '';
-            objectsMatrix.forEach(mesh => {
-                list.innerHTML += `<div class="explorer-item ${selectedObjectId===mesh.userData.id ? 'selected':''}" onclick="selectStudioObjectNode('${mesh.userData.id}')"><span>🧱 ${mesh.userData.name}</span><span onclick="deleteStudioObjectNode('${mesh.userData.id}', event)">🗑️</span></div>`;
-            });
-        }
-
-        window.selectStudioObjectNode = function(id) {
-            selectedObjectId = id; rebuildStudioExplorerTreeNodes();
-            const mesh = objectsMatrix.find(m => m.userData.id === id);
-            const props = document.getElementById('properties-window'); props.innerHTML = ''; if(!mesh) return;
-
-            props.innerHTML = `
-                <div class="prop-group"><label>Asset Name</label><input type="text" value="${mesh.userData.name}" onchange="updateStudioObjectProperty('name', this.value)"></div>
-                <div class="prop-group"><label>Hex Color</label><input type="color" value="${mesh.userData.color}" onchange="updateStudioObjectProperty('color', this.value)"></div>
-                <div class="prop-group"><label>Position Axis X/Y/Z</label>
-                    <input type="number" step="0.5" value="${mesh.position.x}" onchange="updateStudioObjectProperty('posX', this.value)" style="width:30%; display:inline;">
-                    <input type="number" step="0.5" value="${mesh.position.y}" onchange="updateStudioObjectProperty('posY', this.value)" style="width:30%; display:inline;">
-                    <input type="number" step="0.5" value="${mesh.position.z}" onchange="updateStudioObjectProperty('posZ', this.value)" style="width:30%; display:inline;">
-                </div>
-                <div class="prop-group"><label>Scale Vector X/Y/Z</label>
-                    <input type="number" step="0.5" value="${mesh.scale.x}" onchange="updateStudioObjectProperty('scaleX', this.value)" style="width:30%; display:inline;">
-                    <input type="number" step="0.5" value="${mesh.scale.y}" onchange="updateStudioObjectProperty('scaleY', this.value)" style="width:30%; display:inline;">
-                    <input type="number" step="0.5" value="${mesh.scale.z}" onchange="updateStudioObjectProperty('scaleZ', this.value)" style="width:30%; display:inline;">
-                </div>`;
-        };
-
-        window.updateStudioObjectProperty = function(key, val) {
-            const mesh = objectsMatrix.find(m => m.userData.id === selectedObjectId); if(!mesh) return;
-            if(key === 'name') { mesh.userData.name = val; rebuildStudioExplorerTreeNodes(); }
-            if(key === 'color') { mesh.userData.color = val; mesh.material.color.set(val); }
-            if(key === 'posX') mesh.position.x = parseFloat(val); if(key === 'posY') mesh.position.y = parseFloat(val); if(key === 'posZ') mesh.position.z = parseFloat(val);
-            if(key === 'scaleX') mesh.scale.x = parseFloat(val); if(key === 'scaleY') mesh.scale.y = parseFloat(val); if(key === 'scaleZ') mesh.scale.z = parseFloat(val);
-        };
-
-        window.deleteStudioObjectNode = function(id, e) {
-            if(e) e.stopPropagation();
-            const mesh = objectsMatrix.find(m => m.userData.id === id); if(!mesh) return;
-            studioScene.remove(mesh); objectsMatrix = objectsMatrix.filter(m => m.userData.id !== id);
-            if(selectedObjectId === id) selectedObjectId = null;
-            rebuildStudioExplorerTreeNodes(); document.getElementById('properties-window').innerHTML = '';
-        };
-
-        window.changeActiveStudioTool = function(t) { activeStudioTool = t; };
-
-        /* FIXED PUBLISHING CORRELATION ERROR */
-        window.saveActiveStudioProject = async function() {
-            if(!currentlyEditingGameId) return;
-            const serializedObjects = objectsMatrix.map(m => ({
-                id: m.userData.id, type: m.userData.type, name: m.userData.name, color: m.userData.color,
-                position: { x: m.position.x, y: m.position.y, z: m.position.z },
-                scale: { x: m.scale.x, y: m.scale.y, z: m.scale.z },
-                rotation: { x: m.rotation.x, y: m.rotation.y, z: m.rotation.z }
-            }));
-            await updateDoc(doc(db, "games", currentlyEditingGameId), { 
-                objects: serializedObjects, 
-                blocksData: compiledBlocksData 
-            });
-            alert("Published! Your part maps and 2KCode blocks are officially live across all game instances!");
-        };
-
-        window.exitStudioModeWorkspace = function() { switchPage('create-hub'); currentlyEditingGameId = null; };
-
-        /* COMMUNITY FORUMS */
-        async function syncForumsDashboard() {
-            const target = document.getElementById('forum-threads-list'); target.innerHTML = '';
-            const snap = await getDocs(collection(db, "forums"));
-            snap.forEach(d => {
-                const t = d.data();
-                target.innerHTML += `<div class="forum-row" onclick="viewForumThreadInstance('${d.id}')"><div><b>📌 ${t.title}</b><br><small>Started by: ${t.author}</small></div><span>💬 Views</span></div>`;
             });
         }
 
         window.openNewForumPostModal = function() { document.getElementById('new-forum-modal').style.display='block'; };
         window.submitForumThreadCloud = async function() {
             const title = document.getElementById('forum-title-input').value.trim();
-            const body = document.getElementById('forum-body-input').value.trim(); if(!title || !body) return;
-            await addDoc(collection(db, "forums"), { title, author: localUserDoc.username, body, replies: [] });
-            document.getElementById('new-forum-modal').style.display='none'; syncForumsDashboard();
+            const body = document.getElementById('forum-body-input').value.trim();
+            if(!title || !body) return;
+            await addDoc(collection(db, "forums"), { title, body, author: localUserDoc.username, timestamp: Date.now() });
+            document.getElementById('new-forum-modal').style.display='none';
         };
 
-        window.viewForumThreadInstance = async function(id) {
-            activeThreadId = id; switchPage('forum-view');
-            const snap = await getDoc(doc(db, "forums", id)); if(!snap.exists()) return;
-            const t = snap.data();
-            document.getElementById('view-thread-title').textContent = t.title;
-            const box = document.getElementById('forum-replies-container');
-            box.innerHTML = `<div class="post-container" style="background:#f8fafc; border-left:6px solid #3570c5;"><b>${t.author}:</b><p>${t.body}</p></div>`;
-            if(t.replies) {
-                t.replies.forEach(r => { box.innerHTML += `<div class="post-container"><b>${r.sender}:</b><p>${r.msg}</p></div>`; });
-            }
+        window.viewForumThreadDetails = async function(id) {
+            activeThreadId = id;
+            switchPage('forum-view');
+            const snap = await getDoc(doc(db, "forums", id));
+            const data = snap.data();
+            document.getElementById('view-thread-title').textContent = data.title;
+            
+            const container = document.getElementById('forum-replies-container');
+            container.innerHTML = `
+                <div class="post-container" style="border-left: 6px solid #3570c5;">
+                    <strong>${data.author} (Original Poster)</strong>
+                    <p style="margin-top:10px; font-size:15px; white-space:pre-wrap;">${data.body}</p>
+                </div>`;
+                
+            onSnapshot(collection(db, "forums", id, "replies"), (rSnap) => {
+                const subNodes = document.querySelectorAll('.reply-node-post');
+                subNodes.forEach(n => n.remove());
+                rSnap.forEach(rd => {
+                    const rData = rd.data();
+                    container.innerHTML += `
+                        <div class="post-container reply-node-post" style="margin-left:30px;">
+                            <strong>${rData.author}</strong>
+                            <p style="margin-top:8px; white-space:pre-wrap;">${rData.body}</p>
+                        </div>`;
+                });
+            });
         };
 
         window.submitForumReply = async function() {
-            const text = document.getElementById('forum-reply-body').value.trim(); if(!text || !activeThreadId) return;
-            const ref = doc(db, "forums", activeThreadId); const snap = await getDoc(ref);
-            let reps = snap.data().replies || []; reps.push({ sender: localUserDoc.username, msg: text });
-            await updateDoc(ref, { replies: reps }); document.getElementById('forum-reply-body').value = '';
-            viewForumThreadInstance(activeThreadId);
+            const el = document.getElementById('forum-reply-body');
+            const body = el.value.trim();
+            if(!body || !activeThreadId) return;
+            await addDoc(collection(db, "forums", activeThreadId, "replies"), { body, author: localUserDoc.username, timestamp: Date.now() });
+            el.value = '';
         };
 
-        /* GROUPS */
-        async function syncGroupsDashboard() {
-            const matrix = document.getElementById('groups-matrix-grid'); matrix.innerHTML = '';
-            const snap = await getDocs(collection(db, "groups"));
-            snap.forEach(d => {
-                const g = d.data(); const hasJoined = g.members && g.members.includes(localUserDoc.username);
-                matrix.innerHTML += `
-                    <div class="market-card">
-                        <div style="font-size:32px;">👥</div>
-                        <b>${g.name}</b><br><small>${g.members?.length || 1} Members</small><br>
-                        <button class="btn-action" style="margin-top:5px; background:${hasJoined ? '#6c757d':'#007bff'};" ${hasJoined ? 'disabled':''} onclick="joinGroupInstance('${d.id}')">
-                            ${hasJoined ? 'Affiliated' : 'Join Group'}
-                        </button>
-                    </div>`;
+        function initGroupsRealtimeFeed() {
+            onSnapshot(collection(db, "groups"), (snap) => {
+                const grid = document.getElementById('groups-matrix-grid');
+                const homeGrid = document.getElementById('home-groups-list');
+                if(grid) grid.innerHTML = '';
+                if(homeGrid) homeGrid.innerHTML = '';
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    const isMember = data.members && data.members.includes(localUserDoc.username);
+                    const cardHtml = `
+                        <div class="market-card">
+                            🛡️ <br><strong>${data.name}</strong><br>
+                            <small style="color:#666;">${data.members?data.members.length:1} Allies</small><br><br>
+                            <button class="btn-action" style="background:${isMember?'#6c757d':'#28a745'}" ${isMember?'disabled':''} onclick="joinCommunityGroupRegistry('${d.id}')">
+                                ${isMember ? 'Joined Member' : 'Enlist Unit'}
+                            </button>
+                        </div>`;
+                    if(grid) grid.innerHTML += cardHtml;
+                    if(homeGrid && isMember) homeGrid.innerHTML += cardHtml;
+                });
             });
         }
 
         window.openNewGroupModal = function() { document.getElementById('new-group-modal').style.display='block'; };
         window.submitGroupCloud = async function() {
-            const name = document.getElementById('group-title-input').value.trim(); if(!name) return;
-            await addDoc(collection(db, "groups"), { name, members: [localUserDoc.username] });
-            document.getElementById('new-group-modal').style.display='none'; syncGroupsDashboard();
+            const name = document.getElementById('group-title-input').value.trim();
+            if(!name) return;
+            await addDoc(collection(db, "groups"), { name, owner: localUserDoc.username, members: [localUserDoc.username] });
+            document.getElementById('new-group-modal').style.display='none';
         };
 
-        window.joinGroupInstance = async function(id) {
-            const ref = doc(db, "groups", id); const snap = await getDoc(ref);
-            let mems = snap.data().members || []; if(mems.includes(localUserDoc.username)) return;
-            mems.push(localUserDoc.username); await updateDoc(ref, { members: mems });
-            syncGroupsDashboard(); alert("Affiliated successfully!");
+        window.joinCommunityGroupRegistry = async function(id) {
+            await updateDoc(doc(db, "groups", id), { members: arrayUnion(localUserDoc.username) });
+            alert("Affiliated membership logged to group database registry.");
         };
 
-        /* MASTER SYSTEM SECURITY DASHBOARD LOCKDOWNS */
+        async function renderUserCreationsHubList() {
+            const grid = document.getElementById('user-creations-grid');
+            if(!grid) return;
+            grid.innerHTML = 'Syncing developer pipeline...';
+            const q = query(collection(db, "games"), where("creatorId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q);
+            grid.innerHTML = '';
+            snap.forEach(d => {
+                const data = d.data();
+                if(data.isBanned) return;
+                grid.innerHTML += `
+                    <div class="market-card">
+                        🎮<br><strong>${data.title}</strong><br><br>
+                        <button class="btn-action" style="background:#8a2be2;" onclick="bootStudioEnvironmentWorkspace('${d.id}')">Launch Studio IDE</button>
+                    </div>`;
+            });
+        }
+
+        window.commitNewGameToCloudRegistry = async function() {
+            const title = document.getElementById('new-game-title-input').value.trim();
+            if(!title) return;
+            const newDoc = await addDoc(collection(db, "games"), {
+                title,
+                creatorId: auth.currentUser.uid,
+                creatorName: localUserDoc.username,
+                objects: [
+                    { id: 'spawn-1', type: 'Part', position: {x:0, y:0.5, z:0}, scale: {x:3, y:0.2, z:3}, color: '#00ff00' },
+                    { id: 'part-base', type: 'Part', position: {x:0, y:-0.5, z:0}, scale: {x:50, y:0.5, z:50}, color: '#7f8c8d' }
+                ],
+                scripts: [],
+                isBanned: false,
+                isFeatured: false
+            });
+            document.getElementById('new-game-modal').style.display = 'none';
+            bootStudioEnvironmentWorkspace(newDoc.id);
+        };
+
+        window.bootStudioEnvironmentWorkspace = async function(gameId) {
+            currentlyEditingGameId = gameId;
+            switchPage('studio');
+            
+            const snap = await getDoc(doc(db, "games", gameId));
+            const gameData = snap.data();
+            objectsMatrix = gameData.objects || [];
+            compiledBlocksData = gameData.scripts || [];
+            
+            rebuildStudioSceneViewerCanvas(objectsMatrix);
+            populateAssetExplorerTree();
+            renderCompiledBlocksLineInterface();
+        };
+
+        function rebuildStudioSceneViewerCanvas(objects) {
+            const container = document.getElementById('studio-3d-canvas');
+            container.innerHTML = '';
+            
+            studioScene = new THREE.Scene();
+            studioScene.background = new THREE.Color(0x1a1a1a);
+            
+            studioCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            studioCamera.position.set(0, 15, 35);
+            studioCamera.lookAt(0, 0, 0);
+            
+            studioRenderer = new THREE.WebGLRenderer({ antialias: true });
+            studioRenderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(studioRenderer.domElement);
+            
+            const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+            studioScene.add(ambient);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            dirLight.position.set(20, 40, 20);
+            studioScene.add(dirLight);
+            
+            const gridHelper = new THREE.GridHelper(60, 60, 0x444444, 0x222222);
+            gridHelper.position.y = -0.2;
+            studioScene.add(gridHelper);
+            
+            objects.forEach(obj => {
+                let geom = obj.type === 'Sphere' ? new THREE.SphereGeometry(obj.scale.x/2, 32, 32) : new THREE.BoxGeometry(obj.scale.x, obj.scale.y, obj.scale.z);
+                let mat = new THREE.MeshStandardMaterial({ color: parseInt(obj.color.replace('#','0x')), roughness: 0.4 });
+                let mesh = new THREE.Mesh(geom, mat);
+                mesh.position.set(obj.position.x, obj.position.y, obj.position.z);
+                mesh.userData = { id: obj.id };
+                studioScene.add(mesh);
+            });
+            
+            function animate() {
+                if(!studioRenderer) return;
+                requestAnimationFrame(animate);
+                studioRenderer.render(studioScene, studioCamera);
+            }
+            animate();
+        }
+
+        function populateAssetExplorerTree() {
+            const list = document.getElementById('explorer-list');
+            if(!list) return;
+            list.innerHTML = '';
+            objectsMatrix.forEach(obj => {
+                const isSelected = selectedObjectId === obj.id;
+                list.innerHTML += `
+                    <div class="explorer-item ${isSelected?'selected':''}" onclick="selectWorkspaceStudioObject('${obj.id}')">
+                        <span>📦 ${obj.type} (${obj.id.slice(0,5)})</span>
+                        <span style="color:#ef4444; font-weight:bold; padding:0 4px;" onclick="event.stopPropagation(); removeWorkspaceStudioObject('${obj.id}')">X</span>
+                    </div>`;
+            });
+        }
+
+        window.selectWorkspaceStudioObject = function(id) {
+            selectedObjectId = id;
+            populateAssetExplorerTree();
+            renderPropertiesInspectorWindow();
+        };
+
+        function renderPropertiesInspectorWindow() {
+            const panel = document.getElementById('properties-window');
+            if(!panel) return;
+            if(!selectedObjectId) { panel.innerHTML = '<p style="color:#777;">No asset instance selected.</p>'; return; }
+            
+            const obj = objectsMatrix.find(o => o.id === selectedObjectId);
+            if(!obj) return;
+            
+            panel.innerHTML = `
+                <div class="prop-group">
+                    <label>Position Axis Coordinate Vector</label>
+                    X: <input type="number" step="0.5" value="${obj.position.x}" onchange="updateSelectedObjectProperty('position','x', parseFloat(this.value))">
+                    Y: <input type="number" step="0.5" value="${obj.position.y}" onchange="updateSelectedObjectProperty('position','y', parseFloat(this.value))">
+                    Z: <input type="number" step="0.5" value="${obj.position.z}" onchange="updateSelectedObjectProperty('position','z', parseFloat(this.value))">
+                </div>
+                <div class="prop-group">
+                    <label>Dimension Vector Footprint</label>
+                    Width: <input type="number" step="0.5" value="${obj.scale.x}" onchange="updateSelectedObjectProperty('scale','x', parseFloat(this.value))">
+                    Height: <input type="number" step="0.5" value="${obj.scale.y}" onchange="updateSelectedObjectProperty('scale','y', parseFloat(this.value))">
+                    Depth: <input type="number" step="0.5" value="${obj.scale.z}" onchange="updateSelectedObjectProperty('scale','z', parseFloat(this.value))">
+                </div>
+                <div class="prop-group">
+                    <label>Solid Material HEX Color Map</label>
+                    <input type="color" value="${obj.color}" onchange="updateSelectedObjectProperty('color', null, this.value)">
+                </div>`;
+        }
+
+        window.updateSelectedObjectProperty = function(category, axis, val) {
+            if(!selectedObjectId) return;
+            const obj = objectsMatrix.find(o => o.id === selectedObjectId);
+            if(!obj) return;
+            
+            if(axis) { obj[category][axis] = val; } 
+            else { obj[category] = val; }
+            
+            rebuildStudioSceneViewerCanvas(objectsMatrix);
+        };
+
+        window.spawn3DObject = function(type) {
+            const newObj = {
+                id: type.toLowerCase() + '-' + Math.random().toString(36).substring(2, 9),
+                type,
+                position: {x:0, y:1, z:0},
+                scale: {x:2, y:2, z:2},
+                color: '#3498db'
+            };
+            objectsMatrix.push(newObj);
+            populateAssetExplorerTree();
+            selectWorkspaceStudioObject(newObj.id);
+            rebuildStudioSceneViewerCanvas(objectsMatrix);
+        };
+
+        window.removeWorkspaceStudioObject = function(id) {
+            objectsMatrix = objectsMatrix.filter(o => o.id !== id);
+            if(selectedObjectId === id) selectedObjectId = null;
+            populateAssetExplorerTree();
+            renderPropertiesInspectorWindow();
+            rebuildStudioSceneViewerCanvas(objectsMatrix);
+        };
+
+        window.changeActiveStudioTool = function(tool) {
+            activeStudioTool = tool;
+            document.querySelectorAll('.studio-toolbar button').forEach(b => b.classList.remove('active-tool'));
+            const targetBtn = document.getElementById(`tool-${tool}`);
+            if(targetBtn) targetBtn.classList.add('active-tool');
+        };
+
+        window.open2KCodeEditorWindow = function() { document.getElementById('html-editor-panel').style.display = 'block'; };
+        window.closeHtmlEditorWindow = function() { document.getElementById('html-editor-panel').style.display = 'none'; };
+
+        window.add2KBlockNode = function(type) {
+            let defaultVal = '';
+            if(type === 'set_title' || type === 'add_banner' || type === 'show_popup') defaultVal = 'Hello World!';
+            if(type === 'give_tickets' || type === 'wait_sec') defaultVal = '10';
+            
+            compiledBlocksData.push({ id: 'block-' + Date.now() + Math.random().toString(36).substring(2,5), type, val: defaultVal });
+            renderCompiledBlocksLineInterface();
+        };
+
+        function renderCompiledBlocksLineInterface() {
+            const container = document.getElementById('block-assembly-line');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            compiledBlocksData.forEach(b => {
+                let colorClass = 'block-orange';
+                if(['set_title','add_banner','show_popup'].includes(b.type)) colorClass = 'block-blue';
+                if(['enable_glow','change_sky'].includes(b.type)) colorClass = 'block-purple';
+                if(['give_tickets','spawn_npc','teleport_player'].includes(b.type)) colorClass = 'block-green';
+                if(['loop_forever','wait_sec'].includes(b.type)) colorClass = 'block-pink';
+
+                let inputHtml = '';
+                if(['set_title','add_banner','show_popup','give_tickets','wait_sec'].includes(b.type)) {
+                    inputHtml = `<input type="text" value="${b.val}" onchange="updateBlockValueNode('${b.id}', this.value)">`;
+                }
+
+                container.innerHTML += `
+                    <div class="assembled-block ${colorClass}">
+                        <span>⚙️ <strong>${b.type.toUpperCase().replace('_',' ')}</strong> ${inputHtml}</span>
+                        <button class="block-delete-btn" onclick="deleteBlockNode('${b.id}')">Remove</button>
+                    </div>`;
+            });
+        }
+
+        window.updateBlockValueNode = function(id, val) {
+            const b = compiledBlocksData.find(x => x.id === id);
+            if(b) b.val = val;
+        };
+
+        window.deleteBlockNode = function(id) {
+            compiledBlocksData = compiledBlocksData.filter(x => x.id !== id);
+            renderCompiledBlocksLineInterface();
+        };
+
+        window.saveActiveStudioProject = async function() {
+            if(!currentlyEditingGameId) return;
+            await updateDoc(doc(db, "games", currentlyEditingGameId), { objects: objectsMatrix, scripts: compiledBlocksData });
+            alert("Experience files published and deployed to 2KBlox cloud clusters!");
+        };
+
+        window.exitStudioModeWorkspace = function() {
+            studioRenderer = null;
+            switchPage('create-hub');
+        };
+
+        window.triggerHtmlLivePlaytest = function() {
+            document.getElementById('html-playtest-overlay').style.display = 'block';
+            const zone = document.getElementById('html-playtest-render-zone');
+            zone.innerHTML = '';
+            
+            let headingText = "2KBlox Experience Running";
+            let bannerText = "";
+            let ticketsAwarded = 0;
+            
+            compiledBlocksData.forEach(b => {
+                if(b.type === 'set_title') headingText = b.val;
+                if(b.type === 'add_banner') bannerText = b.val;
+                if(b.type === 'show_popup') alert(`[Game Alert]: ${b.val}`);
+                if(b.type === 'give_tickets') ticketsAwarded += parseInt(b.val) || 0;
+            });
+            
+            document.getElementById('playtest-header-title').textContent = headingText;
+            
+            let innerContent = `
+                <div style="padding:30px; background:#fafafa; border:2px solid #ccc; border-radius:8px; text-align:center;">
+                    <h2 style="color:#333;">Welcome to the Experience Live View Sandbox</h2>
+                    <p style="font-size:16px; color:#555;">Active Simulator Canvas Instance Environment</p>`;
+                    
+            if(bannerText) {
+                innerContent += `<div style="background:#ffea00; border:2px solid #e6b800; padding:12px; margin:15px 0; font-weight:bold; border-radius:4px;">🪧 Broadcast Banner: ${bannerText}</div>`;
+            }
+            if(ticketsAwarded > 0) {
+                innerContent += `<div style="background:#d4edda; color:#155724; padding:10px; border-radius:4px; margin-top:10px;">💵 This simulation generated: <strong>${ticketsAwarded} Tickets</strong> for your user profile session.</div>`;
+            }
+            
+            innerContent += `
+                    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(auto-fill, minmax(100px,1fr)); gap:10px;">`;
+            
+            objectsMatrix.forEach(o => {
+                innerContent += `
+                    <div style="background:${o.color}; padding:10px; color:white; border-radius:4px; font-size:11px; font-family:monospace; text-align:center;">
+                        <strong>${o.type}</strong><br>
+                        Scale: [${o.scale.x},${o.scale.y},${o.scale.z}]
+                    </div>`;
+            });
+            
+            innerContent += `</div></div>`;
+            zone.innerHTML = innerContent;
+        };
+
+        function initPublicGamesDiscoverFeed() {
+            onSnapshot(collection(db, "games"), (snap) => {
+                const list = document.getElementById('games-market-list');
+                const profileGrid = document.getElementById('profile-games-grid');
+                const homeRecentGrid = document.getElementById('home-recent-games-list');
+                
+                if(list) list.innerHTML = '';
+                if(profileGrid) profileGrid.innerHTML = '';
+                if(homeRecentGrid) homeRecentGrid.innerHTML = '';
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    if(data.isBanned) return;
+
+                    const featuredTag = data.isFeatured ? '<span class="badge-limited" style="background:#ffaa00;">FEATURED</span>' : '';
+                    const baseCard = `
+                        <div class="market-card">
+                            ${featuredTag}
+                            🎮<br><strong>${data.title}</strong><br>
+                            <small style="color:#666;">By ${data.creatorName}</small><br><br>
+                            <button class="btn-action" style="background:#28a745;" onclick="bootGameSimulationClientInstance('${d.id}')">Join Game</button>
+                        </div>`;
+
+                    if(list) list.innerHTML += baseCard;
+                    if(profileGrid && data.creatorId === auth.currentUser.uid) profileGrid.innerHTML += baseCard;
+                    if(homeRecentGrid && localUserDoc.recentGames.includes(d.id)) homeRecentGrid.innerHTML += baseCard;
+                });
+            });
+        }
+
+        window.bootGameSimulationClientInstance = async function(gameId) {
+            document.getElementById('game-client-viewport').style.display = 'block';
+            const container = document.getElementById('game-3d-scene-box');
+            container.innerHTML = '';
+
+            activeGameScene = new THREE.Scene();
+            activeGameScene.background = new THREE.Color(0xbcd6f7);
+
+            activeGameCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            activeGameRenderer = new THREE.WebGLRenderer({ antialias: true });
+            activeGameRenderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(activeGameRenderer.domElement);
+
+            const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+            activeGameScene.add(ambient);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            dirLight.position.set(10, 50, 10);
+            activeGameScene.add(dirLight);
+
+            const snap = await getDoc(doc(db, "games", gameId));
+            const gameData = snap.data();
+            const loadedObjects = gameData.objects || [];
+            const activeScripts = gameData.scripts || [];
+
+            loadedObjects.forEach(obj => {
+                let geom = obj.type === 'Sphere' ? new THREE.SphereGeometry(obj.scale.x/2, 32, 32) : new THREE.BoxGeometry(obj.scale.x, obj.scale.y, obj.scale.z);
+                let mat = new THREE.MeshStandardMaterial({ color: parseInt(obj.color.replace('#','0x')), roughness: 0.5 });
+                let mesh = new THREE.Mesh(geom, mat);
+                mesh.position.set(obj.position.x, obj.position.y, obj.position.z);
+                activeGameScene.add(mesh);
+            });
+
+            activePlayerMeshObj = new THREE.Mesh(new THREE.BoxGeometry(1.5, 3, 1.5), new THREE.MeshStandardMaterial({ color: 0xe63946 }));
+            activePlayerMeshObj.position.set(0, 2, 10);
+            activeGameScene.add(activePlayerMeshObj);
+
+            activeGameCamera.position.set(0, 5, 15);
+            activeGameCamera.lookAt(activePlayerMeshObj.position);
+
+            if(gameChatUnsubscribeNode) gameChatUnsubscribeNode();
+            const displayChatZone = document.getElementById('game-chat-display');
+            displayChatZone.innerHTML = '';
+            
+            gameChatUnsubscribeNode = onSnapshot(collection(db, "games", gameId, "chats"), (cSnap) => {
+                displayChatZone.innerHTML = '';
+                cSnap.forEach(cd => {
+                    const cData = cd.data();
+                    displayChatZone.innerHTML += `<div><strong>${cData.user}</strong>: ${cData.msg}</div>`;
+                });
+                displayChatZone.scrollTop = displayChatZone.scrollHeight;
+            });
+
+            activeScripts.forEach(b => {
+                if(b.type === 'add_banner') {
+                    const alertEl = document.getElementById('game-alert-banner');
+                    document.getElementById('game-alert-txt').textContent = b.val;
+                    alertEl.style.display = 'block';
+                    setTimeout(() => { alertEl.style.display = 'none'; }, 6000);
+                }
+                if(b.type === 'show_popup') alert(`[Live Instance]: ${b.val}`);
+            });
+
+            const chatInputEl = document.getElementById('game-chat-input');
+            chatInputEl.onkeydown = async function(e) {
+                if(e.key === 'Enter') {
+                    const msg = chatInputEl.value.trim();
+                    if(!msg) return;
+                    await addDoc(collection(db, "games", gameId, "chats"), { user: localUserDoc.username, msg, timestamp: Date.now() });
+                    chatInputEl.value = '';
+                }
+            };
+
+            await updateDoc(doc(db, "users", auth.currentUser.uid), { recentGames: arrayUnion(gameId) });
+            if(!localUserDoc.recentGames.includes(gameId)) localUserDoc.recentGames.push(gameId);
+            
+            function engineLoop() {
+                if(!activeGameRenderer) return;
+                requestAnimationFrame(engineLoop);
+                
+                activeGameCamera.position.x = activePlayerMeshObj.position.x;
+                activeGameCamera.position.z = activePlayerMeshObj.position.z + 15;
+                activeGameCamera.lookAt(activePlayerMeshObj.position);
+                
+                activeGameRenderer.render(activeGameScene, activeGameCamera);
+            }
+            engineLoop();
+        };
+
+        window.toggleGameEscMenu = function() {
+            const el = document.getElementById('game-esc-menu');
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        };
+
+        window.closeActiveGameSimulationClient = function() {
+            if(gameChatUnsubscribeNode) gameChatUnsubscribeNode();
+            activeGameRenderer = null;
+            document.getElementById('game-client-viewport').style.display = 'none';
+            document.getElementById('game-esc-menu').style.display = 'none';
+        };
+
+        window.wearInventoryClothingAsset = function(type, color) {
+            alert(`Outfit asset configured! Your avatar mesh properties now feature Hex color target blueprint: ${color}`);
+        };
+
+        function init3DAvatarClosetWorkspace() {
+            const box = document.getElementById('avatar-3d-canvas');
+            if(!box) return;
+            box.innerHTML = '';
+            
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xb0e0e6);
+            
+            const camera = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
+            camera.position.set(0, 4, 10);
+            
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(box.clientWidth, box.clientHeight);
+            box.appendChild(renderer.domElement);
+            
+            const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambient);
+            
+            const avatarChar = new THREE.Group();
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffdbac })); head.position.y = 2.2;
+            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.6, 0.6), new THREE.MeshStandardMaterial({ color: 0xe63946 })); torso.position.y = 1.1;
+            
+            avatarChar.add(head); avatarChar.add(torso);
+            scene.add(avatarChar); camera.lookAt(0, 1.1, 0);
+            
+            function render() {
+                if(!box.innerHTML) return;
+                requestAnimationFrame(render);
+                avatarChar.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            render();
+        }
+
         window.triggerAdminPrompt = function() {
-            const code = prompt("Enter Master Infrastructure Administration Overrides Access Code Key:");
-            if(code === "080112") { switchPage('admin'); } else { alert("Access Denied."); }
+            const promptInput = prompt("Enter Administration Core Identity Validation Authentication Passcode:");
+            if(promptInput === "JacobHT3") {
+                switchPage('admin');
+            } else {
+                alert("Access Denied.");
+            }
         };
 
         window.moderateExperience = async function(type) {
@@ -1181,8 +1224,8 @@
             const title = document.getElementById('admin-ltd-title').value.trim();
             const color = document.getElementById('admin-ltd-color').value.trim() || "#ff0000";
             const price = parseInt(document.getElementById('admin-ltd-price').value) || 50; if(!title) return;
-            await addDoc(collection(db, "catalog"), { title, color, price, isLimited: true, creator: "System Admin" });
-            alert("Limited asset generated!");
+            await addDoc(collection(db, "catalog"), { title, color, price, isLimited: true, type: 'shirt' });
+            alert("Limited distribution asset appended to community shop ledger index!");
         };
     </script>
 </body>
